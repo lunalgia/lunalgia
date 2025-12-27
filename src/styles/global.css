@@ -1,0 +1,295 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --font-sans:
+    Jost, Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono:
+        'JetBrains Mono', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+            'Liberation Mono', 'Courier New', monospace;
+  --font-kleemax:
+  'Kleemax', monospace;
+  --font-formation:
+  'Formation';
+    --font-baskerville:
+    'Baskerville', sans-serif;
+    --font-condensed-serif:
+            'Instrument Serif', sans-serif;
+    --font-serif:
+   'Fanwood';
+    --font-garamond:
+    'EB Garamond', sans-serif;
+
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-additive: var(--additive);
+  --color-additive-foreground: var(--additive-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+    --color-head: var(--head);
+
+}
+
+@font-face {
+    font-family: 'EB Garamond';
+    src: url('/fonts/EB_Garamond/static/EBGaramond-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 100 900;
+}
+@font-face {
+    font-family: 'Redacted Script';
+    src: url('/fonts/RedactedScript-Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'EB Garamond';
+    src: url('/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf') format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Iosevka';
+    src: url('/fonts/Iosevka-ExtraLight.ttc');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/fonts/JetBrainsMono-Regular.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'Fanwood';
+    src: url('/fonts/fanwood-master/FanwoodText.otf') format('opentype');
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Fanwood';
+    src: url('/fonts/fanwood-master/FanwoodText_Italic.otf') format('opentype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Jost';
+    src: url('/fonts/Jost/OpenType/Jost-400-Book.otf') format('opentype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/GeistVF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMonoVF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kleemax';
+  src: url('/fonts/kleemaxdemo.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Formation';
+  src: url('/fonts/3603-formation-desktop.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Baskerville';
+    src: url('/fonts/QTBasker-Italic.otf') format('opentype');
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Baskerville';
+    src: url('/fonts/QTBasker-Regular.ttf') format('truetype');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Instrument Serif';
+    src: url('/fonts/InstrumentSerif-Italic.ttf') format('truetype');
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Instrument Serif';
+    src: url('/fonts/InstrumentSerif-Regular.ttf') format('truetype');
+    font-style: normal;
+}
+
+
+:root {
+  --background: oklch(0.82 0.027 159.448);
+  --foreground: oklch(0.209 0 89.876 / 0.9);
+  --primary: oklch(0 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.767 0.033 159.963);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.686 0.024 196.613);
+  --muted-foreground: oklch(0.427 0.012 196.729);
+  --accent: oklch(0.823 0.047 196.272);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.633 0.025 161.321 / 0.79);
+  --ring: oklch(0.755 0.097 195.288);
+    --head: oklch(1 0 89.876);
+}
+
+[data-theme='dark'] {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.851 0.023 196.735);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.416 0.14 25.688);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.775 0.031 94.423);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    @apply border-border outline-ring/50 tracking-tight;
+  }
+}
+
+.linear-blur-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    height: 6rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    /* Gradient mask */
+    mask: linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,0.7) 50%,
+    rgba(0,0,0,0.3) 80%,
+    rgba(0,0,0,0) 100%
+    );
+    -webkit-mask: linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,0.7) 50%,
+    rgba(0,0,0,0.3) 80%,
+    rgba(0,0,0,0) 100%
+    );
+
+    transition: all 0.3s ease;
+}
+
+/* Override when TOC is present */
+.has-toc .linear-blur-backdrop {
+    height: 3.3rem;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+
+    mask: linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 50%,
+    rgba(0,0,0,1) 80%,
+    rgba(0,0,0,1) 100%
+    );
+    -webkit-mask: linear-gradient(to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 50%,
+    rgba(0,0,0,1) 80%,
+    rgba(0,0,0,1) 100%
+    );
+}
+
+/* Default state (no TOC) */
+.header-container {
+    position: sticky;
+}
+
+/* Blur background layer */
+
+/* subtle atmospheric grain */
+.grain {
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: .12;
+    mix-blend-mode: soft-light;
+}
+
+/* soft fade entrance */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 1.4s ease forwards;
+    opacity: 0;
+}
+.animate-fade-in.delay-150 {
+    animation-delay: 0.15s;
+}
+
+
+.album-card-wrapper {
+    flex: 0 0 370px;
+}
+
+.album-description {
+    flex: 1;
+    min-width: 250px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-top: 0.4rem;
+}
+
+@media (max-width: 768px) {
+    .album-card-wrapper {
+        flex: 1 1 100%;
+    }
+
+    .album-description {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+}

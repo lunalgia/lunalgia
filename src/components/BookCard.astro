@@ -1,0 +1,321 @@
+---
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+interface BookCardProps {
+  isbn?: string
+  title?: string
+  author?: string
+  class?: string
+}
+
+// Extract ISBN from various formats
+const extractISBN = (input: string) => {
+  // Remove all non-digit characters except X
+  const cleaned = input.replace(/[^0-9X]/gi, '')
+  // Check if it's a valid ISBN-10 or ISBN-13 length
+  if (cleaned.length === 10 || cleaned.length === 13) {
+    return cleaned
+  }
+  return null
+}
+
+
+
+// Fetch high-quality cover from multiple sources
+const fetchHighQualityCover = async (isbn: string, title: string, authors: string[]) => {
+  const sources = [
+    // Open Library covers (often high quality)
+    `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`,
+    // Internet Archive covers
+    `https://archive.org/services/img/${isbn}`,
+    // Goodreads-style search (replace spaces with +)
+    `https://covers.openlibrary.org/b/olid/${title.replace(/\s+/g, '+')}-L.jpg`,
+  ]
+
+  // Test each source
+  for (const url of sources) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' })
+      if (response.ok && response.headers.get('content-type')?.includes('image')) {
+        return url
+      }
+    } catch (error) {
+      continue
+    }
+  }
+
+  return null
+}
+
+const fetchBookData = async (isbn?: string, title?: string, author?: string) => {
+  try {
+    let searchQuery = ''
+
+    if (isbn) {
+      const cleanISBN = extractISBN(isbn)
+      if (cleanISBN) {
+        searchQuery = `isbn:${cleanISBN}`
+      }
+    } else if (title && author) {
+      searchQuery = `intitle:"${title}" inauthor:"${author}"`
+    } else if (title) {
+      searchQuery = `intitle:"${title}"`
+    }
+
+    if (!searchQuery) return null
+
+    const response = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=1`
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch')
+    const data = await response.json()
+
+    if (!data.items || data.items.length === 0) return null
+
+    const book = data.items[0]
+    const volumeInfo = book.volumeInfo
+
+    // Extract and clean categories - get more genres with debugging
+    let genres = []
+    if (volumeInfo.categories) {
+      console.log('Raw categories from Google Books:', volumeInfo.categories)
+
+      genres = volumeInfo.categories
+        .flatMap((cat: string) => cat.split('/').map((c: string) => c.trim()))
+        .flatMap((cat: string) => cat.split('&').map((c: string) => c.trim()))
+        .flatMap((cat: string) => cat.split(',').map((c: string) => c.trim()))
+        .filter((cat: string) => {
+          const isValid = cat &&
+            cat !== 'Fiction' &&
+            cat !== 'General' &&
+            cat !== 'Literary' &&
+            cat !== 'Literature' &&
+            !cat.toLowerCase().includes('general') &&
+            cat.length > 2
+
+          console.log(`Category "${cat}" - Valid: ${isValid}`)
+          return isValid
+        })
+        .map((cat: string) => {
+          if (cat.toLowerCase().includes('science fiction')) return 'Science Fiction'
+          if (cat.toLowerCase().includes('dystopian')) return 'Dystopian'
+          if (cat.toLowerCase().includes('political')) return 'Political Fiction'
+          if (cat.toLowerCase().includes('social')) return 'Social Fiction'
+          if (cat.toLowerCase().includes('biography')) return 'Biography'
+          if (cat.toLowerCase().includes('autobiography')) return 'Autobiography'
+          if (cat.toLowerCase().includes('mystery')) return 'Mystery'
+          if (cat.toLowerCase().includes('thriller')) return 'Thriller'
+          if (cat.toLowerCase().includes('romance')) return 'Romance'
+          if (cat.toLowerCase().includes('fantasy')) return 'Fantasy'
+          if (cat.toLowerCase().includes('horror')) return 'Horror'
+          if (cat.toLowerCase().includes('history')) return 'History'
+          if (cat.toLowerCase().includes('business')) return 'Business'
+          if (cat.toLowerCase().includes('self')) return 'Self-Help'
+          if (cat.toLowerCase().includes('philosophy')) return 'Philosophy'
+          if (cat.toLowerCase().includes('psychology')) return 'Psychology'
+          if (cat.toLowerCase().includes('religion')) return 'Religion'
+          if (cat.toLowerCase().includes('health')) return 'Health'
+          if (cat.toLowerCase().includes('cooking')) return 'Cooking'
+          if (cat.toLowerCase().includes('travel')) return 'Travel'
+          if (cat.toLowerCase().includes('art')) return 'Art'
+          if (cat.toLowerCase().includes('music')) return 'Music'
+          if (cat.toLowerCase().includes('poetry')) return 'Poetry'
+          if (cat.toLowerCase().includes('drama')) return 'Drama'
+          return cat
+        })
+        .filter((genre: string, index: number, arr: string[]) => arr.indexOf(genre) === index)
+        .slice(0, 3)
+
+
+      console.log('Final processed genres:', genres)
+    }
+
+    // If still less than 3 genres, try to extract more from description
+    if (genres.length < 3 && volumeInfo.description) {
+      console.log('Checking description for additional genres...')
+      const desc = volumeInfo.description.toLowerCase()
+      const descGenres = []
+
+      if (desc.includes('dystopian') || desc.includes('dystopia')) descGenres.push('Dystopian')
+      if (desc.includes('science fiction') || desc.includes('sci-fi')) descGenres.push('Science Fiction')
+      if (desc.includes('political')) descGenres.push('Political Fiction')
+      if (desc.includes('totalitarian')) descGenres.push('Dystopian')
+      if (desc.includes('mystery') || desc.includes('detective')) descGenres.push('Mystery')
+      if (desc.includes('romance') || desc.includes('love story')) descGenres.push('Romance')
+      if (desc.includes('thriller') || desc.includes('suspense')) descGenres.push('Thriller')
+      if (desc.includes('fantasy') || desc.includes('magic')) descGenres.push('Fantasy')
+      if (desc.includes('biography') || desc.includes('life story')) descGenres.push('Biography')
+      if (desc.includes('history') || desc.includes('historical')) descGenres.push('History')
+      if (desc.includes('horror') || desc.includes('scary')) descGenres.push('Horror')
+      if (desc.includes('adventure')) descGenres.push('Adventure')
+      if (desc.includes('comedy') || desc.includes('humor')) descGenres.push('Comedy')
+
+      // Add genres that aren't already in the list
+      descGenres.forEach(genre => {
+        if (!genres.includes(genre) && genres.length < 3) {
+          genres.push(genre)
+        }
+      })
+
+      console.log('Genres after description analysis:', genres)
+    }
+
+    // Get high-quality cover
+    let coverUrl = null
+    const cleanISBN = isbn ? extractISBN(isbn) : null
+
+    if (cleanISBN) {
+      coverUrl = await fetchHighQualityCover(cleanISBN, volumeInfo.title, volumeInfo.authors || [])
+    }
+
+    // Fallback to Google Books covers if no high-quality cover found
+    if (!coverUrl) {
+      coverUrl = volumeInfo.imageLinks?.large ||
+        volumeInfo.imageLinks?.medium ||
+        volumeInfo.imageLinks?.thumbnail || null
+    }
+
+    return {
+      title: volumeInfo.title,
+      authors: volumeInfo.authors || ['Unknown Author'],
+      subjects: genres,
+      cover: coverUrl,
+      isbn: isbn,
+      publishDate: volumeInfo.publishedDate ? new Date(volumeInfo.publishedDate).getFullYear() : null,
+      publisher: volumeInfo.publisher || null,
+      pageCount: volumeInfo.pageCount || null,
+      rating: volumeInfo.averageRating || null
+    }
+
+  } catch (error) {
+    console.error('Error fetching book data:', error)
+    return null
+  }
+}
+
+const { isbn, title, author, ...rest } = Astro.props
+const bookData = await fetchBookData(isbn, title, author)
+
+// Fallback cover if no cover is available
+const defaultCover = '/static/images/book-placeholder.jpg' // You'll need to add this image
+const coverUrl = bookData?.cover || defaultCover
+---
+
+{bookData ? (
+<div
+  class={cn(
+    "book-card group relative overflow-hidden rounded-2xl bg-[#1a1a1a] transition-all duration-300 w-full max-w-sm mb-6",
+    rest.class
+  )}
+>
+  <!-- Cover area -->
+  <div
+    class="aspect-[3/4] relative bg-center bg-cover bg-no-repeat bg-gray-800"
+    style={`background-image: url('${coverUrl}')`}
+    aria-hidden="true"
+  >
+    <!-- Gradient overlay for better text contrast -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none"></div>
+
+    <!-- Genre badges - translucent and better visibility -->
+    {bookData.subjects && bookData.subjects.length > 0 && (
+      <div class="absolute bottom-3 left-3 right-3 z-20">
+        <div class="flex flex-wrap gap-1">
+          {bookData.subjects.slice(0, 3).map((subject: string) => (
+            <span class="px-2.5 py-1 text-xs bg-black/30 text-white rounded-full backdrop-blur-md font-mono font-medium border border-white/20 shadow-lg">
+              {subject.length > 15 ? subject.slice(0, 15) + '...' : subject}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Book icon overlay -->
+    <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div class="pointer-events-none rounded-full bg-blue-600/80 p-3 shadow-2xl backdrop-blur-sm">
+        <Icon name="lucide:book-open" class="h-6 w-6 text-white block" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Metadata -->
+  <div class="px-5 pb-5 pt-4">
+    <h3 class="font-mono font-medium not-italic text-gray-100 line-clamp-2 mb-2 text-sm leading-relaxed">
+      {bookData.title}
+    </h3>
+
+    <div class="space-y-1">
+      <!-- Author -->
+      <div class="flex items-center text-xs text-gray-400 font-mono">
+        <Icon name="lucide:user" class="h-3.5 w-3.5 mr-2 opacity-70 flex-shrink-0" />
+        <span class="truncate">{bookData.authors[0]}</span>
+        {bookData.authors.length > 1 && (
+          <span class="ml-1">+{bookData.authors.length - 1}</span>
+        )}
+      </div>
+
+      <!-- Publisher & Year -->
+      {(bookData.publisher || bookData.publishDate) && (
+        <div class="flex items-center text-xs text-gray-500 font-mono">
+          <Icon name="lucide:calendar" class="h-3.5 w-3.5 mr-2 opacity-70 flex-shrink-0" />
+          <span class="truncate">
+            {bookData.publisher && bookData.publishDate
+              ? `${bookData.publisher}, ${bookData.publishDate}`
+              : bookData.publisher || bookData.publishDate
+            }
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Clickable overlay -->
+  <div
+    class="absolute inset-0 z-40 rounded-2xl cursor-pointer"
+    role="button"
+    tabindex="0"
+    aria-label={`View details for ${bookData.title}`}
+    onclick={`window.open('https://openlibrary.org/search?q=${encodeURIComponent(bookData.title)}', '_blank')`}
+  >
+    <span class="sr-only">View book details</span>
+  </div>
+</div>
+  ) : (
+<div class={cn("book-card relative rounded-2xl bg-[#1a1a1a] p-5 shadow-lg mb-6", rest.class)}>
+  <div class="flex items-center text-amber-400 font-mono text-sm">
+    <Icon name="lucide:book-x" class="h-4 w-4 mr-3 flex-shrink-0 opacity-80" />
+    <span>Failed to load book metadata</span>
+  </div>
+</div>
+  )}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Border overlay using inset box-shadow */
+  .book-card {
+    box-shadow: inset 0 0 0 1px #2a2a2a;
+    border-radius: inherit;
+  }
+  .book-card.group:hover {
+    box-shadow: inset 0 0 0 1px #3a3a3a;
+  }
+
+  /* Hover effect */
+  .book-card.group:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Ensure clean rendering */
+  .book-card img,
+  .book-card svg {
+    display: block;
+  }
+</style>

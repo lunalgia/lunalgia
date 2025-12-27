@@ -1,0 +1,364 @@
+---
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+const LASTFM_API_KEY = import.meta.env.LASTFM_API_KEY
+
+// ---- Props ----
+interface AlbumCardProps {
+  title?: string
+  artist?: string
+  cover?: string
+  genre?: string[]
+  type?: string          // manual only
+  rating?: string
+  appleMusicLink?: string
+  spotifyUrl?: string
+  bandcampUrl?: string
+  soundcloudUrl?: string
+  class?: string
+}
+
+const {
+  title,
+  artist,
+  cover,
+  genre = [],
+  type,
+  rating,
+  appleMusicLink,
+  spotifyUrl,
+  bandcampUrl,
+  soundcloudUrl,
+  ...rest
+} = Astro.props as AlbumCardProps
+
+// ---- Metadata type ----
+interface Metadata {
+  title: string | null
+  artist?: string | null
+  cover: string | null
+  genres?: string[]
+}
+
+// ---- Helpers ----
+const extractSpotifyId = (url: string) => url?.match(/\/album\/([a-zA-Z0-9]+)/)?.[1] ?? null
+const extractAppleMusicId = (url: string) => url?.match(/\/album\/[^/]+\/(\d+)/)?.[1] ?? null
+
+// ---- Fetch functions ----
+const fetchSpotifyData = async (url: string): Promise<Metadata | null> => {
+  const id = extractSpotifyId(url)
+  if (!id) return null
+  try {
+    const html = await (await fetch(`https://open.spotify.com/album/${id}`)).text()
+    const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i)
+    const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/i)
+    return { title: titleMatch?.[1] || null, cover: imageMatch?.[1] || null }
+  } catch (e) {
+    console.error('Spotify fetch error:', e)
+    return null
+  }
+}
+
+const fetchAppleMusicData = async (url: string): Promise<Metadata | null> => {
+  const id = extractAppleMusicId(url)
+  if (!id) return null
+  try {
+    const res = await fetch(`https://itunes.apple.com/lookup?id=${id}`)
+    const data = await res.json()
+    if (data.results?.[0]) {
+      const r = data.results[0]
+      return {
+        title: r.collectionName || null,
+        artist: r.artistName || null,
+        cover: r.artworkUrl100?.replace('100x100', '600x600') || null
+      }
+    }
+    return null
+  } catch (e) {
+    console.error('Apple fetch error:', e)
+    return null
+  }
+}
+
+const fetchBandcampData = async (url: string): Promise<Metadata | null> => {
+  try {
+    const html = await (await fetch(url)).text()
+    const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i)
+    const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/i)
+
+    let rawTitle = titleMatch?.[1] || null
+    let cleanTitle = rawTitle
+    let artist: string | null = null
+
+    if (rawTitle?.includes('|')) {
+      const [albumPart, artistPart] = rawTitle.split('|').map(s => s.trim())
+      cleanTitle = albumPart.replace(/,$/, '').trim()
+      artist = artistPart
+    } else if (rawTitle?.toLowerCase().includes(' by ')) {
+      const [albumPart, artistPart] = rawTitle.split(/ by /i)
+      cleanTitle = albumPart.replace(/,$/, '').trim()
+      artist = artistPart.trim()
+    }
+
+    const tagMatches = [...html.matchAll(/<a href="\/tag\/[^"]+"[^>]*>([^<]+)<\/a>/gi)]
+    const genres = tagMatches.map(m => m[1]).slice(0, 3)
+
+    return {
+      title: cleanTitle || null,
+      artist,
+      cover: imageMatch?.[1] || null,
+      genres
+    }
+  } catch (e) {
+    console.error('Bandcamp fetch error:', e)
+    return null
+  }
+}
+
+const fetchSoundCloudData = async (url: string): Promise<Metadata | null> => {
+  try {
+    const html = await (await fetch(url)).text()
+    const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i)
+    const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/i)
+
+    let cleanTitle = titleMatch?.[1] || null
+    let artist: string | null = null
+
+    if (cleanTitle) {
+      const byMatch = cleanTitle.match(/^(.+) by (.+)$/)
+      if (byMatch) {
+        cleanTitle = byMatch[1]
+        artist = byMatch[2]
+      }
+    }
+
+    return { title: cleanTitle, artist, cover: imageMatch?.[1] || null }
+  } catch (e) {
+    console.error('SoundCloud fetch error:', e)
+    return null
+  }
+}
+
+// ---- Genre fetchers ----
+const fetchLastFmGenres = async (artist: string, album: string): Promise<string[]> => {
+  if (!LASTFM_API_KEY) return []
+  try {
+    const url = `https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=${LASTFM_API_KEY}&artist=${encodeURIComponent(
+      artist
+    )}&album=${encodeURIComponent(album)}&format=json`
+    const res = await fetch(url)
+    const data = await res.json()
+    if (data?.album?.tags?.tag) {
+      // Filter out radio tags / weird Last.fm auto-tags
+      return data.album.tags.tag
+        .map((t: { name: string }) => t.name)
+        .filter((name: string) => !/\b\d{1,3}\b/i.test(name) && !/fm/i.test(name))
+        .slice(0, 3)
+    }
+    return []
+  } catch (e) {
+    console.error('Last.fm fetch error:', e)
+    return []
+  }
+}
+
+
+const fetchMusicBrainzGenres = async (artist: string, album: string): Promise<string[]> => {
+  try {
+    const q = `release?query=release:${encodeURIComponent(album)} AND artist:${encodeURIComponent(
+      artist
+    )}&fmt=json`
+    const res = await fetch(`https://musicbrainz.org/ws/2/${q}`, {
+      headers: { 'User-Agent': 'AlbumCard/1.0 (yourdomain.com)' },
+    })
+    const data = await res.json()
+    const release = data?.releases?.[0]
+    if (!release?.id) return []
+    const detailRes = await fetch(
+      `https://musicbrainz.org/ws/2/release/${release.id}?inc=genres+tags&fmt=json`,
+      { headers: { 'User-Agent': 'AlbumCard/1.0 (yourdomain.com)' } }
+    )
+    const detail = await detailRes.json()
+    return (detail?.genres || detail?.tags || []).map((g: { name: string }) => g.name).slice(0, 3)
+  } catch (e) {
+    console.error('MusicBrainz fetch error:', e)
+    return []
+  }
+}
+
+// ---- Metadata pipeline ----
+let metadata: Metadata | null = null
+
+if (bandcampUrl) metadata = await fetchBandcampData(bandcampUrl)
+else if (soundcloudUrl) metadata = await fetchSoundCloudData(soundcloudUrl)
+else if (spotifyUrl) metadata = await fetchSpotifyData(spotifyUrl)
+else if (appleMusicLink) metadata = await fetchAppleMusicData(appleMusicLink)
+
+// ---- Fallbacks ----
+const cardTitle = metadata?.title || title || 'Unknown Album'
+const cardArtist = metadata?.artist || artist || 'Unknown Artist'
+const cardCover = metadata?.cover || cover || ''
+const cardType = type || 'Album'
+
+// ---- Genre resolution ----
+let cardGenres: string[] = genre.slice(0, 3)
+if (cardGenres.length === 0 && metadata?.genres?.length) {
+  cardGenres = metadata.genres
+} else if (cardGenres.length === 0 && cardArtist && cardTitle) {
+  cardGenres = await fetchLastFmGenres(cardArtist, cardTitle)
+  if (cardGenres.length === 0) {
+    cardGenres = await fetchMusicBrainzGenres(cardArtist, cardTitle)
+  }
+}
+
+// ---- Rating ----
+const cardRating = Math.max(0, Math.min(parseFloat(rating || '0'), 100))
+const starRating = (cardRating / 100) * 5
+const fullStars = Math.floor(starRating)
+const halfStar = starRating % 1 >= 0.25 && starRating % 1 < 0.75
+const emptyStars = 5 - fullStars - (halfStar ? 1 : 0)
+
+const primaryLink = bandcampUrl || soundcloudUrl || spotifyUrl || appleMusicLink || '#'
+---
+
+
+
+<!-- UI layout -->
+<div class={cn(
+  "album-card group relative overflow-hidden rounded-2xl bg-[#1a1a1a] transition-all duration-300 mb-6",
+  rest.class
+)}>
+  <!-- album cover -->
+  <div
+    class="aspect-square relative bg-center bg-cover bg-no-repeat bg-gray-800"
+    style={cardCover ? `background-image: url('${cardCover}')` : 'background-color: #374151'}
+    aria-hidden="true"
+  >
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none"></div>
+
+    <!-- Genre badges -->
+    {cardGenres.length > 0 && (
+      <div class="absolute bottom-3 left-3 right-3 z-20">
+        <div class="flex flex-wrap gap-1">
+          {cardGenres.map((g: string) => (
+            <span class="px-2.5 py-1 text-xs bg-black/30 text-white rounded-full backdrop-blur-md font-mono font-medium border border-white/20 shadow-lg">
+              {g.length > 15 ? g.slice(0, 15) + '...' : g}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Hover play icon -->
+    <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div class={cn(
+        "pointer-events-none rounded-full p-3 shadow-2xl backdrop-blur-sm",
+        bandcampUrl ? "bg-cyan-600/80" :
+          soundcloudUrl ? "bg-orange-600/80" :
+            spotifyUrl ? "bg-green-600/80" :
+              appleMusicLink ? "bg-gray-600/80" : "bg-blue-600/80"
+      )}>
+        <Icon name="lucide:play" class="h-6 w-6 text-white block" />
+      </div>
+    </div>
+
+    <!-- Platform badge -->
+    {(bandcampUrl || soundcloudUrl || spotifyUrl || appleMusicLink) && (
+      <div class="absolute top-3 right-3 z-20">
+        <span class={cn(
+          "px-2 py-1 text-xs font-mono font-medium rounded-md backdrop-blur-sm border shadow-sm",
+          bandcampUrl ? "bg-cyan-600/20 text-cyan-200 border-cyan-400/30" :
+            soundcloudUrl ? "bg-orange-600/20 text-orange-200 border-orange-400/30" :
+              spotifyUrl ? "bg-green-600/20 text-green-200 border-green-400/30" :
+                "bg-gray-600/20 text-gray-200 border-gray-400/30"
+        )}>
+          {bandcampUrl ? 'Bandcamp' :
+            soundcloudUrl ? 'SoundCloud' :
+              spotifyUrl ? 'Spotify' :
+                'Apple Music'}
+        </span>
+      </div>
+    )}
+
+    <!-- Fallback icon -->
+    {!cardCover && (
+      <div class="absolute inset-0 z-15 flex items-center justify-center">
+        <Icon name="lucide:music" class="h-16 w-16 text-gray-600" />
+      </div>
+    )}
+  </div>
+
+  <!-- metadata -->
+  <div class="px-5 pt-2 pb-5">
+    <h3 class="font-mono font-semibold not-italic text-gray-100 line-clamp-2 mb-1.5 text-sm leading-relaxed">
+      {cardTitle}
+    </h3>
+
+    <div class="flex items-center text-xs text-gray-400 font-mono mb-2">
+      <Icon name="lucide:music" class="h-3.5 w-3.5 mr-2 opacity-70" />
+      <span class="truncate">{cardArtist}</span>
+    </div>
+
+    {(cardType || cardRating > 0) && (
+      <div class="flex items-center justify-between">
+        {cardType && (
+          <div class="flex items-center text-xs text-gray-400 font-mono">
+            <Icon name="lucide:disc" class="h-3 w-3 mr-1.5" />
+            <span>{cardType}</span>
+          </div>
+        )}
+
+        {cardRating > 0 && (
+          <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-0.5">
+              {Array(fullStars).fill(0).map(() => (
+                <Icon name="lucide:star" class="h-3 w-3 text-yellow-400" />
+              ))}
+              {halfStar && <Icon name="lucide:star-half" class="h-3 w-3 text-yellow-400" />}
+              {Array(emptyStars).fill(0).map(() => (
+                <Icon name="lucide:star" class="h-3 w-3 text-gray-600" />
+              ))}
+            </div>
+            <span class="text-xs text-gray-400 font-mono">{cardRating.toFixed(0)}/100</span>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+
+  <!-- clickable overlay -->
+  <a
+    href={primaryLink}
+    class="absolute inset-0 z-40 rounded-2xl"
+    aria-label={`Listen to ${cardTitle} by ${cardArtist}`}
+    target={primaryLink !== '#' ? "_blank" : undefined}
+    rel={primaryLink !== '#' ? "noopener noreferrer" : undefined}
+  >
+    <span class="sr-only">Listen to album</span>
+  </a>
+</div>
+
+<style>
+  .album-card {
+    box-shadow: inset 0 0 0 1px #2a2a2a;
+    border-radius: inherit;
+  }
+  .album-card.group:hover {
+    box-shadow: inset 0 0 0 1px #3a3a3a;
+    transform: translateY(-2px);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .album-card img,
+  .album-card svg {
+    display: block;
+  }
+</style>

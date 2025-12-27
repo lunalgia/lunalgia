@@ -1,0 +1,130 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
+import ProjectCard from '@/components/ProjectCard.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getAllProjects } from '@/lib/data-utils'
+import YouTubeCard from '@/components/YoutubeCard.astro'
+const projects = await getAllProjects()
+---
+
+<Layout>
+  <PageHead slot="head" title="Bookmarks" />
+  <Breadcrumbs items={[{ label: 'Bookmarks', icon: 'lucide:bookmark' }]} />
+
+  <section>
+    <div class="min-w-full">
+      <div class="prose mb-8">
+        <p class="mb-4">
+          This is an amalgamation of articles/videos/quotes that I find interesting. This is pretty incomplete and I'll be expanding this in the future, especially since I've unfortunately
+          not kept track of things.
+        </p>
+        <h2>
+          Quotes
+        </h2>
+        <ul class="mb-1">
+          <li>“The price of metaphor is eternal vigilance.”, Norbert Wiener. </li>
+          <li>
+            “Whenever I am around people I feel crazy. I feel like some madman the moment I open my mouth, I don't adhere to what most people like. [...] I don't even know alot about what I like, despite being well liked, I feel so out of place.”</li>
+          <li>“You all have a little bit of “I want to save the world” in you. I want you to know that it’s okay if you only save one person, and it’s okay if that person is you.”,
+            Evan Chen.
+          </li>
+          <li>“I think it’s really important to not have an opinion on things you don’t know much about.”,
+            Yi sun.</li>
+          <li>
+            “Never underestimate results that count something.”, Fraleigh.
+          </li>
+          <li>
+            “Stop fooling yourself, scrambling to barely qualify an exam isn’t ambition, it’s avoidance of real effort. You’re not just competing to pass; you’re competing with people who own their knowledge. Rushing makes you fragile, and when the real challenges come, you’ll break. Mediocrity doesn’t impress anyone.”
+          </li>
+          <li>
+            “He who sees how far he can lean out of a window without falling is a moron.”
+          </li>
+        </ul>
+        <h2>
+          Academic Articles
+        </h2>
+        <ul>
+          <li><Link href='https://terrytao.wordpress.com/2012/12/29/a-mathematical-formalisation-of-dimensional-analysis/'>Mathematical Formalisation of Dimensional Analysis</Link></li>
+          <li><Link href='https://dsimanek.vialattea.net/scenario/miscon.htm'>Didaktikogenic Physics Misconceptions</Link></li>
+          <li><Link href="https://www.lesswrong.com/posts/EdFDwjsLNpgtTMJAp/great-mathematicians-on-math-competitions-and-genius">Great Mathematicians on Math Competitions and "Genius"</Link></li>
+          <li><Link href='https://dsimanek.vialattea.net/scenario/analogy.htm'>Danger of Analogies</Link></li>
+          <li><Link href='https://www.physicsforums.com/threads/so-you-want-to-be-a-physicist-a-22-part-guide.240792/'> So You Want to Be a Physicist: A 22 Part Guide</Link>
+
+          </li>
+          <li><Link href='https://blog.evanchen.cc/2024/04/05/grief/'>Infinitely Many Stages of Grief</Link></li>
+          <li><Link href='https://blog.evanchen.cc/2023/10/23/a-story-of-a-town/'>A Story of A Town</Link></li>
+          <li><Link href='https://blog.evanchen.cc/2020/06/14/on-choosing-exercises/'>On Choosing Exercises</Link></li>
+          <li><Link href="https://terrytao.wordpress.com/career-advice/">Terence Tao's Career Advice</Link></li>
+          <li><Link href="https://ciechanow.ski/archives/"> Bartosz Ciechanowski's articles</Link>  | Really wonderful, definitely worth having a look at. </li>
+          <li><Link href="https://www.tanyakhovanova.com/Coffins/coffinsmain.html">Coffin Problems</Link> | Especially interesting for the history behind them.</li>
+        </ul>
+        <h2>
+          Articles/Essays
+        </h2>
+        <ul>
+          <li><Link href='https://www.sbnation.com/a/17776-football/chapter-1'>What Football Will Look Like in the Future</Link></li>
+          <li><Link href='https://pudding.cool/'>The Pudding</Link></li>
+          <li><Link href="https://paulgraham.com/essay.html">The Age of the Essay</Link></li>
+          <li><Link href="https://paulgraham.com/say.html">What You Can't Say</Link></li>
+          <li><Link href="https://www.gnu.org/gnu/manifesto.en.html">The GNU Manifesto</Link></li>
+          <li><Link href="https://fpp.co.uk/Hitler/docs/Mannerheim/recording_040642_dt.html">The Hitler - Mannerheim Conversation</Link> | Very interesting historically. There is an audio recording
+          available of this as well.</li>
+          <li><Link href="https://www.cia.gov/readingroom/docs/project%20mk-ultra%5B15545700%5D.pdf">Project MK-ULTRA</Link></li>
+          <li><Link href="/files/god.txt">History of the Net</Link></li>
+          <li><Link href="/files/hunt.txt"> HOUNDING TEENAGE HACKERS
+            DON'T PLUG THOSE
+            LEAKY COMPUTERS</Link> | A txt file written in 1984, before filenames always had extensions, when words on computers were in all caps, about some government action
+            that attempted to “crack down” on “unauthorized computer access”.</li>
+          <li><Link href="/files/ciabranwashing.txt">CIA Memo on Communist Brainwashing.</Link></li>
+
+        </ul>
+        <h2>
+          Videos
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6 justify-items-center">
+          <YouTubeCard url="https://youtu.be/N8xpAZJp0fU?si=yY5jjBvjpltqoSyZ"/>
+          <YouTubeCard url="https://youtu.be/PV7_JIylFH0?si=JYugBR4ddjSmcBN-" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=8kUDvn_N_Ow"/>
+          <YouTubeCard url="https://www.youtube.com/watch?v=JCQs4JEg6kY" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=pe2acVlqrJw" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=lhb62S3-eAY" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=NESBtODxNVA" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=zgXgkpu7pkg" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=rZwlAcQVzDE" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=jKV-cym4QfQ" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=iqW9sexNdZg" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=AlF3fWHIu_I"/>
+          <YouTubeCard url="https://www.youtube.com/watch?v=I65oL91O_aM" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=xHd4zsIbXJ0" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=kcjK9HSFqMs" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=FqkEQ6jRJUk"/>
+          <YouTubeCard url="https://www.youtube.com/watch?v=ZZOqk8W-a24" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=FfNZFspSmD4" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=mPXLP9mYRi4" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=cGzBaSBdikA" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=hi97EGoLmGE" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=PJccc3qpPh0" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=b6rUk3YLsN0" />
+          <YouTubeCard url="https://youtu.be/6QltxZ-vPMc?si=-Z5pZZzJDmSar6o1E"/>
+          <YouTubeCard url="https://www.youtube.com/watch?v=pg_5L4OgyLM" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=_aAN1bPzpTU" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=qGHXXBOyomE" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=huYpeHW7eGM" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=Xe2Pr4omHMs" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=plEw2WNkd9Y" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=dzdMceG49Wc" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=BCpFTsuuQv0" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=RrUqhfGgL3o" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=mDjrTkssZmE" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=ZOkRF3Xp_4E" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=2kPe-2lv2Is" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=u6EuAUjq92k" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=cC6HlwDWr0k" />
+          <YouTubeCard url="https://www.youtube.com/watch?v=VIR46oH-ufk" />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

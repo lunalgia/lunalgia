@@ -1,0 +1,125 @@
+---
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+interface YouTubeCardProps {
+  url: string
+  class?: string
+}
+
+// Extract video ID from YouTube URL
+const extractVideoId = (url: string) => {
+  const regex =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+  const match = url?.match(regex)
+  return match ? match[1] : null
+}
+
+const fetchYouTubeData = async (url: string) => {
+  try {
+    const response = await fetch(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
+    )
+    if (!response.ok) throw new Error('Failed to fetch')
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching YouTube data:', error)
+    return null
+  }
+}
+
+const { url, ...rest } = Astro.props
+const videoId = extractVideoId(url)
+const videoData = videoId ? await fetchYouTubeData(url) : null
+
+// Prefer oEmbed's thumbnail_url (reliable), otherwise fall back to hqdefault
+const thumbnail =
+  (videoData && (videoData as any).thumbnail_url) ??
+  (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null)
+---
+
+{videoData && thumbnail ? (
+<div
+  class={cn(
+    "youtube-card group relative overflow-hidden rounded-2xl bg-[#1a1a1a] transition-all duration-300 w-full max-w-sm",
+    rest.class
+  )}
+>
+  <!-- media area using background-image (no <img> to avoid rendering gaps) -->
+  <div
+    class="aspect-video relative bg-center bg-cover bg-no-repeat"
+    style={`background-image: url('${thumbnail}')`}
+    aria-hidden="true"
+  >
+    <!-- subtle dark gradient to improve contrast for title -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/35 to-transparent pointer-events-none"></div>
+
+    <!-- centered play button (above gradient) -->
+    <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+      <div class="pointer-events-none rounded-full bg-red-600 p-3 shadow-2xl transition-transform duration-300 group-hover:scale-110">
+        <Icon name="lucide:play" class="h-6 w-6 text-white block" />
+      </div>
+    </div>
+  </div>
+
+  <!-- metadata -->
+  <div class="px-5 pb-5 pt-4">
+    <h3 class="font-mono font-extralight not-italic text-gray-100 line-clamp-2 mb-0 text-sm leading-relaxed">
+      {videoData.title}
+    </h3>
+    <div class="flex items-center text-xs text-gray-400 font-mono">
+      <Icon name="lucide:user" class="h-3.5 w-3.5 mr-2 opacity-70" />
+      <span class="truncate">{videoData.author_name}</span>
+    </div>
+  </div>
+
+  <!-- clickable overlay (keeps the entire card clickable) -->
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="absolute inset-0 z-40 rounded-2xl"
+    aria-label={`Watch ${videoData.title}`}
+  >
+    <span class="sr-only">Watch video</span>
+  </a>
+</div>
+  ) : (
+<div class={cn("youtube-card relative rounded-2xl bg-[#1a1a1a] p-5 shadow-lg", rest.class)}>
+  <div class="flex items-center text-red-400 font-mono text-sm">
+    <Icon name="lucide:alert-circle" class="h-4 w-4 mr-3 flex-shrink-0 opacity-80" />
+    <span>Failed to load YouTube video metadata</span>
+  </div>
+</div>
+  )}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Draw an overlay border using an inset box-shadow so it sits on top of the image
+     (avoids showing any gap between image and border). We also change the shadow on hover. */
+  .youtube-card {
+    /* inset 0 0 0 1px draws a 1px inner border overlay */
+    box-shadow: inset 0 0 0 1px #2a2a2a;
+    border-radius: inherit;
+  }
+  .youtube-card.group:hover {
+    box-shadow: inset 0 0 0 1px #3a3a3a;
+  }
+
+  /* ensure no accidental gaps from line-height/whitespace on replaced content */
+  .youtube-card img,
+  .youtube-card svg {
+    display: block;
+  }
+
+  /* if you want a slightly stronger lift on hover */
+  .youtube-card.group:hover {
+    transform: translateY(-2px);
+  }
+</style>

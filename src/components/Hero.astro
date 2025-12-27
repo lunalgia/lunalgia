@@ -1,0 +1,52 @@
+---
+import Bordered from '@/layouts/Bordered.astro'
+import Link from './Link.astro'
+
+---
+
+<main
+  class="flex min-h-[calc(70vh-96px)] flex-col items-center"
+  style="color: aliceblue"
+>
+  <div class="my-auto h-auto w-full overflow-hidden">
+    <Bordered>
+      <div class="h-[250px] w-[1000px] md:w-[800px]" >
+        <div class="flex h-full w-full items-center justify-center">
+          <h1
+            class="absolute font-kleemax text-[68px] text-accent sm:text-[100px] md:text-[145px] xl:text-[180px] 2xl:text-[230px]"
+            style="color: rgba(101, 109, 117, 0.103);
+">
+            LILIAN
+          </h1>
+          <h2
+            class="z-[2] font-formation text-[40px] text-foreground sm:text-[48px] md:text-[60px] xl:text-[64px] 2xl:text-[70px]"
+            style="color: #c9e5fb" ;
+          >
+            Jardin De Lys
+          </h2>
+        </div>
+      </div>
+      <style>
+        p {
+          font-family: 'Instrument Serif';
+          font-style: italic;
+          font-size: 14pt;
+        }
+      </style>
+    </Bordered>
+
+
+    <div class="flex min-h-[calc(10vh-100px)] w-full items-center justify-between py-3" style="color: aliceblue">
+      <div class="flex w-[35%] justify-start hover:underline">
+        <p>
+          <Link href="/bookmarks" class="hover:underline">Bookmarks <span style="font-family: 'EB Garamond'; vertical-align: 3px; font-size: 12pt">↗</span> </Link>
+        </p>
+      </div>
+      <div class="flex w-[30%] justify-end hover:underline px-1">
+        <p class="text-right">
+          <Link href="https://github.com/jardin-de-lys" class="hover:underline"><span style="font-family: 'EB Garamond'; vertical-align: 3px; font-size: 12pt">↖</span>Github</Link>
+        </p>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,71 @@
+---
+// index.astro
+import BlogCard from '@/components/BlogCard.astro'
+import Container from '@/components/Container.astro'
+import Hero from '@/components/Hero.astro'
+import Link from '@/components/Link.astro'
+import { SITE } from '@/consts'
+import Layout from '@/layouts/Layout.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { getRecentPosts } from '@/lib/data-utils'
+
+const blog = await getRecentPosts(SITE.featuredPostCount)
+---
+
+<!-- FULL PAGE BACKGROUND -->
+<div style="
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-image: url('/static/images/lily-background.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+"></div>
+
+<div style="
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0em;
+  background: #a9baa0;
+  mix-blend-mode: multiply;
+   min-height: 100vh;
+  min-height: 100dvh;
+  opacity: 0.5; /* Try values between 0.3–0.6 */
+  z-index: -1;
+  pointer-events: none;
+"></div>
+
+<Layout>
+  <Container class="flex flex-col gap-y-0">
+
+    <!-- Hero Section -->
+    <section>
+      <Hero />
+    </section>
+
+    <!-- Definition / Card -->
+    <section class="mt-4">
+      <div style="
+        border-radius: 12px;
+        backdrop-filter: blur(6px);
+        background-color: rgba(0, 0, 0, 0.05);
+        color: aliceblue;
+        padding: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      ">
+        <h3 style="font-size: 2rem; font-weight: 500;">jar·din de lys</h3>
+        <p style="font-style: normal; opacity: 0.8; font-size: 0.9rem;">/ʒaʁ.dɛ̃ də lis/ · phrase</p>
+        <p style="margin-top: 1rem; opacity: 1;" class="font-baskerville italic">Garden of Lilies.</p>
+        <p style="opacity: 0.8; font-size: 0.8rem" class="font-sans">
+          White lilies symbolize purity, innocence, and rebirth and are commonly used in funerals.
+          They can sometimes be used as a way to honour and remember the dead, and
+          a garden of lilies becomes a graveyard of those who will never be forgotten.
+        </p>
+      </div>
+    </section>
+
+  </Container>
+</Layout>
