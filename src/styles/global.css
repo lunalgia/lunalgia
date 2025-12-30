@@ -293,3 +293,62 @@
         min-width: 100%;
     }
 }
+
+
+
+/* Gallery container */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Poster container (image + title) */
+.poster-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+}
+
+/* Individual poster */
+.poster {
+    max-width: 400px;
+    width: auto;
+    height: auto;
+    display: block;
+}
+
+/* Title below image */
+.poster-title {
+    margin-top: 1px;
+    text-align: center;
+    font-size: 16px;
+    color: #333; /* Adjust color as needed */
+}
+
+/* Desktop: side by side but maintain aspect ratio */
+@media (min-width: 769px) {
+    .poster {
+        max-height: 500px;
+        max-width: 400px;
+        width: auto;
+        object-fit: contain;
+    }
+}
+
+/* Mobile: stacked vertically */
+@media (max-width: 768px) {
+    .gallery {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .poster {
+        max-width: 100%;
+        width: auto;
+        height: auto;
+    }
+}
