@@ -1,10 +1,10 @@
 import type { IconMap, SocialLink, Site } from '@/types'
 
 export const SITE: Site = {
-  title: 'Jardin De Lys',
+  title: 'Lunalgia',
   description:
-    'A web home.',
-  href: 'https://jardin-de-lys.github.io',
+    'Dystopian musings.',
+  href: 'https://lunalgia.pages.dev',
   author: 'Lilian',
   locale: 'en-US',
   featuredPostCount: 2,
