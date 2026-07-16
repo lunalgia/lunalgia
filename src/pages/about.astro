@@ -1,6 +1,5 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
@@ -17,21 +16,45 @@ const projects = await getAllProjects()
     <div class="min-w-full">
       <div class="prose mb-8">
         <p class="mb-4">
-          Hello, I am Lilian. My real name is <span style="font-size: 24pt; font-family: 'Redacted Script'">Youlost TheGame</span>.
-          I am a highschool senior from India, and plan on majoring in math and physics.
+          Hello, I go by Lilian, if you care my legal name is <span
+            style="font-size: 24pt; font-family: 'Redacted Script'"
+            >Youlost TheGame</span
+          >. I am an incoming freshman at Chennai Mathematical Institute,
+          majoring in Math and Physics.
         </p>
         <p class="mb-4">
-          Academically, aside from math and physics, I also really like philosophy and computer science. I use
-          fedora as my main operating system, and like to engage in the open source community. Non-academically,
-          I like literature, music, movies, photography and painting (although I am an amateur at the last two). I also like
-          reading manga/manhwa, and watching anime.
+          I tend to engage myself with a lot of things, so most of my interests
+          are eclectic and half-baked, but primarily I enjoy literature, music,
+          reading about whatever academic discipline caught my eye, and writing.
+          Academically, aside from mathematics and physics, I currently enjoy
+          philosophy, linguistics/semiotics, sociology and computer science.
         </p>
         <p>
-          Currently I am really enjoying some of Ishiguro's works, and my favourite author is Dostoevsky. I mostly
-          listen to post-rock, shoegaze, baroque-pop and jazz-rap. I also do graphic design from time to time.
+          In daily life I spend my time thinking about the world and trying to
+          understand myself, others, and the world around us. In this fashion I
+          spend time on rationality (the LessWrong brand of it, even if I have
+          great reservations against a lot of LessWrong/Effective Altruism
+          adjacent things) and reading whatever brand of philosophy interests me
+          at the moment (right now its philosophy of language and literary
+          theory).
+        </p>
+        <p>
+          On some more whimsical things, while I don't often watch movies, some
+          of my favourites are Loving Vincent and Space Odyssey. In music I love
+          noise-rock, emo-esque bands (but I am open to trying out just about
+          any genre of music, so feel free to recommend!) and love Radiohead,
+          Godspeed You! Black Emperor, Car Seat Headrest, and Willy Rodriguez
+          (now disbanded, rip, but drug bug, who was one half of the band, is an
+          artist I really like these days). I spend at times too many hours on
+          RPGs and Visual Novels, my favourite being Disco Elysium which I only
+          recently finished playing.
+        </p>
+        <p>
+          If you find that any of these are also things that interest you, or
+          want to just talk, feel free to contact me @lunalgia on discord or
+          mail me at lunalgia(at)pm.me!
         </p>
       </div>
-
       <h2 class="mb-4 text-2xl font-medium">Some things I am working on</h2>
       <div class="flex flex-col gap-4">
         {projects.map((project) => <ProjectCard project={project} />)}
