@@ -1,0 +1,144 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+
+const lectures = (await getCollection('lectures'))
+  .sort((a, b) => {
+    const dateA = a.data.date?.getTime() || 0
+    const dateB = b.data.date?.getTime() || 0
+    return dateB - dateA
+  })
+
+// Group by year → semester → course
+type LectureEntry = (typeof lectures)[number]
+interface CourseGroup {
+  name: string
+  items: LectureEntry[]
+}
+interface SemesterGroup {
+  name: string
+  courses: CourseGroup[]
+}
+interface YearGroup {
+  name: string
+  semesters: SemesterGroup[]
+}
+
+const semesterLabel = (s: number) => (s === 1 ? '1st Semester' : '2nd Semester')
+
+const yearMap = new Map<string, Map<string, Map<string, LectureEntry[]>>>()
+for (const lecture of lectures) {
+  const year = lecture.data.year?.toString() || 'Unsorted'
+  const sem = lecture.data.semester ? semesterLabel(lecture.data.semester) : 'Unsorted'
+  const course = lecture.data.course || 'Uncategorized'
+
+  if (!yearMap.has(year)) yearMap.set(year, new Map())
+  const semMap = yearMap.get(year)!
+  if (!semMap.has(sem)) semMap.set(sem, new Map())
+  const courseMap = semMap.get(sem)!
+  if (!courseMap.has(course)) courseMap.set(course, [])
+  courseMap.get(course)!.push(lecture)
+}
+
+const yearGroups: YearGroup[] = Array.from(yearMap.entries())
+  .sort(([a], [b]) => {
+    if (a === 'Unsorted') return 1
+    if (b === 'Unsorted') return -1
+    return Number(b) - Number(a)
+  })
+  .map(([year, semMap]) => ({
+    name: year,
+    semesters: Array.from(semMap.entries())
+      .sort(([a], [b]) => {
+        if (a === 'Unsorted') return 1
+        if (b === 'Unsorted') return -1
+        return b.localeCompare(a)
+      })
+      .map(([sem, courseMap]) => ({
+        name: sem,
+        courses: Array.from(courseMap.entries()).map(([name, items]) => ({
+          name,
+          items: items.sort((a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity)),
+        })),
+      })),
+  }))
+---
+
+<Layout>
+  <PageHead slot="head" title="Lecture Notes" />
+  <Breadcrumbs items={[{ label: 'Lectures', icon: 'lucide:graduation-cap' }]} />
+
+  <section>
+    <div class="min-w-full">
+      <div class="prose">
+        <p>
+          Course notes and lecture materials. Add markdown or MDX files to
+          <code>src/content/lectures/</code> and they'll appear here.
+        </p>
+      </div>
+
+      {
+        yearGroups.length === 0 ? (
+          <p class="mt-8 text-muted-foreground">
+            No lecture notes yet. Add files to{' '}
+            <code>src/content/lectures/</code>.
+          </p>
+        ) : (
+          <div class="mt-8 flex flex-col gap-10">
+            {yearGroups.map((yg) => (
+              <section class="flex flex-col gap-6">
+                <h2 class="text-2xl font-semibold">{yg.name}</h2>
+                {yg.semesters.map((sg) => (
+                  <section class="flex flex-col gap-4 pl-4 border-l-2 border-muted">
+                    <h3 class="text-lg font-medium text-muted-foreground">
+                      {sg.name}
+                    </h3>
+                    {sg.courses.map((cg) => (
+                      <section class="flex flex-col gap-2">
+                        <h4 class="text-base font-medium">{cg.name}</h4>
+                        <ul class="flex flex-col gap-2">
+                          {cg.items.map((lecture) => (
+                            <li>
+                              <Link
+                                href={`/lectures/${lecture.id}`}
+                                class="group flex items-baseline gap-3 text-foreground/80 transition-colors hover:text-foreground"
+                              >
+                                {lecture.data.date && (
+                                  <span class="text-xs text-muted-foreground tabular-nums">
+                                    {lecture.data.date.toLocaleDateString(
+                                      'en-US',
+                                      {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      }
+                                    )}
+                                  </span>
+                                )}
+                                <span class="group-hover:underline">
+                                  {lecture.data.title}
+                                </span>
+                                {lecture.data.pdf && (
+                                  <span class="text-xs text-muted-foreground">
+                                    [PDF]
+                                  </span>
+                                )}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    ))}
+                  </section>
+                ))}
+              </section>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>

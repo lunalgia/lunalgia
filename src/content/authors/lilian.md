@@ -1,9 +1,9 @@
 ---
 name: 'lilian'
 pronouns: 'they/he'
-avatar: 'https://images2.imgbox.com/98/26/3HfT6YpP_o.jpg'
+avatar: 'https://gateway.pinata.cloud/ipfs/bafkreibj26ouudrlk273e6twbmergryk4iaos6vqstapcg4cdeucizdfxm'
 bio: ':)'
-website: 'https://jardin-de-lys.github.io'
-github: 'https://github.com/jardin-de-lys'
+website: 'https://lunalgia.pages.dev'
+github: 'https://github.com/lunalgia'
 mail: 'lunalgia@proton.me'
 ---
