@@ -5,12 +5,11 @@ import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getCollection } from 'astro:content'
 
-const lectures = (await getCollection('lectures'))
-  .sort((a, b) => {
-    const dateA = a.data.date?.getTime() || 0
-    const dateB = b.data.date?.getTime() || 0
-    return dateB - dateA
-  })
+const lectures = (await getCollection('lectures')).sort((a, b) => {
+  const dateA = a.data.date?.getTime() || 0
+  const dateB = b.data.date?.getTime() || 0
+  return dateB - dateA
+})
 
 // Group by year → semester → course
 type LectureEntry = (typeof lectures)[number]
@@ -32,7 +31,9 @@ const semesterLabel = (s: number) => (s === 1 ? '1st Semester' : '2nd Semester')
 const yearMap = new Map<string, Map<string, Map<string, LectureEntry[]>>>()
 for (const lecture of lectures) {
   const year = lecture.data.year?.toString() || 'Unsorted'
-  const sem = lecture.data.semester ? semesterLabel(lecture.data.semester) : 'Unsorted'
+  const sem = lecture.data.semester
+    ? semesterLabel(lecture.data.semester)
+    : 'Unsorted'
   const course = lecture.data.course || 'Uncategorized'
 
   if (!yearMap.has(year)) yearMap.set(year, new Map())
@@ -61,7 +62,9 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
         name: sem,
         courses: Array.from(courseMap.entries()).map(([name, items]) => ({
           name,
-          items: items.sort((a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity)),
+          items: items.sort(
+            (a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity),
+          ),
         })),
       })),
   }))
@@ -75,14 +78,14 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
     <div class="min-w-full">
       <div class="prose">
         <p>
-          Course notes and lecture materials. Add markdown or MDX files to
-          <code>src/content/lectures/</code> and they'll appear here.
+          Course notes and lecture materials from the courses I have taken at
+          CMI.
         </p>
       </div>
 
       {
         yearGroups.length === 0 ? (
-          <p class="mt-8 text-muted-foreground">
+          <p class="text-muted-foreground mt-8">
             No lecture notes yet. Add files to{' '}
             <code>src/content/lectures/</code>.
           </p>
@@ -92,8 +95,8 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
               <section class="flex flex-col gap-6">
                 <h2 class="text-2xl font-semibold">{yg.name}</h2>
                 {yg.semesters.map((sg) => (
-                  <section class="flex flex-col gap-4 pl-4 border-l-2 border-muted">
-                    <h3 class="text-lg font-medium text-muted-foreground">
+                  <section class="border-muted flex flex-col gap-4 border-l-2 pl-4">
+                    <h3 class="text-muted-foreground text-lg font-medium">
                       {sg.name}
                     </h3>
                     {sg.courses.map((cg) => (
@@ -104,17 +107,17 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
                             <li>
                               <Link
                                 href={`/lectures/${lecture.id}`}
-                                class="group flex items-baseline gap-3 text-foreground/80 transition-colors hover:text-foreground"
+                                class="group text-foreground/80 hover:text-foreground flex items-baseline gap-3 transition-colors"
                               >
                                 {lecture.data.date && (
-                                  <span class="text-xs text-muted-foreground tabular-nums">
+                                  <span class="text-muted-foreground text-xs tabular-nums">
                                     {lecture.data.date.toLocaleDateString(
                                       'en-US',
                                       {
                                         month: 'short',
                                         day: 'numeric',
                                         year: 'numeric',
-                                      }
+                                      },
                                     )}
                                   </span>
                                 )}
@@ -122,7 +125,7 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
                                   {lecture.data.title}
                                 </span>
                                 {lecture.data.pdf && (
-                                  <span class="text-xs text-muted-foreground">
+                                  <span class="text-muted-foreground text-xs">
                                     [PDF]
                                   </span>
                                 )}

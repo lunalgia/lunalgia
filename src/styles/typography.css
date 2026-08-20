@@ -101,7 +101,13 @@
     :where(blockquote):not(
         :where([class~='not-prose'], [class~='not-prose'] *)
       ) {
-      @apply [&_*]:text-muted-foreground small my-6 border-l-2 pl-6;
+      @apply [&_*]:text-muted-foreground small my-6 max-w-full border-l-2 pl-6;
+    }
+
+    :where(.footnotes):not(
+        :where([class~='not-prose'], [class~='not-prose'] *)
+      ) {
+      @apply mt-8 overflow-x-auto;
     }
 
     :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
