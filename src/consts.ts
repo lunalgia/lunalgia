@@ -32,11 +32,11 @@ export const NAV_LINKS: SocialLink[] = [
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    href: 'https://github.com/jardin-de-lys',
+    href: 'https://github.com/lunalgia',
     label: 'GitHub',
   },
   {
-    href: 'mailto:lilianbrienne@protonmail.com',
+    href: 'mailto:lunalgia@pm.me',
     label: 'Email',
   },
 ]
