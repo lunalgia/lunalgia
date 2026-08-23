@@ -1,0 +1,43 @@
+For HW1 upload the following tutorial problems: 0 (optional), 4, 6. Try doing this in TeX but that is not mandatory. It is a suggestion your own learning.
+
+Credible attempt will get full credit for all HW, which anyway has minor weight. While HW will NOT be graded, you can and are strongly encouraged to get immediate feedback from me/TAs during tutorials/office hours. It is also a great idea to discuss your solution AND writing with peers and get as well as give feedback.
+
+Algebra 1 Tutorial problems for Sat Aug 8 and Mon Aug 10
+
+First read all the problems and understand the statements. Solve in the order that you think will maximize your learning. You need not solve the problems you are confident about (but beware of misplaced confidence). Nos. 2-4 and 8 are important and will be discussed in class.
+
+0. Artin chapter 1 problems 2.2 and 2.3. This is the baseline. It is important to be able to work this out honestly.
+
+1. Matrices M and N are said to be row equivalent if there is a sequence of elementary row operations that converts M to N. See quickly that row equivalence is indeed an equivalence relation. We sketched in class that every matrix is row equivalent to a matrix in row echelon form (REF for short). Write a clean full proof.
+
+2. Suppose a matrix M is in row echelon form, so pivots in successive rows move to the right as we go down. In particular each entry below a pivot is 0. If in addition every entry above every pivot entry is also 0, then M is said to be in reduced row echelon form (RREF). Is every matrix row equivalent to a matrix in RREF? Prove/give a counterexample.
+
+3. Proving and characterizing 0/1/infinite trichotomy. Also keep in mind the contrapositive of the statements you prove.
+
+Let M = [A | b] be the augmented matrix for a system of linear equations.
+
+(a) Show that the given system is inconsistent if and only if any REF of M has a pivot in the last column.
+
+(b) Formulate an “if and only if” statement in similar spirit characterizing when the given system has a unique solution. Same for infinitely many solutions. Now solve Artin problem 2.9.
+
+4. Solve Artin problem 2.10.
+
+5. (a)  Formulate and check basic properties of the following matrix operations: addition/subtraction of matrices of the same size, scaling any matrix by a scalar. Later we will say that the set matrices of a fixed size forms a vector space under these operations.
+
+(b) This is an exercise is bookkeeping. Carefully write down the general definition of matrix multiplication. Prove that whenever the involved expressions make sense, the following properties hold.
+Later we will understand all this more conceptually.
+
+(AB)C = A(BC),  A(B+C) = (AB) + (AC), (B+C)D = (BD) + (CD). AI = A, IA = A where I is an identity matrix. AB need not equal BA even when A and B are both square matrices of same size.
+
+(c) Look carefully at our procedure to solve a system of linear equations by doing row operations. Does the validity of this procedure depend on any properties of matrix operations?
+
+6. Prove that for a subset S of R^3, the following are equivalent.
+
+(a) There are scalars a,b,c, not all zero, such that S = {(x,y,z) |  ax + by + cz = 0}.
+(b) There are two non-proportional vectors v and w such S = {pv + qw |  p, q real}
+
+What is a lower dimensional version of this?  Maybe it will help to formulate and prove that first. Can you formulate a higher dimensional version?
+
+7. Prove that algebraic addition of vectors in R^2 and R^3 agrees with the parallelogram law.
+
+8. Suppose an r x c matrix A is given. Consider the function from R^c to R^r defined by f(x) = Ax. Using row reduction, find a crisp criterion for the function f to be (a) injective, i.e., one-to-one (b) surjective, i.e., onto.

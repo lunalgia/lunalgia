@@ -56,6 +56,7 @@ const lectures = defineCollection({
     date: z.coerce.date().optional(),
     order: z.number().optional(),
     pdf: z.string().optional(),
+    folder: z.string().optional(),
     tags: z.array(z.string()).optional(),
   }),
 })

@@ -1,8 +1,10 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import FileTree from '@/components/FileTree.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
+import { readUniTree, uniHref } from '@/lib/file-tree'
 import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -15,6 +17,16 @@ export async function getStaticPaths() {
 
 const lecture = Astro.props
 const { Content } = await render(lecture)
+
+const pdfHref = lecture.data.pdf
+  ? lecture.data.folder
+    ? uniHref(lecture.data.folder, lecture.data.pdf)
+    : `/lectures/${lecture.data.pdf}`
+  : null
+
+const fileTree = lecture.data.folder
+  ? await readUniTree(lecture.data.folder)
+  : []
 ---
 
 <Layout>
@@ -36,24 +48,26 @@ const { Content } = await render(lecture)
         <h1 class="text-3xl leading-tight font-medium sm:text-4xl">
           {lecture.data.title}
         </h1>
-        <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <div class="text-muted-foreground flex items-center gap-3 text-sm">
           {lecture.data.course && <span>{lecture.data.course}</span>}
           {lecture.data.course && lecture.data.date && <span>&middot;</span>}
-          {lecture.data.date && (
-            <span>
-              {lecture.data.date.toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </span>
-          )}
+          {
+            lecture.data.date && (
+              <span>
+                {lecture.data.date.toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+            )
+          }
         </div>
         {
           lecture.data.tags && lecture.data.tags.length > 0 && (
             <div class="mt-1 flex flex-wrap gap-1.5">
               {lecture.data.tags.map((tag) => (
-                <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                <span class="bg-muted text-muted-foreground rounded-md px-2 py-0.5 text-xs">
                   {tag}
                 </span>
               ))}
@@ -62,19 +76,23 @@ const { Content } = await render(lecture)
         }
       </div>
 
+      <article class="prose">
+        <Content />
+      </article>
+
       {
-        lecture.data.pdf && (
-          <div class="mb-8">
+        pdfHref && (
+          <div class="mx-auto mt-10 w-[90%]">
             <a
-              href={`/lectures/${lecture.data.pdf}`}
+              href={pdfHref}
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm text-muted-foreground hover:text-foreground"
+              class="text-muted-foreground hover:text-foreground text-sm"
             >
               Open PDF in new tab &rarr;
             </a>
             <iframe
-              src={`/lectures/${lecture.data.pdf}`}
+              src={pdfHref}
               class="mt-3 w-full rounded-md border"
               style="height: 80vh;"
               loading="lazy"
@@ -83,12 +101,22 @@ const { Content } = await render(lecture)
         )
       }
 
-      <article class="prose">
-        <Content />
-      </article>
+      {
+        fileTree.length > 0 && (
+          <section class="mt-12 border-t pt-6">
+            <h2 class="text-2xl font-semibold">Course Materials</h2>
+            <div class="mt-4">
+              <FileTree nodes={fileTree} />
+            </div>
+          </section>
+        )
+      }
 
       <div class="mt-12 border-t pt-6">
-        <Link href="/lectures" class="text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/lectures"
+          class="text-muted-foreground hover:text-foreground text-sm"
+        >
           &larr; Back to all lectures
         </Link>
       </div>

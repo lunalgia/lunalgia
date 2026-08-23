@@ -1,0 +1,76 @@
+---
+import type { TreeNode } from '@/lib/file-tree'
+import { Icon } from 'astro-icon/components'
+import FileTree from './FileTree.astro'
+
+interface Props {
+  nodes: TreeNode[]
+  depth?: number
+}
+
+const { nodes, depth = 0 } = Astro.props
+
+function fileIcon(name: string): string {
+  const ext = name.includes('.')
+    ? name.split('.').pop()?.toLowerCase()
+    : undefined
+  switch (ext) {
+    case 'pdf':
+    case 'txt':
+      return 'lucide:file-text'
+    case 'hs':
+    case 'lhs':
+    case 'py':
+    case 'js':
+    case 'jsx':
+    case 'ts':
+    case 'tsx':
+    case 'tex':
+    case 'md':
+    case 'mdx':
+      return 'lucide:file-code'
+    default:
+      return 'lucide:file'
+  }
+}
+---
+
+<ul class="flex flex-col gap-1">
+  {
+    nodes.map((node) =>
+      node.type === 'dir' ? (
+        <li>
+          <details class="group" open={depth === 0}>
+            <summary class="text-foreground/80 hover:text-foreground flex w-fit cursor-pointer list-none items-center gap-1.5 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden">
+              <Icon
+                name="lucide:chevron-right"
+                class="text-muted-foreground size-4 shrink-0 transition-transform group-open:rotate-90"
+              />
+              <Icon
+                name="lucide:folder"
+                class="text-muted-foreground size-4 shrink-0"
+              />
+              <span>{node.name}</span>
+            </summary>
+            <div class="border-muted mt-1 ml-4 flex flex-col gap-1 border-l-2 pl-4">
+              <FileTree nodes={node.children ?? []} depth={depth + 1} />
+            </div>
+          </details>
+        </li>
+      ) : (
+        <li>
+          <a
+            href={node.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            download={!node.name.toLowerCase().endsWith('.pdf')}
+            class="text-muted-foreground hover:text-foreground flex w-fit items-center gap-1.5 text-sm transition-colors"
+          >
+            <Icon name={fileIcon(node.name)} class="size-4 shrink-0" />
+            <span>{node.name}</span>
+          </a>
+        </li>
+      ),
+    )
+  }
+</ul>
