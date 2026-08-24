@@ -1,154 +1,193 @@
 ---
+import AlbumCard from '@/components/AlbumCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
+import PageBody from '@/components/PageBody.astro'
 import PageHead from '@/components/PageHead.astro'
-import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllProjects } from '@/lib/data-utils'
-import YouTubeCard from '@/components/YoutubeCard.astro'
 const projects = await getAllProjects()
-import AlbumCard from '@/components/AlbumCard.astro'
-
 ---
 
 <Layout>
   <PageHead slot="head" title="Media" />
-  <Breadcrumbs items={[{ label: 'Media', icon: 'lucide:square-library' }]} />
+  <PageBody>
+    <Breadcrumbs items={[{ label: 'Media', icon: 'lucide:square-library' }]} />
 
-  <section>
-    <div class="min-w-full">
-      <div class="prose mb-8">
-        <p class="mb-4">
-          My main hobbies are reading, listening to music and practicing photography. I'll mainly talk about them on this page.
-        </p>
+    <div class="prose">
+      <p class="mb-4">
+        My main hobbies are reading, listening to music and practicing
+        photography. I'll mainly talk about them on this page.
+      </p>
 
-        <h2>
-          Music
-        </h2>
-        <p>
-          I love music. Unlike literature, because of the almost fleeting nature of the medium, I think that music is more about what is felt rather than what is said.
-          I don't have a particular favourite genre, but some that I enjoy include post-rock, alt/indie-rock, shoegaze, noise-pop, chamber-pop, and jazz rap. Yes, I primarily
-          do listen to rock subgenres, but I wouldn't say I enjoy any rock in general. This is non-exhaustive, I do sometimes listen to idm, electronic, pop, etc.
-          I will try to add the reviews of albums here, though I am unsure about doing longer ones right now. Here are some short overviews that hopefully will convince you
-          to check these records out :D
-
-        </p>
-        <h3>
-          Twin Fantasy (Face to Face)
-        </h3>
-        <div style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
-          <div class="album-card-wrapper">
-            <AlbumCard appleMusicLink="https://music.apple.com/in/album/twin-fantasy/1586483380" rating="100"/>
-          </div>
-
-          <p class="album-description">
-            Twin Fantasy is my favourite album ever. For some historical information, Face to Face refers to the 2018 re-recording of it, which is the definitive version to listen to.
-            The original 2012 version carries the same charm, but is recorded in someone's garage. Somewhat confusingly, the first part of the 2018 album is called mirror to mirror, and the second part
-            face to face as well. This is intentional, and you'll see it in the songs and the themes about "growing up".
-            <br><br>
-            You can see its messy beauty from the first song itself. The real highlight for the first half
-            is of course, the second song, beach life-in-death. This is perhaps my favourite song ever and I've listened to it endlessly. The way it portrays the feelings of societal judgement,
-            obsession and depression speak to me so much. It is the prime example of music that makes me feel, and this song by itself has shaped me as a person. And it isn't the only song like
-            this on the album. Bodys, High to Death, Famous Prophets (Stars), Twin Fantasy (Those Boys) are all heartbreaking and so wonderfully articulate the emotions I have felt at times.
-            <br><br>
-            At its core, it is an album about escaping the fantasy Toledo plants himself in, where his image of his lover is no more than his fantasy. It is an album about messy love, depression,
-            heartbreak and growing up. We go from seeing each other only as reflections (mirror to mirror) and living in the fantasy, to escaping it and seeing each other face to face. There is
-            little I can express here that Toledo hasn't expressed better, and I would recommend you to just listen. Even aside from what he wants to say, there is a lot you can relate to. It is
-            an album I always come back to, I love it a lot.
-          </p>
+      <h2>Music</h2>
+      <p>
+        I love music. Unlike literature, because of the almost fleeting nature
+        of the medium, I think that music is more about what is felt rather than
+        what is said. I don't have a particular favourite genre, but some that I
+        enjoy include post-rock, alt/indie-rock, shoegaze, noise-pop,
+        chamber-pop, and jazz rap. Yes, I primarily do listen to rock subgenres,
+        but I wouldn't say I enjoy any rock in general. This is non-exhaustive,
+        I do sometimes listen to idm, electronic, pop, etc. I will try to add
+        the reviews of albums here, though I am unsure about doing longer ones
+        right now. Here are some short overviews that hopefully will convince
+        you to check these records out :D
+      </p>
+      <h3>Twin Fantasy (Face to Face)</h3>
+      <div
+        style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;"
+      >
+        <div class="album-card-wrapper">
+          <AlbumCard
+            appleMusicLink="https://music.apple.com/in/album/twin-fantasy/1586483380"
+            rating="100"
+          />
         </div>
-        <h3>
-          Ants From Up There
-        </h3>
-        <div style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
-          <div class="album-card-wrapper">
-            <AlbumCard appleMusicLink="https://geo.music.apple.com/hu/album/ants-from-up-there/1586070259" rating="100"/>
-          </div>
-          <p class="album-description">
-            Ants From Up There offers a interesting contrast to Twin Fantasy. It is a similar album in many ways, about obsession and love but the way it portrays it is so different.
-            While Twin Fantasy is messy and personal, I would say Ants From Up There is grand in a sense, with this almost Sisyphean sense of sadness. That doesn't take anything away from it,
-            in fact it is one of the most crushing records I've ever heard. The instrumental is seemingly upbeat and bright for most of the album even while the lyrics are soul crushing. Perhaps this
-            is intentionally ironic, or perhaps they're trying to somehow restrain Isaac's vocals, not letting them cloud the whole sound.
-            <br>  <br>
-            Anyway, the next song, Concorde is my favourite in the album alongside The Place Where He Inserted The Blade.
-            The way Isaac says in the opening <span style="font-style: italic">''What a funny way to speak''</span>  just jumps out to me. He sounds so lost and hateful, I can't ever get over those lines. The analogy with Concorde is
-            so well done and <span
+
+        <p class="album-description">
+          Twin Fantasy is my favourite album ever. For some historical
+          information, Face to Face refers to the 2018 re-recording of it, which
+          is the definitive version to listen to. The original 2012 version
+          carries the same charm, but is recorded in someone's garage. Somewhat
+          confusingly, the first part of the 2018 album is called mirror to
+          mirror, and the second part face to face as well. This is intentional,
+          and you'll see it in the songs and the themes about "growing up".
+          <br /><br />
+          You can see its messy beauty from the first song itself. The real highlight
+          for the first half is of course, the second song, beach life-in-death. This
+          is perhaps my favourite song ever and I've listened to it endlessly. The
+          way it portrays the feelings of societal judgement, obsession and depression
+          speak to me so much. It is the prime example of music that makes me feel,
+          and this song by itself has shaped me as a person. And it isn't the only
+          song like this on the album. Bodys, High to Death, Famous Prophets (Stars),
+          Twin Fantasy (Those Boys) are all heartbreaking and so wonderfully articulate
+          the emotions I have felt at times.
+          <br /><br />
+          At its core, it is an album about escaping the fantasy Toledo plants himself
+          in, where his image of his lover is no more than his fantasy. It is an album
+          about messy love, depression, heartbreak and growing up. We go from seeing
+          each other only as reflections (mirror to mirror) and living in the fantasy,
+          to escaping it and seeing each other face to face. There is little I can
+          express here that Toledo hasn't expressed better, and I would recommend
+          you to just listen. Even aside from what he wants to say, there is a lot
+          you can relate to. It is an album I always come back to, I love it a lot.
+        </p>
+      </div>
+      <h3>Ants From Up There</h3>
+      <div
+        style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;"
+      >
+        <div class="album-card-wrapper">
+          <AlbumCard
+            appleMusicLink="https://geo.music.apple.com/hu/album/ants-from-up-there/1586070259"
+            rating="100"
+          />
+        </div>
+        <p class="album-description">
+          Ants From Up There offers a interesting contrast to Twin Fantasy. It
+          is a similar album in many ways, about obsession and love but the way
+          it portrays it is so different. While Twin Fantasy is messy and
+          personal, I would say Ants From Up There is grand in a sense, with
+          this almost Sisyphean sense of sadness. That doesn't take anything
+          away from it, in fact it is one of the most crushing records I've ever
+          heard. The instrumental is seemingly upbeat and bright for most of the
+          album even while the lyrics are soul crushing. Perhaps this is
+          intentionally ironic, or perhaps they're trying to somehow restrain
+          Isaac's vocals, not letting them cloud the whole sound.
+          <br />
+          <br />
+          Anyway, the next song, Concorde is my favourite in the album alongside The
+          Place Where He Inserted The Blade. The way Isaac says in the opening <span
+            style="font-style: italic">''What a funny way to speak''</span
+          > just jumps out to me. He sounds so lost and hateful, I can't ever get
+          over those lines. The analogy with Concorde is so well done and <span
             style="
                 display: block;
                 text-align: center;
                 font-style: italic;
                 margin-top: 0rem; /* adjust this to taste */
               "
-                      >
-              "But, for less than a moment<br>
-              We'd share the same sky<br>
-              And then Isaac will suffer<br>
-              Concorde will fly"
-            </span>
-            is such an incredibly devastating portrayal of his love. The analogy in Bread Song, this over-dramatic portrayal of
-            sadness in The Place Where He Inserted the Blade (which to me represents is the thesis of the album); they're all things that make the album special to me. It is also the most accessible of three records, so I really
-            do recommend to try this out.
-          </p>
-        </div>
-        <h3>
-          Lift Your Skinny Fists Like Antennas to Heaven
-      </h3>
-        <div style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
-          <div class="album-card-wrapper">
-            <AlbumCard bandcampUrl="https://godspeedyoublackemperor.bandcamp.com/album/lift-your-skinny-fists-like-antennas-to-heaven" rating="100"/>
-          </div>
-          <p class="album-description">
-            This is different from the other two albums mentioned here, being largely instrumental. I like to think of this album as grander than music somewhat. This is also the most inaccessible of the
-            three records, both musically, with each song being 20 minute long with a few acts, and because it is not available on spotify or apple music. You can stream it on bandcamp
-            for free (at least for a couple of streams). I do have the FLACs for the album, so feel free to ask.
-            <br> <br>
-            The first song, Storm, is almost hopeful
-            but ends with a sample (which is technically about homeless people) that gives of a sense of alienation.. Static builds upon hope with dread and the words of the preacher evoke the same
-            sort of poignant feeling of almost dread in me that the album title and Neon Genesis Evangelion do with their religious themes.
-            Sleep, is about the monotonicity and decadence the world has fallen into,
-            and is in my opinion the best song on the album. "They don't sleep anymore on the beach...". The buildup is incredible and it sounds
-            so alienating and dark for the first two acts, while the the third act is kind of post-apocalyptic, being hopeful. Like Antennas to Heaven is the final act and is a wonderful closer.
-            <br><br>
-            At its core, I think Lift Your Skinny Fists is an uplifting album for all its dreary sound. It showcases the loss of innocence and the decadence of the world, and still urges you to lift your hands and hope. Storm, Static, Sleep,
-            ...Like Antennas to Heaven. Hope after a storm.
-          </p>
-        </div>
-        <h3>
-          Wetdream
-        </h3>
-        <div style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
-          <div class="album-card-wrapper">
-            <AlbumCard appleMusicLink="https://music.apple.com/in/album/wetdream/1723413859" rating="100"/>
-          </div>
-          <p class="album-description" style="margin-top: 3rem;">
-            Yes, the artist name is a god-darn dream smp reference. However, this is very much a case of don't judge a book by its cover. Trigger warning, the lyrics contain mentions of sexual abuse and suicide.
-            <br><br>
-            This is such an underrated record. Unfortunately Willy Rodriguez disbanded after making this, so it is their last album, and what an album it is. I personally love noisy music, I am very much a shoegaze
-            fan, and this is noise done just about perfectly for me. The production and instrumentals are so, so perfect. It has these, I don't know, winter-y christmas-y sounds at times (Snowing in Las Vegas) upon which
-            the most haunting lyrics lay. The noise and purely instrumental portions represent his desperation, suffering and hatred so perfectly well.
-            <br><br>
-            The lyrical content, although quite dark, is also pretty underrated. It pervades with these poignant feelings of hatred and desperation and everything in between. It is not a record for everyone, both because
-            of how noisy it is, and also because of the themes it covers. If you're fine with both, this is very much a record worth checking out. I don't think I have ever heard a better noise-pop record. I miss
-            Willy Rodriguez :(
-          </p>
-      </div>
-
-        <h2>
-          Designs
-        </h2>
-        <p>
-          I sometimes design. I am currently learning, and mostly just aim to make posters about my favourite media. There are not that many yet unfortunately, I don't usually get the time to make them. This is the public
-          album where I will add my posters, the images are not compressed.`
+          >
+            "But, for less than a moment<br />
+            We'd share the same sky<br />
+            And then Isaac will suffer<br />
+            Concorde will fly"
+          </span>
+          is such an incredibly devastating portrayal of his love. The analogy in
+          Bread Song, this over-dramatic portrayal of sadness in The Place Where He
+          Inserted the Blade (which to me represents is the thesis of the album);
+          they're all things that make the album special to me. It is also the most
+          accessible of three records, so I really do recommend to try this out.
         </p>
-        <iframe
-          src="https://embed.ente.com/?t=EVNDMCHDRQ#9jBrAne93rKT6j4zKPQeCs6ZnMJcwbLtHBc1bEu7ofqj"
-          width="1000"
-          height="800"
-          frameborder="0"
-          allowfullscreen
-          style="display:block; margin: 0 auto;">
-        </iframe>
-
       </div>
-  </section>
+      <h3>Lift Your Skinny Fists Like Antennas to Heaven</h3>
+      <div
+        style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;"
+      >
+        <div class="album-card-wrapper">
+          <AlbumCard
+            bandcampUrl="https://godspeedyoublackemperor.bandcamp.com/album/lift-your-skinny-fists-like-antennas-to-heaven"
+            rating="100"
+          />
+        </div>
+        <p class="album-description">
+          This is different from the other two albums mentioned here, being
+          largely instrumental. I like to think of this album as grander than
+          music somewhat. This is also the most inaccessible of the three
+          records, both musically, with each song being 20 minute long with a
+          few acts, and because it is not available on spotify or apple music.
+          You can stream it on bandcamp for free (at least for a couple of
+          streams). I do have the FLACs for the album, so feel free to ask.
+          <br />
+          <br />
+          The first song, Storm, is almost hopeful but ends with a sample (which is
+          technically about homeless people) that gives of a sense of alienation..
+          Static builds upon hope with dread and the words of the preacher evoke the
+          same sort of poignant feeling of almost dread in me that the album title
+          and Neon Genesis Evangelion do with their religious themes. Sleep, is about
+          the monotonicity and decadence the world has fallen into, and is in my opinion
+          the best song on the album. "They don't sleep anymore on the beach...".
+          The buildup is incredible and it sounds so alienating and dark for the first
+          two acts, while the the third act is kind of post-apocalyptic, being hopeful.
+          Like Antennas to Heaven is the final act and is a wonderful closer.
+          <br /><br />
+          At its core, I think Lift Your Skinny Fists is an uplifting album for all
+          its dreary sound. It showcases the loss of innocence and the decadence of
+          the world, and still urges you to lift your hands and hope. Storm, Static,
+          Sleep, ...Like Antennas to Heaven. Hope after a storm.
+        </p>
+      </div>
+      <h3>Wetdream</h3>
+      <div
+        style="display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap;"
+      >
+        <div class="album-card-wrapper">
+          <AlbumCard
+            appleMusicLink="https://music.apple.com/in/album/wetdream/1723413859"
+            rating="100"
+          />
+        </div>
+        <p class="album-description" style="margin-top: 3rem;">
+          Yes, the artist name is a god-darn dream smp reference. However, this
+          is very much a case of don't judge a book by its cover. Trigger
+          warning, the lyrics contain mentions of sexual abuse and suicide.
+          <br /><br />
+          This is such an underrated record. Unfortunately Willy Rodriguez disbanded
+          after making this, so it is their last album, and what an album it is. I
+          personally love noisy music, I am very much a shoegaze fan, and this is
+          noise done just about perfectly for me. The production and instrumentals
+          are so, so perfect. It has these, I don't know, winter-y christmas-y sounds
+          at times (Snowing in Las Vegas) upon which the most haunting lyrics lay.
+          The noise and purely instrumental portions represent his desperation, suffering
+          and hatred so perfectly well.
+          <br /><br />
+          The lyrical content, although quite dark, is also pretty underrated. It
+          pervades with these poignant feelings of hatred and desperation and everything
+          in between. It is not a record for everyone, both because of how noisy it
+          is, and also because of the themes it covers. If you're fine with both,
+          this is very much a record worth checking out. I don't think I have ever
+          heard a better noise-pop record. I miss Willy Rodriguez :(
+        </p>
+      </div>
+    </div>
+  </PageBody>
 </Layout>

@@ -2,6 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import FileTree from '@/components/FileTree.astro'
 import Link from '@/components/Link.astro'
+import PageBody from '@/components/PageBody.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { readUniTree, uniHref } from '@/lib/file-tree'
@@ -31,21 +32,20 @@ const fileTree = lecture.data.folder
 
 <Layout>
   <PageHead slot="head" title={lecture.data.title} />
-  <Breadcrumbs
-    items={[
-      {
-        label: 'Lectures',
-        href: '/lectures',
-        icon: 'lucide:graduation-cap',
-      },
-      { label: lecture.data.title, icon: 'lucide:file-text' },
-    ]}
-  />
+  <PageBody>
+    <Breadcrumbs
+      items={[
+        {
+          label: 'Lectures',
+          href: '/lectures',
+          icon: 'lucide:graduation-cap',
+        },
+        { label: lecture.data.title, icon: 'lucide:file-text' },
+      ]}
+    />
 
-  <section>
-    <div class="min-w-full">
-      <div class="mb-6 flex flex-col gap-1">
-        <h1 class="text-3xl leading-tight font-medium sm:text-4xl">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-3xl leading-tight sm:text-4xl">
           {lecture.data.title}
         </h1>
         <div class="text-muted-foreground flex items-center gap-3 text-sm">
@@ -104,7 +104,7 @@ const fileTree = lecture.data.folder
       {
         fileTree.length > 0 && (
           <section class="mt-12 border-t pt-6">
-            <h2 class="text-2xl font-semibold">Course Materials</h2>
+            <h2 class="text-2xl">Course Materials</h2>
             <div class="mt-4">
               <FileTree nodes={fileTree} />
             </div>
@@ -120,6 +120,5 @@ const fileTree = lecture.data.folder
           &larr; Back to all lectures
         </Link>
       </div>
-    </div>
-  </section>
+  </PageBody>
 </Layout>

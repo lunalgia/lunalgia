@@ -27,7 +27,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
         data-toc-scroll-area
       >
         <div class="flex flex-col gap-2 px-4">
-          <span class="text-lg font-medium">Table of Contents</span>
+          <span class="text-lg">Table of Contents</span>
           {sections.map((section, index) => {
             const isFirstSubpost =
               section.type === 'subpost' &&
@@ -38,7 +38,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                 {isFirstSubpost && (
                   <div class="mt-2 flex items-center gap-2">
                     <div class="bg-border h-px flex-1" />
-                    <span class="text-muted-foreground text-xs font-medium">
+                    <span class="text-muted-foreground text-xs">
                       Subposts
                     </span>
                     <div class="bg-border h-px flex-1" />
@@ -81,7 +81,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                     <ul class="flex list-none flex-col gap-y-2">
                       <li
                         class={cn(
-                          'text-xs font-medium',
+                          'text-xs',
                           section.subpostId === currentPostId
                             ? 'text-foreground'
                             : 'text-foreground/60',

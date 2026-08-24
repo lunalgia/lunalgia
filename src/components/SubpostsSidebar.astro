@@ -54,7 +54,7 @@ const subpostsWithReadingTime = await Promise.all(
           activePost && (
             <li>
               {isActivePost ? (
-                <div class="text-foreground bg-muted subposts-sidebar-active-item flex items-center gap-2 rounded-md py-1.5 pr-3 pl-2 text-sm font-medium text-pretty">
+                <div class="text-foreground bg-muted subposts-sidebar-active-item flex items-center gap-2 rounded-md py-1.5 pr-3 pl-2 text-sm text-pretty">
                   <Icon
                     name="lucide:book-open-text"
                     class="size-4 flex-shrink-0"
@@ -118,7 +118,7 @@ const subpostsWithReadingTime = await Promise.all(
             <li class="ml-4 space-y-1">
               {subpostsWithReadingTime.map((subpost) =>
                 currentPostId === subpost.id ? (
-                  <div class="text-foreground bg-muted subposts-sidebar-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-pretty">
+                  <div class="text-foreground bg-muted subposts-sidebar-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-pretty">
                     <Icon
                       name="lucide:file-text"
                       class="size-4 flex-shrink-0"

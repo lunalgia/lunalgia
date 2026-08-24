@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
+import PageBody from '@/components/PageBody.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getCollection } from 'astro:content'
@@ -72,16 +73,15 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
 
 <Layout>
   <PageHead slot="head" title="Lecture Notes" />
-  <Breadcrumbs items={[{ label: 'Lectures', icon: 'lucide:graduation-cap' }]} />
+  <PageBody>
+    <Breadcrumbs items={[{ label: 'Lectures', icon: 'lucide:graduation-cap' }]} />
 
-  <section>
-    <div class="min-w-full">
-      <div class="prose">
-        <p>
-          Course notes and lecture materials from the courses I have taken at
-          CMI.
-        </p>
-      </div>
+    <div class="prose">
+      <p>
+        Course notes and lecture materials from the courses I have taken at
+        CMI.
+      </p>
+    </div>
 
       {
         yearGroups.length === 0 ? (
@@ -93,15 +93,15 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
           <div class="mt-8 flex flex-col gap-10">
             {yearGroups.map((yg) => (
               <section class="flex flex-col gap-6">
-                <h2 class="text-2xl font-semibold">{yg.name}</h2>
+                <h2 class="text-2xl">{yg.name}</h2>
                 {yg.semesters.map((sg) => (
                   <section class="border-muted flex flex-col gap-4 border-l-2 pl-4">
-                    <h3 class="text-muted-foreground text-lg font-medium">
+                    <h3 class="text-muted-foreground text-lg">
                       {sg.name}
                     </h3>
                     {sg.courses.map((cg) => (
                       <section class="flex flex-col gap-2">
-                        <h4 class="text-base font-medium">{cg.name}</h4>
+                        <h4 class="text-base">{cg.name}</h4>
                         <ul class="flex flex-col gap-2">
                           {cg.items.map((lecture) => (
                             <li>
@@ -142,6 +142,5 @@ const yearGroups: YearGroup[] = Array.from(yearMap.entries())
           </div>
         )
       }
-    </div>
-  </section>
+  </PageBody>
 </Layout>

@@ -87,7 +87,7 @@ const currentSubpostDetails = isCurrentSubpost
               {activePost && (
                 <li>
                   {isActivePost ? (
-                    <div class="text-foreground bg-muted mobile-subposts-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium">
+                    <div class="text-foreground bg-muted mobile-subposts-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
                       <Icon
                         name="lucide:book-open-text"
                         class="size-4 flex-shrink-0"
@@ -149,7 +149,7 @@ const currentSubpostDetails = isCurrentSubpost
                 <div class="ml-4 space-y-1">
                   {subpostsWithReadingTime.map((subpost) =>
                     currentPostId === subpost.id ? (
-                      <div class="text-foreground bg-muted mobile-subposts-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium">
+                      <div class="text-foreground bg-muted mobile-subposts-active-item flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
                         <Icon
                           name="lucide:file-text"
                           class="size-4 flex-shrink-0"

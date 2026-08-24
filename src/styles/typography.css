@@ -27,16 +27,16 @@
 
 @layer components {
   .prose {
-    @apply text-foreground font-serif text-base leading-7;
+    @apply text-foreground font-garamond text-base leading-7;
 
     :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground text-[13pt] font-serif my-5 tracking-[0.007em];
+      @apply text-foreground text-[14pt] font-serif my-5 tracking-[0.007em];
     }
 
     :where(h1, h2, h3, h4, h5, h6):not(
         :where([class~='not-prose'], [class~='not-prose'] *)
       ) {
-      @apply text-foreground scroll-mt-32 font-condensed-serif italic font-medium xl:scroll-mt-20;
+      @apply text-foreground scroll-mt-32 font-condensed-serif italic xl:scroll-mt-20;
     }
 
     :where(h1, h2, h3, h4, h5, h6):first-child:not(
@@ -67,7 +67,7 @@
     }
 
     :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors;
+      @apply text-foreground decoration-muted-foreground hover:decoration-foreground break-words underline underline-offset-[3px] transition-colors;
     }
 
     :where(strong):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -75,11 +75,11 @@
     }
 
     :where(ul):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply marker:text-foreground font-medium text-[13pt] text-accent-foreground my-5 list-disc [&>li]:mt-2 tracking-[0.007em];
+      @apply marker:text-foreground/50 text-foreground text-[14pt] font-serif my-5 list-disc [&>li]:mt-2 tracking-[0.007em];
     }
 
     :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply marker:text-foreground/30 my-5 ml-6 list-decimal [&>li]:mt-2;
+      @apply marker:text-foreground/50 text-foreground text-[14pt] font-serif my-5 ml-6 list-decimal [&>li]:mt-2 tracking-[0.007em];
       @apply [&[type='A']]:list-[upper-alpha] [&[type='I']]:list-[upper-roman] [&[type='a']]:list-[lower-alpha] [&[type='i']]:list-[lower-roman];
     }
 
@@ -123,7 +123,7 @@
     }
 
     :where(th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply px-4 py-2 font-medium;
+      @apply px-4 py-2;
       @apply text-left [&[align=center]]:text-center [&[align=right]]:text-right;
     }
 
@@ -151,7 +151,7 @@
     }
 
     :where(kbd):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground bg-muted rounded-md border px-2 py-1 text-xs font-medium;
+      @apply text-foreground bg-muted rounded-md border px-2 py-1 text-xs;
     }
 
     :where(.katex-display):not(

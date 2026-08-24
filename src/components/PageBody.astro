@@ -1,0 +1,15 @@
+---
+interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+---
+
+<section
+  class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-lg)-1rem),100%)_minmax(0px,1fr)] gap-y-6"
+>
+  <div class:list={['col-start-2 flex min-w-0 flex-col gap-y-6', className]}>
+    <slot />
+  </div>
+</section>
