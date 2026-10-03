@@ -1,6 +1,6 @@
-# lunalgia v2
+# lunalgia
 
-Lilian's personal site. Astro 7 + MDX, React islands + Tailwind v4 (for shadcn/componentry components), GSAP
+My personal site. Astro 7 + MDX, React islands + Tailwind v4 (for shadcn/componentry components), GSAP
 (ScrollTrigger, SplitText) and Lenis for motion, KaTeX for maths. Design tokens live in
 `src/styles/global.css`; the home page is built from the Affinity boards in `design/website/`.
 
