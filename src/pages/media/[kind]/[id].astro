@@ -29,7 +29,7 @@ const chips = [...(d.genres ?? []), ...(d.tags ?? [])]
 const links: Record<string, string> = d.links ?? {}
 ---
 
-<Base title={d.title} description={`${d.title}, ${d.by}: a review.`}>
+<Base title={d.title} description={`${d.title}, ${d.by}: a review.`} preview={cover}>
   <script>
     import '@/scripts/sidenotes'
   </script>
