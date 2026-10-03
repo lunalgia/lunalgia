@@ -97,6 +97,10 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     color: var(--ultramarine);
     aspect-ratio: 1920 / 900;
     min-height: 34rem;
+    /* without an explicit width, aspect-ratio turns min-height into a min-width
+       (34rem × 1920/900 ≈ 1160px) and the footer overflows narrower windows */
+    width: 100%;
+    min-width: 0;
   }
   .foot__water {
     position: absolute;

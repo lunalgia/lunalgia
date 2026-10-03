@@ -3,15 +3,16 @@
  * Board 1: the four roads and the name.
  *
  * Every number here comes from design/website/board1.svg (a 1920×1080 board),
- * so the wide drawing is the artwork itself. Phones get the same drawing
- * re-bent into a tall frame by `toTall`, which keeps the middle of the board
- * (the name and the inner ends of the roads) as it is and squeezes the outskirts.
+ * so the wide drawing is the artwork itself. Tall screens (phones) keep the
+ * frame, the tag and the name, and the four roads move into a menu that opens
+ * from the button on the frame.
  *
  * Intro: the four roads draw in together from the edges of the page; then each
  * letter of the name is traced along its outline, left to right, and the ink
  * floods in behind the pen; the labels settle last.
  */
 import StatusBar from './StatusBar.astro'
+import { NAV } from '@/consts'
 import name from './lunalgia.json' // glyph outlines, positioned as in board1
 
 type Road = {
@@ -72,35 +73,24 @@ const roads: Road[] = [
   },
 ]
 
+/** apply a path's translate from the board file to its coordinates */
+const mapPath = (d: string, [tx, ty]: [number, number]) =>
+  d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, a, b) => `${(+a + tx).toFixed(2)},${(+b + ty).toFixed(2)}`)
+
 // ---------- the tall (phone) drawing ----------
-const CX = 960
-const CY = 540
-const bend = (v: number, keep: number, k: number) => {
-  const a = Math.abs(v)
-  return Math.sign(v) * (Math.min(a, keep) + Math.max(a - keep, 0) * k)
-}
-const TALL = { w: 760, h: 1600, s: 0.72, kx: 0.44, ky: 1.45, keepX: 262, keepY: 140 }
-const toTall = (x: number, y: number): [number, number] => [
-  TALL.w / 2 + bend((x - CX) * TALL.s, TALL.keepX * TALL.s, TALL.kx),
-  TALL.h / 2 + bend((y - CY) * TALL.s, TALL.keepY * TALL.s, TALL.ky),
-]
-const mapPath = (d: string, [tx, ty]: [number, number], f: (x: number, y: number) => [number, number]) =>
-  d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, a, b) => {
-    const [x, y] = f(+a + tx, +b + ty)
-    return `${x.toFixed(2)},${y.toFixed(2)}`
-  })
-const tallAngle = (x: number, y: number, deg: number) => {
-  const jx = Math.abs(x - CX) > TALL.keepX ? TALL.kx : 1
-  const jy = Math.abs(y - CY) > TALL.keepY ? TALL.ky : 1
-  const r = (deg * Math.PI) / 180
-  return (Math.atan2(Math.sin(r) * jy, Math.cos(r) * jx) * 180) / Math.PI
-}
+// Phones get the frame, the tag and the name only (bigger, centred); the roads
+// become a menu behind the button on the frame (see .hmenu below).
+const TALL = { w: 760, h: 1600 }
+const NAME = { cx: 967, cy: 543, w: 478 } // the name's box in board1
+const TALL_NAME_SCALE = (TALL.w * 0.8) / NAME.w
+
+const wideRoads = roads.map((r) => ({ ...r, path: mapPath(r.d, r.t), x: r.lx, y: r.ly, a: r.rot, k: 1 }))
 
 const drawings = [
   {
     id: 'wide',
     viewBox: '0 0 1920 1080',
-    roads: roads.map((r) => ({ ...r, path: mapPath(r.d, r.t, (x, y) => [x, y]), x: r.lx, y: r.ly, a: r.rot, k: 1 })),
+    roads: wideRoads,
     nameAt: '',
     frame: { x: 44.546, y: 51.983, w: 1830.143, h: 983.8 },
     tag: { x: 960, y: 51.983 + 7.8, pw: 158.8 },
@@ -108,16 +98,8 @@ const drawings = [
   {
     id: 'tall',
     viewBox: `0 0 ${TALL.w} ${TALL.h}`,
-    roads: roads.map((r) => {
-      // labels that would run off a phone screen slide back along their road
-      const nudge: Record<string, [number, number]> = { '/academics': [-30, -200] }
-      const [nx, ny] = nudge[r.href] ?? [0, 0]
-      const [x0, y0] = toTall(r.lx, r.ly)
-      const [x, y] = [x0 + nx, y0 + ny]
-      return { ...r, path: mapPath(r.d, r.t, toTall), x, y, a: tallAngle(r.lx, r.ly, r.rot), k: TALL.s * 1.08 }
-    }),
-    // the whole middle is scaled down by TALL.s, so the name is too
-    nameAt: `translate(${TALL.w / 2} ${TALL.h / 2}) scale(${TALL.s}) translate(${-CX} ${-CY})`,
+    roads: [] as typeof wideRoads,
+    nameAt: `translate(${TALL.w / 2} ${TALL.h / 2}) scale(${TALL_NAME_SCALE}) translate(${-NAME.cx} ${-NAME.cy})`,
     frame: { x: 24, y: 44, w: TALL.w - 48, h: TALL.h - 88 },
     tag: { x: TALL.w / 2, y: 44 + 7.8, pw: 158.8 },
   },
@@ -131,7 +113,7 @@ const drawings = [
       <svg
         class={`hero__art hero__art--${g.id}`}
         viewBox={g.viewBox}
-        preserveAspectRatio={g.id === 'wide' ? 'xMidYMin meet' : 'xMidYMid slice'}
+        preserveAspectRatio={g.id === 'wide' ? 'xMidYMin meet' : 'xMidYMid meet'}
         role="navigation"
         aria-label="sections"
       >
@@ -156,7 +138,7 @@ const drawings = [
         ))}
 
         <a class="hero__name" href="#hello" aria-label="Lunalgia: about me">
-          <g transform={g.nameAt || undefined}>
+          <g transform={g.nameAt || undefined} data-tall-name={g.id === 'tall' ? `${TALL_NAME_SCALE} ${NAME.cx} ${NAME.cy}` : undefined}>
             <g class="hero__ink">
               {name.letters.map((l) => (
                 <path class="hero__letter" d={l.d} />
@@ -167,8 +149,32 @@ const drawings = [
       </svg>
     ))
   }
+  <button class="hmenu__btn" type="button" aria-expanded="false" aria-controls="hmenu">
+    <span class="hmenu__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="visually-hidden">menu</span>
+  </button>
   <StatusBar />
 </section>
+
+<nav id="hmenu" class="hmenu" aria-label="sections" hidden>
+  <div class="hmenu__frame" aria-hidden="true"></div>
+  <p class="hmenu__tag">lit. moon pain</p>
+  <button class="hmenu__close" type="button" aria-label="close the menu">
+    <span aria-hidden="true"><i></i><i></i></span>
+  </button>
+  <ol class="hmenu__list" role="list">
+    {
+      NAV.map((l, i) => (
+        <li style={`--i:${i}`}>
+          <a href={l.href}>
+            <span class="hmenu__n">{String(i + 1).padStart(2, '0')}</span>
+            <em>{l.label}</em>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
 
 <script>
   import { gsap } from 'gsap'
@@ -193,11 +199,101 @@ const drawings = [
       }),
     )
 
+  /**
+   * The tall drawing is only a frame and the name, so instead of cropping a fixed
+   * board to the screen it takes the screen's own shape: the board stays 760
+   * wide and becomes as tall as the screen needs, with the frame redrawn to fit.
+   */
+  const fitTall = (hero: HTMLElement) => {
+    const svg = hero.querySelector<SVGSVGElement>('.hero__art--tall')
+    if (!svg || getComputedStyle(svg).display === 'none') return
+    const { width, height } = svg.getBoundingClientRect()
+    if (!width || !height) return
+    const W = 760
+    const H = Math.round((W * height) / width)
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    const m = 24
+    const top = 44
+    svg.querySelector('.hero__frame')?.setAttribute('d', `M${W / 2} ${top}H${W - m}V${H - top}H${m}V${top}Z`)
+    const name = svg.querySelector<SVGGElement>('[data-tall-name]')
+    if (name) {
+      const [scale, cx, cy] = name.dataset.tallName!.split(' ')
+      name.setAttribute('transform', `translate(${W / 2} ${H / 2}) scale(${scale}) translate(${-cx} ${-cy})`)
+    }
+  }
+
+  /**
+   * Seat the menu button on the visible frame's top line, at its right end, like
+   * the frame's labels; the open menu draws its own frame in the same place.
+   */
+  const placeMenuButton = (hero: HTMLElement) => {
+    const svg = [...hero.querySelectorAll<SVGSVGElement>('.hero__art')].find((el) => getComputedStyle(el).display !== 'none')
+    const frame = svg?.querySelector('.hero__frame')
+    if (!frame) return
+    const f = frame.getBoundingClientRect()
+    const h = hero.getBoundingClientRect()
+    const root = document.documentElement.style
+    root.setProperty('--hf-top', `${f.top - h.top}px`)
+    root.setProperty('--hf-side', `${h.right - f.right}px`)
+  }
+
+  /** the phone menu: the roads, as a list, behind the button on the frame */
+  const menu = (hero: HTMLElement) => {
+    const btn = hero.querySelector<HTMLButtonElement>('.hmenu__btn')
+    const nav = document.getElementById('hmenu')
+    if (!btn || !nav) return
+    const closeBtn = nav.querySelector<HTMLButtonElement>('.hmenu__close')!
+    let hideTimer = 0
+    const lenis = () => (window as any).__lenis as { stop(): void; start(): void } | undefined
+    const set = (open: boolean) => {
+      clearTimeout(hideTimer)
+      btn.setAttribute('aria-expanded', String(open))
+      document.documentElement.classList.toggle('hmenu-open', open)
+      if (open) {
+        nav.hidden = false
+        void nav.offsetWidth
+        nav.classList.add('is-open')
+        lenis()?.stop()
+        closeBtn.focus({ preventScroll: true })
+      } else {
+        nav.classList.remove('is-open')
+        lenis()?.start()
+        hideTimer = window.setTimeout(() => (nav.hidden = true), 450)
+      }
+    }
+    btn.addEventListener('click', () => set(true))
+    closeBtn.addEventListener('click', () => {
+      set(false)
+      btn.focus({ preventScroll: true })
+    })
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)))
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !nav.hidden && set(false)
+    document.addEventListener('keydown', onKey)
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        document.removeEventListener('keydown', onKey)
+        document.documentElement.classList.remove('hmenu-open')
+        lenis()?.start()
+      },
+      { once: true },
+    )
+    placeMenuButton(hero)
+    const ro = new ResizeObserver(() => {
+      fitTall(hero)
+      placeMenuButton(hero)
+    })
+    ro.observe(hero)
+    document.addEventListener('astro:before-swap', () => ro.disconnect(), { once: true })
+  }
+
   const play = () => {
     fitTags()
     const hero = document.querySelector<HTMLElement>('.hero')
     if (!hero || hero.dataset.ready) return
     hero.dataset.ready = '1'
+    fitTall(hero)
+    menu(hero)
 
     let seen = false
     try {
@@ -220,7 +316,7 @@ const drawings = [
     const labels = svg.querySelectorAll('.road__label')
     const frame = svg.querySelector<SVGPathElement>('.hero__frame')!
     const frameLen = frame.getTotalLength()
-    const tag = svg.querySelectorAll('.hero__tag, .hero__tagpatch')
+    const tag = [...svg.querySelectorAll('.hero__tag, .hero__tagpatch'), hero.querySelector('.hmenu__btn')]
 
     // where the bottom of the screen is, in board units
     const pt = new DOMPoint(0, innerHeight).matrixTransform(svg.getScreenCTM()!.inverse())
@@ -303,7 +399,8 @@ const drawings = [
     )
 
     // 3. the name: each letter's outline is traced, the ink follows the pen
-    const START = 1.75
+    // with no roads to draw first (phones), the pen starts sooner
+    const START = roads.length ? 1.75 : 0.7
     const STAGGER = 0.16
     letters.forEach((l, i) => {
       const at = START + i * STAGGER
@@ -441,5 +538,168 @@ const drawings = [
   /* while a road is drawing, square ends: a round cap on an empty dash is a dot */
   .road__line.is-drawing {
     stroke-linecap: butt;
+  }
+  /* ---------- the phone menu ---------- */
+  .hmenu__btn {
+    display: none;
+  }
+  @media (max-aspect-ratio: 4/3) {
+    /* a label on the frame's top line, at its right end */
+    .hmenu__btn {
+      position: absolute;
+      z-index: 3;
+      top: var(--hf-top, 1.1rem);
+      right: calc(var(--hf-side, 0.75rem) + 1.1rem);
+      translate: 0 -50%;
+      display: inline-flex;
+      padding: 0.55rem 0.55rem;
+      border: 0;
+      background: var(--lavender);
+      color: var(--ultramarine);
+      cursor: pointer;
+    }
+  }
+  /* hidden, like the drawing, until the script has set the first frame */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root.js) .hero__art--tall:not(.is-ready) ~ .hmenu__btn {
+      visibility: hidden;
+    }
+  }
+  .hmenu__bars {
+    display: grid;
+    gap: 5px;
+    width: 24px;
+  }
+  .hmenu__bars i {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition: width 0.35s var(--ease-out);
+  }
+  .hmenu__bars i:nth-child(2) {
+    width: 66%;
+    justify-self: end;
+  }
+  .hmenu__btn:hover .hmenu__bars i:nth-child(2) {
+    width: 100%;
+  }
+
+  :global(html.hmenu-open) {
+    overflow: hidden;
+  }
+  .hmenu {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    background: var(--lavender);
+    color: var(--ultramarine);
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-out);
+  }
+  .hmenu[hidden] {
+    display: none;
+  }
+  .hmenu.is-open {
+    opacity: 1;
+  }
+  /* the same frame as the hero's, so opening the menu only swaps what is inside it */
+  .hmenu__frame {
+    position: absolute;
+    inset: var(--hf-top, 1.1rem) var(--hf-side, 0.75rem) var(--hf-side, 0.75rem);
+    border: 1.3px solid var(--ultramarine);
+    pointer-events: none;
+  }
+  .hmenu__tag {
+    position: absolute;
+    left: 50%;
+    top: var(--hf-top, 1.1rem);
+    translate: -50% -50%;
+    margin: 0;
+    padding: 0 0.6rem;
+    background: var(--lavender);
+    font: italic 0.85rem/1.2 var(--font-display);
+  }
+  .hmenu__close {
+    position: absolute;
+    top: var(--hf-top, 1.1rem);
+    right: calc(var(--hf-side, 0.75rem) + 1.1rem);
+    translate: 0 -50%;
+    padding: 0.55rem;
+    border: 0;
+    background: var(--lavender);
+    color: inherit;
+    cursor: pointer;
+  }
+  .hmenu__close span {
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+  .hmenu__close i {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    rotate: 45deg;
+  }
+  .hmenu__close i + i {
+    rotate: -45deg;
+  }
+  .hmenu__list {
+    width: 100%;
+    margin: 0;
+    padding: 0 calc(var(--hf-side, 0.75rem) + 1.5rem);
+    list-style: none;
+  }
+  .hmenu__list li {
+    border-top: 1px solid var(--rule);
+    opacity: 0;
+    translate: 0 14px;
+    transition:
+      opacity 0.5s var(--ease-out),
+      translate 0.6s var(--ease-out);
+    transition-delay: calc(0.08s + var(--i) * 0.06s);
+  }
+  .hmenu__list li:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+  .hmenu.is-open .hmenu__list li {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .hmenu__list a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 0 0.95rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .hmenu__n {
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.16em;
+    color: var(--muted);
+  }
+  .hmenu__list em {
+    font-family: var(--font-display);
+    font-size: clamp(2.3rem, 11vw, 3.4rem);
+    line-height: 1;
+  }
+  .hmenu__list a:active em,
+  .hmenu__list a:hover em {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hmenu,
+    .hmenu__list li {
+      transition: none;
+    }
   }
 </style>
