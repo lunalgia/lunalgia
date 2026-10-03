@@ -18,7 +18,7 @@ interface Props {
   preview?: ImageMetadata
 }
 
-const { title, description = SITE.description, image = '/og.png', home = false, footer = true, preview } = Astro.props
+const { title, description = SITE.description, image = '/og.jpg', home = false, footer = true, preview } = Astro.props
 const here = Astro.url.pathname.split('/').filter(Boolean)[0] ?? 'home'
 const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.author} · ${SITE.title}`
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -46,6 +46,8 @@ const previewSrc = preview && (await getImage({ src: preview, width: 480, format
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    {image === '/og.jpg' && <meta property="og:image:width" content="1200" />}
+    {image === '/og.jpg' && <meta property="og:image:height" content="630" />}
     <meta name="twitter:card" content="summary_large_image" />
     {title && <meta name="preview:title" content={title} />}
     {previewSrc && <meta name="preview:image" content={previewSrc} />}
