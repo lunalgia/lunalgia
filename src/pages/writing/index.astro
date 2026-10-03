@@ -7,7 +7,7 @@ import { Image } from 'astro:assets'
 import Base from '@/layouts/Base.astro'
 import { emphasize, getPosts, wordCount } from '@/lib/utils'
 import { WRITING_KINDS } from '@/content.config'
-import fog from '@/assets/fog.jpg'
+import lilyPale from '@/assets/home/lily-pale.png'
 
 const posts = await getPosts()
 const latest = posts[0]
@@ -35,7 +35,16 @@ const one = (k: string) => WRITING_KINDS[k as keyof typeof WRITING_KINDS].label.
   {
     latest && (
       <a class="feat" href={`/writing/${latest.id}`}>
-        <Image src={latest.data.image ?? fog} alt="" widths={[700, 1100, 1500]} sizes="(min-width: 900px) 52vw, 92vw" class="feat__img" loading="eager" />
+        {
+          latest.data.image ? (
+            <Image src={latest.data.image} alt="" widths={[700, 1100, 1500]} sizes="(min-width: 900px) 52vw, 92vw" class="feat__img" loading="eager" />
+          ) : (
+            // no picture of its own: the pale lily on the deep lavender of the Writings panel
+            <span class="feat__img feat__lily">
+              <Image src={lilyPale} alt="" widths={[600, 1000, 1334]} sizes="(min-width: 900px) 46vw, 82vw" loading="eager" />
+            </span>
+          )
+        }
         <div class="feat__txt">
           <p class="k">
             LATEST · {one(latest.data.kind).toUpperCase()} · {date(latest.data.date, true)}
@@ -164,6 +173,21 @@ const one = (k: string) => WRITING_KINDS[k as keyof typeof WRITING_KINDS].label.
   }
   .feat:hover .feat__img {
     filter: saturate(1.15);
+  }
+  .feat__lily {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--lavender-deep);
+  }
+  .feat__lily :global(img) {
+    width: 86%;
+    height: auto;
+    translate: 3% 4%;
+    transition: scale 0.9s var(--ease-out);
+  }
+  .feat:hover .feat__lily :global(img) {
+    scale: 1.03;
   }
   .feat h2 {
     margin: 1rem 0;
