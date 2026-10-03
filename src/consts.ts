@@ -1,7 +1,7 @@
 export const SITE = {
   title: 'lunalgia',
   author: 'Lilian',
-  description: 'Lilian’s corner of the internet: writing, work, academics, media and things worth keeping.',
+  description: 'A garden of lilies.',
   url: 'https://lunalgia.pages.dev',
   email: 'lunalgia@proton.me',
   github: 'https://github.com/lunalgia',
