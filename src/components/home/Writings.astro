@@ -101,59 +101,102 @@ const letters = [
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   gsap.registerPlugin(ScrollTrigger)
 
-  /** the lily develops out of an ordered dither, like a print in a tray */
-  const develop = (box: HTMLElement) => {
+  /**
+   * The lily develops out of an ordered dither, like a print in a tray.
+   *
+   * Each pixel gets a threshold (4×4 Bayer, a little noise, a top-to-bottom
+   * bias) and appears once the reveal passes it. The pixels are sorted by
+   * threshold ahead of time, while the page is idle, so each frame of the
+   * reveal only touches the pixels that turn on in that frame instead of
+   * re-checking the whole canvas.
+   */
+  const LEVELS = 256
+  const MAX_T = 1
+  type Plan = { ctx: CanvasRenderingContext2D; out: ImageData; order: Uint32Array; starts: Uint32Array }
+
+  const prepare = (box: HTMLElement): Promise<Plan> =>
+    new Promise((resolve) => {
+      const img = box.querySelector<HTMLImageElement>('img')!
+      const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
+      const build = () => {
+        const w = 900
+        const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, w, h)
+        const out = ctx.getImageData(0, 0, w, h)
+        ctx.clearRect(0, 0, w, h)
+        const px = out.data
+        const n = w * h
+        // keep each pixel's alpha in a side array, start fully transparent
+        const alpha = new Uint8Array(n)
+        for (let i = 0, j = 3; i < n; i++, j += 4) {
+          alpha[i] = px[j]
+          px[j] = 0
+        }
+        // bucket every pixel by its threshold (a counting sort)
+        const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+        const level = new Uint16Array(n)
+        const counts = new Uint32Array(LEVELS + 1)
+        for (let y = 0, i = 0; y < h; y++)
+          for (let x = 0; x < w; x++, i++) {
+            const b = bayer[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16
+            const t = b * 0.55 + Math.random() * 0.25 + (y / h) * 0.2
+            const l = Math.min(LEVELS - 1, Math.floor((t / MAX_T) * LEVELS))
+            level[i] = l
+            counts[l + 1]++
+          }
+        const starts = new Uint32Array(LEVELS + 1)
+        for (let l = 0; l < LEVELS; l++) starts[l + 1] = starts[l] + counts[l + 1]
+        const fill = starts.slice(0, LEVELS)
+        // store pixel index and its alpha together: index * 256 + alpha
+        const order = new Uint32Array(n)
+        for (let i = 0; i < n; i++) order[fill[level[i]]++] = i * 256 + alpha[i]
+        resolve({ ctx, out, order, starts })
+      }
+      const idle = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1))
+      const go = () => idle(build, { timeout: 1500 })
+      if (img.complete && img.naturalWidth) go()
+      else img.addEventListener('load', go, { once: true })
+    })
+
+  const develop = async (box: HTMLElement, plan: Promise<Plan>) => {
     const img = box.querySelector<HTMLImageElement>('img')!
     const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
-    const run = () => {
-      const w = 900
-      const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d', { willReadFrequently: true })!
-      ctx.drawImage(img, 0, 0, w, h)
-      const src = ctx.getImageData(0, 0, w, h)
-      const out = ctx.createImageData(w, h)
-      // 4×4 Bayer thresholds, a little noise, and a top-to-bottom bias
-      const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
-      const thr = new Float32Array(w * h)
-      for (let y = 0; y < h; y++)
-        for (let x = 0; x < w; x++) {
-          const b = bayer[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16
-          thr[y * w + x] = b * 0.55 + Math.random() * 0.25 + (y / h) * 0.2
+    const { ctx, out, order, starts } = await plan
+    const px = out.data
+    img.style.opacity = '0'
+    canvas.style.opacity = '1'
+    ctx.putImageData(out, 0, 0)
+    let done = 0 // levels revealed so far
+    const state = { p: 0 }
+    gsap.to(state, {
+      p: 1,
+      duration: 1.8,
+      ease: 'power1.inOut',
+      onUpdate: () => {
+        const to = Math.min(LEVELS, Math.ceil(state.p * LEVELS))
+        if (to <= done) return
+        for (let k = starts[done], end = starts[to]; k < end; k++) {
+          const v = order[k]
+          px[(v >>> 8) * 4 + 3] = v & 255
         }
-      img.style.opacity = '0'
-      canvas.style.opacity = '1'
-      const state = { p: 0 }
-      gsap.to(state, {
-        p: 1.02,
-        duration: 1.8,
-        ease: 'power1.inOut',
-        onUpdate: () => {
-          const s = src.data
-          const o = out.data
-          for (let i = 0, j = 0; i < thr.length; i++, j += 4) {
-            const on = thr[i] < state.p
-            o[j] = s[j]
-            o[j + 1] = s[j + 1]
-            o[j + 2] = s[j + 2]
-            o[j + 3] = on ? s[j + 3] : 0
-          }
-          ctx.putImageData(out, 0, 0)
-        },
-        onComplete: () => {
-          img.style.opacity = '1'
-          canvas.style.opacity = '0'
-        },
-      })
-    }
-    if (img.complete && img.naturalWidth) run()
-    else img.addEventListener('load', run, { once: true })
+        done = to
+        ctx.putImageData(out, 0, 0)
+      },
+      onComplete: () => {
+        img.style.opacity = '1'
+        canvas.style.opacity = '0'
+      },
+    })
   }
 
   /**
    * The lens: under the cursor the watermark gives way to the inked lily,
-   * inside a hard-edged circle with a hairline ring.
+   * inside a hard-edged circle with a hairline ring. The lens lives in screen
+   * coordinates and is redrawn every frame while open, so it stays under a
+   * still cursor while the page (and the lily's slower parallax) scrolls past.
    */
   const lens = (root: HTMLElement) => {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return
@@ -162,50 +205,60 @@ const letters = [
     const ring = root.querySelector<HTMLElement>('.writings__ring')!
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
     const state = { x: 0, y: 0, r: 0 }
-    let target = { x: 0, y: 0 }
+    let pointer: { x: number; y: number } | null = null
     let open = false
     const radius = () => (clip.getBoundingClientRect().width / 1920) * 170
 
     const paint = () => {
       const ib = ink.getBoundingClientRect()
       const cb = clip.getBoundingClientRect()
-      ink.style.clipPath = `circle(${state.r}px at ${state.x + cb.left - ib.left}px ${state.y + cb.top - ib.top}px)`
-      ring.style.transform = `translate(${state.x}px, ${state.y}px)`
+      ink.style.clipPath = `circle(${state.r}px at ${state.x - ib.left}px ${state.y - ib.top}px)`
+      ring.style.transform = `translate(${state.x - cb.left}px, ${state.y - cb.top}px)`
       ring.style.width = ring.style.height = `${state.r * 2}px`
       ring.style.opacity = state.r > 1 ? '1' : '0'
     }
-    const follow = calm
-      ? () => {
-          state.x = target.x
-          state.y = target.y
-          paint()
-        }
-      : () => gsap.to(state, { x: target.x, y: target.y, duration: 0.35, ease: 'power3.out', overwrite: 'auto', onUpdate: paint })
+    const setOpen = (over: boolean) => {
+      if (over === open) return
+      open = over
+      gsap.to(state, {
+        r: over ? radius() : 0,
+        duration: calm ? 0 : over ? 0.55 : 0.35,
+        ease: over ? 'power3.out' : 'power2.in',
+        overwrite: 'auto',
+      })
+    }
+    const isOver = (x: number, y: number) => {
+      const ib = ink.getBoundingClientRect()
+      const cb = clip.getBoundingClientRect()
+      return x > ib.left && x < ib.right && y > ib.top && y < ib.bottom && y > cb.top && y < cb.bottom
+    }
 
     root.addEventListener('pointermove', (e) => {
-      const cb = clip.getBoundingClientRect()
-      const ib = ink.getBoundingClientRect()
-      const over = e.clientX > ib.left && e.clientX < ib.right && e.clientY > ib.top && e.clientY < ib.bottom
-      target = { x: e.clientX - cb.left, y: e.clientY - cb.top }
+      pointer = { x: e.clientX, y: e.clientY }
       if (!open) {
-        state.x = target.x
-        state.y = target.y
+        state.x = pointer.x
+        state.y = pointer.y
       }
-      if (over !== open) {
-        open = over
-        gsap.to(state, {
-          r: over ? radius() : 0,
-          duration: calm ? 0 : over ? 0.55 : 0.35,
-          ease: over ? 'power3.out' : 'power2.in',
-          onUpdate: paint,
-        })
-      }
-      follow()
+      setOpen(isOver(pointer.x, pointer.y))
+      if (calm) {
+        state.x = pointer.x
+        state.y = pointer.y
+      } else gsap.to(state, { x: pointer.x, y: pointer.y, duration: 0.35, ease: 'power3.out', overwrite: 'auto' })
     })
     root.addEventListener('pointerleave', () => {
-      open = false
-      gsap.to(state, { r: 0, duration: calm ? 0 : 0.35, ease: 'power2.in', onUpdate: paint })
+      pointer = null
+      setOpen(false)
     })
+    // redraw each frame while the lens is showing; the lily may have scrolled out from under the cursor
+    let drawnR = -1
+    const tick = () => {
+      if (!open && state.r <= 0 && drawnR === 0) return
+      if (pointer) setOpen(isOver(pointer.x, pointer.y))
+      paint()
+      drawnR = state.r
+    }
+    gsap.ticker.add(tick)
+    document.addEventListener('astro:before-swap', () => gsap.ticker.remove(tick), { once: true })
     paint()
   }
 
@@ -234,6 +287,7 @@ const letters = [
     gsap.set(root.querySelector('.writings__panel'), { '--draw': 0 })
     gsap.set(title, { opacity: 0, y: 40 })
     gsap.set(wm.querySelector('img'), { opacity: 0 })
+    const plan = prepare(wm)
     gsap.set('.garden__meta, .garden__row, .writings__all, .writings__count', { opacity: 0, y: 18 })
 
     ScrollTrigger.create({
@@ -244,7 +298,7 @@ const letters = [
         const tl = gsap.timeline()
         tl.to(root.querySelector('.writings__panel'), { '--draw': 1, duration: 1.4, ease: 'power3.inOut' }, 0)
         tl.to(title, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.05 }, 0.25)
-        tl.call(() => develop(wm), [], 0.5)
+        tl.call(() => develop(wm, plan), [], 0.5)
         tl.to(
           '.garden__meta, .garden__row, .writings__all, .writings__count',
           { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08 },

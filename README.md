@@ -17,7 +17,8 @@ npm run build    # static site in dist/
 | palette, fonts, grid, frame/label/divider pieces | `src/styles/global.css` |
 | long-form typesetting (posts, lecture pages) | `src/styles/prose.css` |
 | home page boards (hero, writings, hello, intro) | `src/components/home/` |
-| footer (jardin de lys) | `src/components/Footer.astro` |
+| footer wording (label, paragraph, links) | `src/data/footer.md` |
+| footer layout (jardin de lys) | `src/components/Footer.astro` |
 | hero wordmark outlines + pen strokes | `scripts/gen-name.py` → `src/components/home/lunalgia.json` |
 | framed title card used on every page | `src/components/PageIntro.astro` |
 | writing (essays, notes, fragments) | `src/content/writing/` (copy `_template.md`) |

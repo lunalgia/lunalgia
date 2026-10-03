@@ -75,7 +75,6 @@ const line = 'Hello, I go by Lilian'
     --img-w: 610;
     --img-h: 912;
     --fs: 104;
-    --line-x: 175;
     --line-y: 560;
     --u: calc(100cqi / var(--bw));
     aspect-ratio: 1000 / 1060;
@@ -88,7 +87,6 @@ const line = 'Hello, I go by Lilian'
       --img-w: 608;
       --img-h: 908;
       --fs: 146.5;
-      --line-x: 509.19;
       --line-y: 581.43;
       aspect-ratio: 16 / 9;
     }
@@ -129,14 +127,18 @@ const line = 'Hello, I go by Lilian'
       'WONK' 1;
     /* place the baseline (≈ 0.98em below the top of the line box) on --line-y */
     top: calc(var(--line-y) * var(--u) - 0.93em);
+    /* each copy spans the whole board and centres the text in it, so the line
+       sits in the middle (as the picture does) whatever its rendered width */
+    width: calc(var(--bw) * var(--u));
+    text-align: center;
     pointer-events: none;
   }
   .hello__line--ink {
-    left: calc(var(--line-x) * var(--u));
+    left: 0;
     color: var(--ultramarine);
   }
   .hello__line--light {
-    left: calc((var(--line-x) - var(--img-x)) * var(--u));
+    left: calc(var(--img-x) * var(--u) * -1);
     top: calc((var(--line-y) - var(--img-y)) * var(--u) - 0.93em);
     color: #fff;
   }
