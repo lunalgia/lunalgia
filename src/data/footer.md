@@ -5,7 +5,7 @@
 # the word on the line across the top
 label: 'lilian'
 # the big italic word above the paragraph
-word: 'lun·algia'
+word: 'lunalgia'
 # the small line under the paragraph; {year} becomes the current year
 credit: '© {year} lilian · set in instrument serif, eb garamond, fraunces & dindong'
 # the large misty word at the very bottom
@@ -19,11 +19,13 @@ headings:
 elsewhere:
   - label: 'github'
     href: 'https://github.com/lunalgia'
+  - label: 'bluseky'
+    href: 'https://bsky.app/profile/lunalgia.bsky.social'
   - label: 'email'
     href: 'mailto:lunalgia@proton.me'
   - label: 'rss'
     href: '/rss.xml'
 ---
 
-*algia* is a suffix for pain; white lilies are funeral flowers. Write to me at
-[lunalgia@proton.me](mailto:lunalgia@proton.me), or find me as *@lunalgia*.
+white lilies are traditionally used as funeral flowers. Write to me at
+[lunalgia@proton.me](mailto:lunalgia@proton.me), or find me as *@lunalgia* on discord.
