@@ -6,7 +6,8 @@
  * one faint copy on top so they stay legible, both fading out downwards.
  */
 import { getImage } from 'astro:assets'
-import { NAV, SITE } from '@/consts'
+import { NAV } from '@/consts'
+import { frontmatter as text, Content as Note } from '@/data/footer.md'
 import monet from '@/assets/home/monet.jpg'
 
 interface Props {
@@ -14,12 +15,9 @@ interface Props {
 }
 const { here = 'home' } = Astro.props
 const water = await getImage({ src: monet, width: 2000, format: 'webp', quality: 82 })
-const year = new Date().getFullYear()
-const elsewhere = [
-  { label: 'github', href: SITE.github },
-  { label: 'email', href: `mailto:${SITE.email}` },
-  { label: 'rss', href: '/rss.xml' },
-]
+// all the wording lives in src/data/footer.md
+const credit = String(text.credit ?? '').replaceAll('{year}', String(new Date().getFullYear()))
+const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
 ---
 
 <footer class="foot board">
@@ -28,34 +26,31 @@ const elsewhere = [
   </div>
   <div class="foot__fog" aria-hidden="true"></div>
 
-  <div class="foot__rule"><span>lilian</span></div>
+  <div class="foot__rule">{text.label && <span>{text.label}</span>}</div>
 
   <div class="foot__note">
-    <p class="foot__word">lun·algia</p>
-    <p>
-      <em>algia</em> is a suffix for pain; white lilies are funeral flowers. Write to me at{' '}
-      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>, or find me as <em>@{SITE.discord}</em>.
-    </p>
+    {text.word && <p class="foot__word">{text.word}</p>}
+    <div class="foot__body"><Note /></div>
     <p class="meta foot__small">
-      © {year} lilian · set in instrument serif, eb garamond, fraunces &amp; dindong · <a href="#top">back to the top ↑</a>
+      {credit && <>{credit} · </>}<a href="#top">back to the top ↑</a>
     </p>
   </div>
 
   <nav class="foot__cols" aria-label="footer">
     <div>
-      <p class="meta">explore</p>
+      <p class="meta">{text.headings?.explore ?? 'explore'}</p>
       <ul role="list">
         {NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
       </ul>
     </div>
     <div>
-      <p class="meta">elsewhere</p>
+      <p class="meta">{text.headings?.elsewhere ?? 'elsewhere'}</p>
       <ul role="list">
         {elsewhere.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
       </ul>
     </div>
     <div>
-      <p class="meta">you are here</p>
+      <p class="meta">{text.headings?.here ?? 'you are here'}</p>
       <ul role="list">
         <li class="foot__here">{here}</li>
       </ul>
@@ -63,8 +58,8 @@ const elsewhere = [
   </nav>
 
   <div class="foot__mark" aria-hidden="true">
-    <span class="foot__mist foot__mist--blend">jardin de lys</span>
-    <span class="foot__mist foot__mist--veil">jardin de lys</span>
+    <span class="foot__mist foot__mist--blend">{text.mark}</span>
+    <span class="foot__mist foot__mist--veil">{text.mark}</span>
   </div>
 </footer>
 
@@ -169,7 +164,12 @@ const elsewhere = [
     line-height: 1.05;
     margin-bottom: 0.4em;
   }
-  .foot__note a {
+  /* the paragraph comes from Markdown, so its elements need :global */
+  .foot__body :global(p + p) {
+    margin-top: 0.6em;
+  }
+  .foot__note a,
+  .foot__body :global(a) {
     font-style: italic;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
