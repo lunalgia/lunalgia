@@ -35,9 +35,9 @@ const { home = false } = Astro.props
     inset: 0 0 auto 0;
     display: flex;
     align-items: flex-start;
-    height: 5.5rem;
-    /* sits just under the frame's top hairline on framed pages */
-    padding: calc(var(--frame-inset) + 0.55rem) calc(var(--frame-inset) + 1.25rem) 0;
+    height: 4rem;
+    /* level with the frame's top hairline and the labels on it */
+    padding: calc(var(--frame-inset) - 0.75rem) calc(var(--frame-inset) + 1.25rem) 0;
     pointer-events: none;
     font-size: 1rem;
   }
@@ -52,8 +52,6 @@ const { home = false } = Astro.props
       color-mix(in oklab, var(--chrome-bg, var(--bg)) 85%, transparent) 40%,
       transparent 100%
     );
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
     -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent);
     mask-image: linear-gradient(to bottom, #000 35%, transparent);
     opacity: 0;
@@ -69,6 +67,14 @@ const { home = false } = Astro.props
   .chrome a {
     color: var(--ink);
     text-decoration: none;
+    padding-inline: 0.625rem;
+    margin-inline: -0.625rem;
+    transition: background-color 0.4s var(--ease);
+  }
+  /* on a framed page, sit on the hairline like its labels do, with the same
+     patch of paper; once the page scrolls the frame is gone and so is the patch */
+  :global(:root:has(.intro.frame)) .chrome:not(.is-scrolled) a {
+    background: var(--bg);
   }
   .chrome__arrow {
     display: inline-block;

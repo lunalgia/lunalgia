@@ -476,10 +476,11 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
 
   /* ---------- inspecting ---------- */
   .cs__panel {
-    position: fixed; z-index: 40; top: 0; right: 0; height: 100vh; height: 100dvh; width: 44vw; box-sizing: border-box;
+    /* above the site's top bar (z-index 50), so the panel owns the whole right side */
+    position: fixed; z-index: 60; top: 0; right: 0; height: 100vh; height: 100dvh; width: 44vw; box-sizing: border-box;
     display: flex; flex-direction: column;
     padding: 6.5rem 4vw 2.6rem 3.5vw;
-    background: rgb(49 55 126 / 0.95); border-left: 1.5px solid var(--ultramarine); color: var(--mist);
+    background: rgb(55 60 130); /* the old 95% panel over lavender, made opaque so nothing shows through */ border-left: 1.5px solid var(--ultramarine); color: var(--mist);
     translate: 100% 0; visibility: hidden;
     transition: translate 0.9s var(--ease-cs), visibility 0s 0.9s;
   }
