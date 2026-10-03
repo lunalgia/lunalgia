@@ -103,28 +103,32 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     inset: 0;
     overflow: hidden;
   }
+  /* exactly the footer's width: any wider only zooms further into the painting */
   .foot__water img {
     position: absolute;
-    left: calc(-80 * var(--u));
+    left: 0;
     bottom: calc(-18 * var(--u));
-    width: calc(2000 * var(--u));
+    width: 100%;
     max-width: none;
     height: auto;
     min-height: 100%;
     object-fit: cover;
   }
-  /* the fog: solid lavender, then thinning out over the water (from board 5) */
+  /* the fog: solid lavender behind the text, then thinning out over the water
+     (from board 5, lifted so more of the painting shows), on an eased curve */
   .foot__fog {
     position: absolute;
     inset: 0 0 auto 0;
-    height: calc(540 * var(--u));
+    height: calc(470 * var(--u));
     min-height: 19rem;
     background: linear-gradient(
       to bottom,
       var(--lavender) 0%,
-      var(--lavender) 56%,
-      rgb(162 151 203 / 0.67) 72%,
-      rgb(162 151 203 / 0.27) 88%,
+      var(--lavender) 54%,
+      rgb(162 151 203 / 0.85) 62%,
+      rgb(162 151 203 / 0.6) 71%,
+      rgb(162 151 203 / 0.33) 81%,
+      rgb(162 151 203 / 0.12) 91%,
       transparent 100%
     );
   }
