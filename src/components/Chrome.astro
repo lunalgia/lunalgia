@@ -5,45 +5,77 @@ interface Props {
 const { home = false } = Astro.props
 ---
 
-<nav class="chrome" aria-label="site">
-  {
-    !home && (
+{
+  !home && (
+    <nav class="chrome" aria-label="site">
       <a class="chrome__home" href="/" transition:name="home-mark">
-        <span aria-hidden="true">←</span> <em>lunalgia</em>
+        <span class="chrome__arrow" aria-hidden="true">←</span> <em>lunalgia</em>
       </a>
-    )
+    </nav>
+  )
+}
+
+<script>
+  const watch = () => {
+    const bar = document.querySelector<HTMLElement>('.chrome')
+    if (!bar) return
+    const update = () => bar.classList.toggle('is-scrolled', scrollY > 8)
+    update()
+    addEventListener('scroll', update, { passive: true })
+    document.addEventListener('astro:before-swap', () => removeEventListener('scroll', update), { once: true })
   }
-
-</nav>
-
-
+  document.addEventListener('astro:page-load', watch)
+</script>
 
 <style>
+  /* a band of the page colour that thins out downwards, so text scrolls away under it */
   .chrome {
     position: fixed;
     z-index: 50;
     inset: 0 0 auto 0;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: calc(var(--frame-inset) - 0.72rem) calc(var(--frame-inset) + 1.25rem);
+    align-items: flex-start;
+    height: 5.5rem;
+    /* sits just under the frame's top hairline on framed pages */
+    padding: calc(var(--frame-inset) + 0.55rem) calc(var(--frame-inset) + 1.25rem) 0;
     pointer-events: none;
     font-size: 1rem;
+  }
+  .chrome::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      var(--chrome-bg, var(--bg)) 0%,
+      color-mix(in oklab, var(--chrome-bg, var(--bg)) 85%, transparent) 40%,
+      transparent 100%
+    );
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent);
+    mask-image: linear-gradient(to bottom, #000 35%, transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+  /* only once something has scrolled under it */
+  .chrome.is-scrolled::before {
+    opacity: 1;
   }
   .chrome > * {
     pointer-events: auto;
   }
-  .chrome a,
-  .chrome button {
+  .chrome a {
     color: var(--ink);
     text-decoration: none;
-    /* a little patch of paper, like the labels on the frame */
-    padding: 0.05rem 0.625rem;
-    background: var(--chrome-bg, var(--bg));
-    transition: background-color 0.4s var(--ease);
   }
-  :global(:root:has(.hero)) .chrome {
-    --chrome-bg: var(--bg-hero);
+  .chrome__arrow {
+    display: inline-block;
+    transition: translate 0.3s var(--ease);
+  }
+  .chrome__home:hover .chrome__arrow {
+    translate: -3px 0;
   }
   .chrome__home:hover em {
     text-decoration: underline;

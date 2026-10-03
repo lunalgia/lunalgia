@@ -4,7 +4,8 @@
  * The page ships ordinary footnotes (they work without JS and in reader mode).
  * On wide screens each note is copied into the margin column beside its
  * reference; notes stack so they never overlap, and long ones start folded.
- * On narrow screens a tapped reference opens its note in a card under the line.
+ * On narrow screens a tapped (or, with a mouse, hovered) reference opens its
+ * note in a card under the line.
  * Clicking a reference never jumps the page.
  */
 const WIDE = '(min-width: 1180px)'
@@ -45,7 +46,8 @@ function setup(article: HTMLElement) {
   for (const note of notes)
     for (const el of [note.ref, note.aside]) {
       el.addEventListener('mouseenter', () => light(note, true))
-      el.addEventListener('mouseleave', () => light(note, false))
+      // keep the reference lit while its hover card is open
+      el.addEventListener('mouseleave', () => pop?.dataset.n !== note.n && light(note, false))
     }
 
   const mq = matchMedia(WIDE)
@@ -80,12 +82,36 @@ function setup(article: HTMLElement) {
     }
   }
 
-  // ---- clicks: never jump; flash the margin note, or open a card on phones ----
+  // ---- clicks: never jump; flash the margin note, or open a card on narrow screens ----
+  // With a mouse, hovering a reference opens the same card; a click pins it open.
   let pop: HTMLElement | null = null
+  let pinned = false
+  let hoverTimer = 0
   const closePop = () => {
+    clearTimeout(hoverTimer)
     pop?.remove()
     pop = null
+    pinned = false
     notes.forEach((n) => light(n, false))
+  }
+  const openPop = (note: Note) => {
+    closePop()
+    pop = document.createElement('div')
+    pop.className = 'fn-pop'
+    pop.dataset.n = note.n
+    pop.setAttribute('role', 'note')
+    pop.innerHTML = `<div class="fn-pop__head"><span class="sidenote__no">${note.n}</span><button type="button" class="sidenote__more">close</button></div><div class="sidenote__body"></div>`
+    pop.querySelector('.sidenote__body')!.append(noteBody(note.li))
+    pop.querySelector('button')!.addEventListener('click', closePop)
+    pop.addEventListener('mouseenter', () => clearTimeout(hoverTimer))
+    pop.addEventListener('mouseleave', () => !pinned && (hoverTimer = window.setTimeout(closePop, 180)))
+    article.append(pop)
+    const box = article.getBoundingClientRect()
+    const rr = note.ref.getBoundingClientRect()
+    const width = pop.offsetWidth
+    pop.style.left = `${Math.min(Math.max(8, rr.left - box.left - width / 2), box.width - width - 8)}px`
+    pop.style.top = `${rr.bottom - box.top + 10}px`
+    light(note, true)
   }
   const onRefClick = (e: MouseEvent) => {
     const note = notes.find((x) => x.ref === e.currentTarget)
@@ -99,23 +125,24 @@ function setup(article: HTMLElement) {
       note.aside.classList.add('is-flash')
       return
     }
-    const wasOpen = pop?.dataset.n === note.n
-    closePop()
-    if (wasOpen) return
-    pop = document.createElement('div')
-    pop.className = 'fn-pop'
-    pop.dataset.n = note.n
-    pop.setAttribute('role', 'note')
-    pop.innerHTML = `<div class="fn-pop__head"><span class="sidenote__no">${note.n}</span><button type="button" class="sidenote__more">close</button></div><div class="sidenote__body"></div>`
-    pop.querySelector('.sidenote__body')!.append(noteBody(note.li))
-    pop.querySelector('button')!.addEventListener('click', closePop)
-    article.append(pop)
-    const box = article.getBoundingClientRect()
-    const rr = note.ref.getBoundingClientRect()
-    const width = pop.offsetWidth
-    pop.style.left = `${Math.min(Math.max(8, rr.left - box.left - width / 2), box.width - width - 8)}px`
-    pop.style.top = `${rr.bottom - box.top + 10}px`
-    light(note, true)
+    const isOpen = pop?.dataset.n === note.n
+    if (isOpen && pinned) return closePop()
+    if (!isOpen) openPop(note)
+    pinned = true
+  }
+  const mouse = matchMedia('(hover: hover) and (pointer: fine)')
+  for (const note of notes) {
+    note.ref.addEventListener('mouseenter', () => {
+      if (mq.matches || !mouse.matches || pinned) return
+      clearTimeout(hoverTimer)
+      if (pop?.dataset.n === note.n) return
+      hoverTimer = window.setTimeout(() => openPop(note), 200)
+    })
+    note.ref.addEventListener('mouseleave', (e) => {
+      if (pinned || (pop && pop.contains(e.relatedTarget as Node))) return
+      clearTimeout(hoverTimer)
+      if (pop) hoverTimer = window.setTimeout(closePop, 180)
+    })
   }
   // capture phase, so this runs before any document-level anchor handler
   notes.forEach(({ ref }) => ref.addEventListener('click', onRefClick, { capture: true }))
