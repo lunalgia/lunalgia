@@ -1,0 +1,537 @@
+---
+/**
+ * A close-up shelf after play.mint.gg/complete-shelf, in plain CSS 3D.
+ * One item faces you; the rest stand spine-out. Arrow keys / buttons / a spine
+ * click move along; clicking the facing item (or "open the review") inspects it
+ * and slides in the review panel.
+ *
+ * kind:  'book'   tall hardcovers
+ *        'record' square sleeves; the vinyl slides out of the facing one
+ *        'film'   DVD-style cases; a ticket stub sticks out of the facing one
+ */
+export interface ShelfItem {
+  title: string
+  /** shorter title for spines and the big label */
+  short?: string
+  by: string
+  year?: number
+  rating?: number
+  favourite?: boolean
+  liked?: boolean
+  /** genres, then your own tags */
+  tags?: string[]
+  /** a few facts for the panel: [label, value] */
+  facts?: [string, string][]
+  /** e.g. "September 2026" */
+  when?: string
+  /** cover image URL; a typeset cover is drawn when missing */
+  img?: string
+  /** spine colour and spine ink */
+  color: string
+  ink: string
+  /** spine thickness in px */
+  depth: number
+  excerpt: string[]
+  href?: string
+  words?: number
+  warning?: string
+}
+interface Props {
+  id: string
+  kind: 'book' | 'record' | 'film'
+  heading: string
+  items: ShelfItem[]
+}
+const { id, kind, heading, items } = Astro.props
+import Score from './Score.astro'
+/** "Phil Lord and Christopher Miller" → "Lord & Miller"; "Lana and Lilly Wachowski" → "Wachowski" */
+const surname = (s: string) =>
+  s
+    .split(/\s+(?:and|&)\s+/)
+    .filter((p) => p.trim().includes(' '))
+    .map((p) => p.trim().split(/\s+/).at(-1))
+    .join(' & ') || s.trim().split(/\s+/).at(-1)
+const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[kind]
+---
+
+<section class={`cs cs--${kind}`} id={id} data-active="0" tabindex="-1" aria-label={heading}>
+  <header class="cs__top">
+    <span>{heading}</span>
+    <span class="cs__nav">
+      <button type="button" data-step="-1" aria-label="previous"><svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M33 7H1M7 1 1 7l6 6" /></svg></button>
+      <span class="cs__count"><b>01</b> / {String(items.length).padStart(2, '0')}</span>
+      <button type="button" data-step="1" aria-label="next"><svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 7h32M27 1l6 6-6 6" /></svg></button>
+    </span>
+  </header>
+
+  <div class="cs__stage">
+    <div class="cs__shelf">
+      {
+        items.map((b, i) => (
+          <button
+            class="bk"
+            style={`--c:${b.color};--f:${b.ink};--d:${b.depth}px`}
+            data-i={i}
+            aria-label={`${b.title}, ${b.by}`}
+          >
+            <span class="bk__box">
+              {kind !== 'book' && (
+                <span class="bk__sleeve" aria-hidden="true">
+                  {kind === 'record' ? (
+                    <span class="bk__disc">
+                      <span style={b.img ? `background-image:url(${b.img})` : `background-color:${b.color}`} />
+                    </span>
+                  ) : (
+                    <span class="bk__ticket">
+                      <span>ADMIT ONE</span>
+                      <b>{String(i + 1).padStart(3, '0')}</b>
+                    </span>
+                  )}
+                </span>
+              )}
+              <span class="bk__spine">
+                {kind === 'film' && <span class="bk__no">{String(i + 1).padStart(3, '0')}</span>}
+                <span class="bk__st">{b.short ?? b.title}</span>
+                <span class="bk__sa">{kind === 'record' ? b.by : surname(b.by)}</span>
+              </span>
+              {b.img ? (
+                <span class="bk__cover" style={`background-image:url(${b.img})`} />
+              ) : (
+                <span class="bk__cover bk__cover--type">
+                  <span class="bk__ca">{b.by}</span>
+                  <span class="bk__ct">{b.title}</span>
+                  <span class="bk__ca">{b.year}</span>
+                </span>
+              )}
+              <span class="bk__back" />
+              <span class="bk__pages" />
+            </span>
+          </button>
+        ))
+      }
+    </div>
+    <div class="cs__plank"></div>
+  </div>
+
+  <div class="cs__label">
+    {
+      items.map((b, i) => (
+        <div class="lab" data-i={i}>
+          <p class="lab__n">{String(i + 1).padStart(2, '0')}</p>
+          <h2 class="lab__t">{b.short ?? b.title}</h2>
+          <p class="lab__a">
+            {b.by}
+            {b.year && `, ${b.year}`}
+          </p>
+          {b.rating != null && <p class="lab__s">{b.rating}<small>/100</small></p>}
+          <button class="lab__go" type="button">
+            {b.excerpt.length ? 'open the review ↗' : 'details ↗'}
+          </button>
+        </div>
+      ))
+    }
+  </div>
+
+  <aside class="cs__panel" aria-live="polite">
+    <button class="cs__back" type="button">← back to the shelf</button>
+    {
+      items.map((b, i) => (
+        <article class="pn" data-i={i}>
+          <p class="pn__k">
+            {kind.toUpperCase()}
+            {b.when && ` · ${verb} ${b.when.toUpperCase()}`}
+          </p>
+          <h3 class="pn__t">{b.title}</h3>
+          <p class="pn__a">
+            {b.by}
+            {b.year && `, ${b.year}`}
+          </p>
+          <Score class="pn__score" rating={b.rating} favourite={b.favourite} liked={b.liked} />
+          {b.facts && b.facts.length > 0 && (
+            <dl class="pn__facts">
+              {b.facts.map(([k, v]) => (
+                <div>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {b.tags && b.tags.length > 0 && (
+            <p class="pn__tags">
+              {b.tags.map((t) => (
+                <span>{t}</span>
+              ))}
+            </p>
+          )}
+          {b.warning && <p class="pn__warn">content note: {b.warning}</p>}
+          {b.excerpt.length ? (
+            <>
+              <div class="pn__body">
+                {b.excerpt.map((p) => (
+                  <p class="pn__p">{p}</p>
+                ))}
+              </div>
+              <a class="pn__more" href={b.href ?? '#'}>
+                continue reading{b.words ? `, ${b.words.toLocaleString('en-GB')} words` : ''} →
+              </a>
+            </>
+          ) : (
+            <p class="pn__none">No review yet.</p>
+          )}
+        </article>
+      ))
+    }
+  </aside>
+</section>
+
+<script>
+  const setup = (root: HTMLElement) => {
+    if (root.dataset.ready) return
+    root.dataset.ready = '1'
+    const all = [...root.querySelectorAll<HTMLElement>('.bk')]
+    let switching: ReturnType<typeof setTimeout> | undefined
+    const set = (i: number) => {
+      i = Math.max(0, Math.min(all.length - 1, i))
+      // moving along with the review open: let the shelf slide with the item
+      // at rest first, then pull the new one out once things have settled
+      if (root.classList.contains('is-inspecting') && String(i) !== root.dataset.active) {
+        root.classList.add('is-switching')
+        clearTimeout(switching)
+        switching = setTimeout(() => root.classList.remove('is-switching'), 700)
+        requestAnimationFrame(() => clip())
+      }
+      root.dataset.active = String(i)
+      all.forEach((b, j) => b.classList.toggle('is-active', j === i))
+      root.querySelectorAll<HTMLElement>('.lab, .pn').forEach((l) => l.classList.toggle('is-on', +l.dataset.i! === i))
+      root.querySelector('.cs__count b')!.textContent = String(i + 1).padStart(2, '0')
+      // spine widths only: the facing item's own width is still animating
+      const x = all.slice(0, i).reduce((s, b) => s + parseFloat(b.style.getPropertyValue('--d')) + 2, 0)
+      root.querySelector<HTMLElement>('.cs__shelf')!.style.transform = `translateX(${-x}px)`
+    }
+    let settling = 0
+    const inspect = (on: boolean) => {
+      root.classList.toggle('is-inspecting', on)
+      if (!on) return
+      // bring the whole shelf on screen; the panel is fixed to the viewport
+      settling = performance.now() + 1200
+      const lenis = (window as any).__lenis
+      lenis ? lenis.scrollTo(root, { duration: 0.9 }) : root.scrollIntoView({ behavior: 'smooth' })
+      requestAnimationFrame(clip)
+    }
+    /** fade the excerpt only when it is cut short */
+    const clip = () =>
+      root.querySelectorAll<HTMLElement>('.pn.is-on .pn__body').forEach((b) => b.classList.toggle('is-clipped', b.scrollHeight > b.clientHeight + 2))
+    addEventListener('resize', clip)
+    // scrolling away from an open shelf closes it
+    addEventListener(
+      'scroll',
+      () => {
+        if (!root.classList.contains('is-inspecting') || performance.now() < settling) return
+        if (Math.abs(root.getBoundingClientRect().top) > innerHeight * 0.3) root.classList.remove('is-inspecting')
+      },
+      { passive: true },
+    )
+    root.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement
+      const bk = t.closest<HTMLElement>('.bk')
+      if (bk) bk.classList.contains('is-active') ? inspect(true) : set(+bk.dataset.i!)
+      const step = t.closest<HTMLElement>('[data-step]')
+      if (step) set(+root.dataset.active! + +step.dataset.step!)
+      if (t.closest('.lab__go')) inspect(true)
+      if (t.closest('.cs__back')) inspect(false)
+    })
+    root.addEventListener('pointermove', (e) => {
+      if (!root.classList.contains('is-inspecting')) return
+      const r = root.getBoundingClientRect()
+      root.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 36}deg`)
+      root.style.setProperty('--rx', `${-((e.clientY - r.top) / r.height - 0.5) * 14}deg`)
+    })
+    // swipe on touch screens
+    let sx = 0
+    root.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true })
+    root.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - sx
+      if (Math.abs(dx) > 40 && !root.classList.contains('is-inspecting')) set(+root.dataset.active! + (dx < 0 ? 1 : -1))
+    })
+    ;(root as any).__set = set
+    ;(root as any).__inspect = inspect
+    set(0)
+  }
+
+  // the arrow keys drive whichever shelf is most on screen
+  const current = () =>
+    [...document.querySelectorAll<HTMLElement>('.cs')]
+      .map((el) => {
+        const r = el.getBoundingClientRect()
+        return [el, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)] as const
+      })
+      .sort((a, b) => b[1] - a[1])[0]?.[0]
+  addEventListener('keydown', (e) => {
+    const root = current() as any
+    if (!root) return
+    if (e.key === 'ArrowRight') root.__set(+root.dataset.active + 1)
+    else if (e.key === 'ArrowLeft') root.__set(+root.dataset.active - 1)
+    else if (e.key === 'Escape') root.__inspect(false)
+  })
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('.cs').forEach(setup))
+</script>
+
+<style is:global>
+  .cs {
+    --H: min(66vh, 660px);
+    --W: calc(var(--H) * 0.66);
+    --gap: 40px;
+    --extra: 0px;
+    --ease-cs: cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+    color: var(--ultramarine);
+    outline: none;
+  }
+  .cs--record {
+    --H: min(54vh, 540px);
+    --W: var(--H);
+    --extra: calc(var(--H) * 0.22);
+  }
+  .cs--book {
+    --H: min(60vh, 600px);
+  }
+  .cs--film {
+    --H: min(60vh, 600px);
+    --W: calc(var(--H) * 0.71);
+  }
+
+  .cs__top {
+    position: absolute; z-index: 5; left: 4vw; right: 4vw; top: 4.2rem;
+    display: flex; justify-content: space-between;
+    font: 0.75rem var(--font-din); letter-spacing: 0.18em;
+  }
+  .cs__count b { font-weight: 400; }
+  .cs__top { align-items: center; }
+  /* previous · count · next, as one object */
+  .cs__nav { display: inline-flex; align-items: center; gap: 1.3rem; }
+  .cs__nav button { all: unset; cursor: pointer; display: inline-flex; padding: 0.4rem 0; transition: translate 0.3s var(--ease-out), opacity 0.3s; }
+  .cs__nav button:first-child:hover { translate: -4px 0; }
+  .cs__nav button:last-child:hover { translate: 4px 0; }
+  .cs__nav button:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+
+
+  .cs__stage {
+    position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--H) + 200px);
+    /* a level, straight-on eye at the facing item (as on mint's shelf): the
+       packed spines hide each other's sides, and the tops stay out of view */
+    --sx: 30vw;
+    perspective: 2600px; perspective-origin: calc(var(--sx) + var(--W) / 2 + 20px) 42%;
+    transition: perspective-origin 1s var(--ease-cs);
+  }
+  .cs__stage::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 104px; height: 40px;
+    background: linear-gradient(rgb(17 19 90 / 0.28), transparent); filter: blur(6px); pointer-events: none;
+  }
+  .cs__plank {
+    position: absolute; left: -5vw; right: -5vw; bottom: 46px; height: 64px;
+    background: linear-gradient(#5a5a9a, #4a4a8c 30%, #3d3d7e);
+    border-top: 1.5px solid var(--ultramarine);
+    box-shadow: 0 -2px 0 rgb(255 255 255 / 0.12) inset, 0 30px 40px -20px rgb(17 19 90 / 0.5);
+  }
+  .cs__shelf {
+    position: absolute; left: var(--sx); bottom: 104px;
+    display: flex; align-items: flex-end; gap: 2px;
+    transform-style: preserve-3d;
+    transition: transform 1s var(--ease-cs), left 1s var(--ease-cs);
+  }
+
+  /* ---------- an item: a box, spine d wide, H tall, W deep ---------- */
+  .bk {
+    all: unset; cursor: pointer; position: relative; flex: none;
+    width: var(--d); height: var(--H);
+    transform-style: preserve-3d;
+    transition: width 1s var(--ease-cs), transform 0.5s var(--ease-cs), opacity 0.6s;
+  }
+  .bk.is-active { width: calc(var(--W) + var(--gap) + var(--extra)); }
+  .bk:not(.is-active):hover { transform: translateY(-16px); }
+  .bk__box {
+    position: absolute; left: 0; bottom: 0; width: var(--d); height: 100%;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--W) / -2));
+    transition: transform 1s var(--ease-cs), left 1s var(--ease-cs);
+  }
+  .bk__box > span { position: absolute; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+  .bk__spine {
+    left: 0; top: 0; width: var(--d); height: 100%; box-sizing: border-box;
+    background: var(--c); color: var(--f);
+    transform: translateZ(calc(var(--W) / 2));
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 24px 0 20px;
+    box-shadow: inset 4px 0 0 rgb(255 255 255 / 0.1), inset -5px 0 0 rgb(0 0 0 / 0.18);
+  }
+  .bk__st { writing-mode: vertical-rl; rotate: 180deg; font: italic 1.35rem/1 var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 76%; }
+  .bk__sa { writing-mode: vertical-rl; rotate: 180deg; font: 0.62rem var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; }
+  .bk__cover {
+    top: 0; height: 100%; width: var(--W); left: calc((var(--d) - var(--W)) / 2);
+    background: var(--c) center / cover no-repeat;
+    transform: rotateY(-90deg) translateZ(calc(var(--d) / 2));
+    box-shadow: inset 8px 0 12px -4px rgb(0 0 0 / 0.35);
+  }
+  /* the back cover: without it you see the inside of the front cover between spines */
+  .bk__back {
+    top: 0; height: 100%; width: var(--W); left: calc((var(--d) - var(--W)) / 2);
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.32)), var(--c);
+    transform: rotateY(90deg) translateZ(calc(var(--d) / 2));
+  }
+  .cs--film .bk__back { background: #1a1a1f; }
+  .bk__cover::after {
+    content: ''; position: absolute; inset: 0; background: rgb(12 12 40 / 0.7);
+    transition: opacity 0.6s;
+  }
+  .bk.is-active .bk__cover::after { opacity: 0; }
+  .bk__pages {
+    left: 0; width: var(--d); height: var(--W); top: calc((var(--H) - var(--W)) / 2);
+    background: repeating-linear-gradient(90deg, #f3efe2 0 2px, #e1dac8 2px 3px);
+    transform: rotateX(90deg) translateZ(calc(var(--H) / 2));
+  }
+  .bk.is-active .bk__box {
+    left: calc((var(--W) - var(--d)) / 2 + 20px);
+    /* pulled forward, cover just in front of the spines */
+    transform: translateZ(calc(24px - var(--d) / 2)) rotateY(90deg);
+  }
+
+  /* records: thin sleeves, plain card top, and the vinyl */
+  .cs--record .bk__st { font-size: 0.95rem; }
+  .cs--record .bk__sa { font-size: 0.5rem; }
+  .cs--record .bk__spine { padding: 14px 0 12px; }
+  .cs--record .bk__pages { background: var(--c); filter: brightness(0.8); }
+  /* the disc and the ticket sit in the sleeve: a plane just behind the cover,
+     so they turn and tilt with it instead of floating free */
+  .bk__sleeve {
+    top: 0; height: 100%; width: var(--W); left: calc((var(--d) - var(--W)) / 2);
+    transform: rotateY(-90deg) translateZ(calc(var(--d) / 2 - 3px));
+    pointer-events: none;
+  }
+  .bk__disc {
+    position: absolute; left: 2%; bottom: 2%; width: 96%; aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 0 33%, rgb(255 255 255 / 0.05) 33.5% 34%, transparent 34.5%),
+      repeating-radial-gradient(circle, #15152c 0 1.5px, #1d1d3a 1.5px 3px);
+    box-shadow: 0 10px 30px -10px rgb(17 19 90 / 0.6);
+    translate: 0 0; opacity: 0;
+    transition: translate 0.9s var(--ease-cs), opacity 0.2s;
+  }
+  .bk__disc::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 30deg, transparent 0 10%, rgb(255 255 255 / 0.1) 14%, transparent 20% 60%, rgb(255 255 255 / 0.08) 64%, transparent 70%);
+  }
+  .bk__disc > span {
+    position: absolute; inset: 33.5%; border-radius: 50%;
+    background: center / cover no-repeat; box-shadow: 0 0 0 2px #0d0d1c;
+  }
+  .bk__disc > span::after { content: ''; position: absolute; left: 50%; top: 50%; width: 7%; height: 7%; translate: -50% -50%; border-radius: 50%; background: var(--lavender); }
+  .cs--record .bk.is-active .bk__disc { opacity: 1; translate: calc(var(--H) * 0.4) 0; transition-delay: 0.7s, 0.6s; }
+  .cs--record.is-inspecting .bk.is-active .bk__disc { translate: calc(var(--H) * 0.5) 0; transition-delay: 0s; }
+  .cs--record.is-inspecting .cs__stage { --sx: 5vw; }
+  .cs--record.is-inspecting .bk.is-active .bk__disc > span { animation: cs-spin 3.4s linear infinite; }
+  .cs--record.is-inspecting .bk.is-active .bk__disc::after { opacity: 1; }
+  @keyframes cs-spin { to { rotate: 360deg; } }
+
+  /* films: DVD-style cases with a numbered spine, and a ticket stub */
+  .cs--film .bk__spine { padding-top: 14px; }
+  .bk__no { font: 0.6rem var(--font-din); letter-spacing: 0.1em; padding-bottom: 8px; border-bottom: 1px solid currentColor; margin-bottom: 4px; }
+  .cs--film .bk__st { font-size: 1.15rem; max-height: 68%; }
+  .cs--film .bk__pages { background: #1a1a1f; }
+  .cs--film .bk__cover { box-shadow: inset 10px 0 0 rgb(0 0 0 / 0.35), inset 11px 0 0 rgb(255 255 255 / 0.15); }
+  .bk__ticket {
+    position: absolute; left: 58%; top: 0; width: 86px; height: 150px; box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 12px 0;
+    background: var(--mist); color: var(--ultramarine);
+    border-top: 2px dashed var(--lavender);
+    font: 0.55rem var(--font-din); letter-spacing: 0.16em; writing-mode: vertical-rl;
+    translate: 0 10px; rotate: 4deg; opacity: 0;
+    transition: translate 0.8s var(--ease-cs), rotate 0.8s var(--ease-cs), opacity 0.2s;
+  }
+  .bk__ticket > * { rotate: 180deg; }
+  .bk__ticket b { font: italic 1.4rem var(--font-display); letter-spacing: 0; }
+  .cs--film .bk.is-active .bk__ticket { opacity: 1; translate: 0 -112px; rotate: 5deg; transition-delay: 0.7s, 0.7s, 0.6s; }
+  .cs--film.is-inspecting .bk.is-active .bk__ticket { translate: 0 -132px; rotate: 8deg; transition-delay: 0s; }
+
+  /* ---------- the big label (left) ---------- */
+  /* one line under the shelf heading, clear of the spines */
+  .cs__label { position: absolute; z-index: 4; left: 0; right: 12vw; top: 7.4rem; }
+  .lab {
+    position: absolute; left: 0; top: 0; padding: 0 0 0 4vw;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 1.6rem;
+    opacity: 0; translate: 0 10px; transition: opacity 0.6s, translate 0.6s var(--ease-cs); pointer-events: none;
+  }
+  .lab.is-on { opacity: 1; translate: 0 0; pointer-events: auto; }
+  .lab__n { font: 0.75rem var(--font-din); letter-spacing: 0.18em; }
+  .lab__t { font: 400 clamp(2.2rem, 3.4vw, 3.4rem)/1 var(--font-display); margin: 0; }
+  .lab__a { font: italic 1.3rem var(--font-display); }
+  .lab__s { font: italic 1.3rem var(--font-display); }
+  .lab__s small { font: 0.62rem var(--font-din); letter-spacing: 0.14em; margin-left: 0.15em; }
+  .lab__go { all: unset; cursor: pointer; display: inline-block; font: 0.72rem var(--font-din); letter-spacing: 0.18em; text-transform: uppercase; border-bottom: 1px solid currentColor; padding-bottom: 0.3rem; }
+
+  /* ---------- inspecting ---------- */
+  .cs__panel {
+    position: fixed; z-index: 40; top: 0; right: 0; height: 100vh; height: 100dvh; width: 44vw; box-sizing: border-box;
+    display: flex; flex-direction: column;
+    padding: 6.5rem 4vw 2.6rem 3.5vw;
+    background: rgb(49 55 126 / 0.95); border-left: 1.5px solid var(--ultramarine); color: var(--mist);
+    translate: 100% 0; visibility: hidden;
+    transition: translate 0.9s var(--ease-cs), visibility 0s 0.9s;
+  }
+  .cs.is-inspecting .cs__panel { translate: 0 0; visibility: visible; transition-delay: 0s; }
+  .cs__back { all: unset; cursor: pointer; font: 0.72rem var(--font-din); letter-spacing: 0.18em; text-transform: uppercase; color: var(--lavender); }
+  .pn { display: none; margin-top: 2.6rem; flex: 1; min-height: 0; flex-direction: column; }
+  .pn.is-on { display: flex; animation: pn-in 0.5s var(--ease-cs); }
+  @keyframes pn-in { from { opacity: 0; translate: 0 10px; } }
+  .pn > * { flex: none; }
+  .pn .pn__body { flex: 0 1 auto; min-height: 0; overflow: hidden; }
+  .pn__body.is-clipped { -webkit-mask-image: linear-gradient(#000 calc(100% - 7rem), transparent); mask-image: linear-gradient(#000 calc(100% - 7rem), transparent); }
+  .pn__k { font: 0.72rem var(--font-din); letter-spacing: 0.18em; color: var(--lavender); }
+  .pn__t { font: italic 400 3.4rem/1 var(--font-display); color: #fff; margin: 0.8rem 0 0.6rem; }
+  .pn__a { font: 1.25rem var(--font-display); margin-bottom: 0.9rem; }
+  .pn__score { font-size: 1.15rem; color: #fff; margin-bottom: 1.4rem; }
+  .pn__facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 0.8rem 1.4rem; margin: 0 0 1.4rem; }
+  .pn__facts dt { font: 0.6rem var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; color: var(--lavender); }
+  .pn__facts dd { margin: 0.2rem 0 0; font: 1.05rem/1.3 var(--font-display); }
+  .pn__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.6rem; }
+  .pn__tags span { font: 0.65rem var(--font-din); letter-spacing: 0.14em; text-transform: uppercase; padding: 0.3rem 0.6rem; border: 1px solid rgb(210 211 221 / 0.4); }
+  .pn__warn { font: italic 1rem var(--font-body); color: var(--lavender); margin-bottom: 1rem; }
+  .pn__none { font: italic 1.2rem var(--font-display); color: var(--lavender); }
+  .bk__cover--type { display: flex; flex-direction: column; justify-content: space-between; padding: 8% 7%; box-sizing: border-box; color: var(--f); }
+  .bk__ct { font: italic calc(var(--W) * 0.12)/1 var(--font-display); }
+  .bk__ca { font: calc(var(--W) * 0.032) var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; }
+  .pn__p { font: 1.2rem/1.6 var(--font-body); margin-bottom: 0.8em; max-width: 34rem; }
+  .pn__more { align-self: flex-start; margin-top: 1.2rem; font: italic 1.3rem var(--font-display); color: #fff; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+
+  .cs.is-inspecting .cs__label { opacity: 0; pointer-events: none; }
+  .cs.is-inspecting .bk:not(.is-active) { opacity: 0.25; }
+  .cs.is-inspecting .cs__stage { --sx: 14vw; }
+  .cs.is-inspecting .bk.is-active .bk__box {
+    transform: translateZ(calc(150px - var(--d) / 2)) translateY(-30px) rotateX(var(--rx, 0deg)) rotateY(calc(90deg + var(--ry, -14deg)));
+  }
+  .cs--record.is-inspecting .bk.is-active .bk__box { transform: translateZ(calc(120px - var(--d) / 2)) translateY(-24px) rotateX(var(--rx, 0deg)) rotateY(calc(90deg + var(--ry, -10deg))); }
+  /* while switching items with the review open, the new item waits at rest */
+  .cs.is-inspecting.is-switching .bk.is-active .bk__box { transform: translateZ(calc(24px - var(--d) / 2)) rotateY(90deg); }
+  .cs--record.is-inspecting.is-switching .bk.is-active .bk__disc { translate: calc(var(--H) * 0.4) 0; }
+  .cs--film.is-inspecting.is-switching .bk.is-active .bk__ticket { translate: 0 -112px; rotate: 5deg; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cs *, .cs { transition-duration: 0.01ms !important; animation: none !important; }
+  }
+
+  /* phones: the facing item fills the width, swipe to move along */
+  @media (max-width: 760px) {
+    .cs { --H: min(52vh, 440px); }
+    .cs--record { --H: min(36vh, 300px); }
+    .cs__stage { --sx: 6vw; }
+    .cs__label { right: 0; top: 6.5rem; }
+    .lab { padding: 0 1.25rem; gap: 0.2rem 1rem; }
+    .lab__t { font-size: 2.4rem; flex-basis: 100%; }
+      .cs__panel { width: 100%; padding: 5rem 1.25rem 2rem; }
+  }
+</style>

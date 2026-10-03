@@ -1,0 +1,49 @@
+---
+/** A score out of 100, with the all-time-favourite mark and the heart. */
+interface Props { rating?: number; favourite?: boolean; liked?: boolean; class?: string }
+const { rating, favourite, liked, class: cls } = Astro.props
+---
+
+{
+  (rating != null || favourite || liked) && (
+    <span class:list={['sc', cls]}>
+      {rating != null && (
+        <span class="sc__n" aria-label={`${rating} out of 100`}>
+          <b>{rating}</b>
+          <small>/100</small>
+        </span>
+      )}
+      {favourite && <span class="sc__fav">all-time favourite</span>}
+      {liked && <span class="sc__heart" title="liked">♥</span>}
+    </span>
+  )
+}
+
+<style>
+  .sc {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.9rem;
+  }
+  .sc__n b {
+    font: italic 400 2.6em/1 var(--font-display);
+  }
+  .sc__n small {
+    font: 0.6em var(--font-din);
+    letter-spacing: 0.14em;
+    margin-left: 0.25em;
+    opacity: 0.8;
+  }
+  .sc__fav {
+    font: 0.58em var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.35em 0.7em;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+  }
+  .sc__heart {
+    color: #e46c9b;
+  }
+</style>

@@ -1,0 +1,692 @@
+/*
+ * Writing pages: contents | text | notes, centred. Content boxes, quotes and
+ * code come from Markdown (see src/lib/remark-boxes.mjs and the shiki config).
+ */
+@layer theme, base, components, utilities;
+@import 'katex/dist/katex.min.css';
+
+@layer components {
+  /* ---------- header ---------- */
+  .ah {
+    max-width: 66rem;
+    margin: 0 auto;
+    padding: 9rem 4vw 0;
+    text-align: center;
+    color: var(--ultramarine);
+  }
+  .ah__k {
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .ah__t {
+    margin: 1.4rem 0 1rem;
+    font: 400 clamp(3.2rem, 8vw, 7.5rem) / 0.92 var(--font-display);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .ah__t em {
+    font-style: italic;
+  }
+  .ah__d {
+    margin: 0 auto 1.6rem;
+    max-width: 40rem;
+    font: italic 1.5rem/1.3 var(--font-display);
+    color: #11135a;
+  }
+  .ah__fig {
+    max-width: 52rem;
+    margin: 3.5rem auto 0;
+  }
+  .ah__fig img {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 40px 70px -44px rgb(17 19 90 / 0.8);
+  }
+  .ah__fig figcaption {
+    margin-top: 0.7rem;
+    font: italic 0.95rem var(--font-body);
+    color: #11135a;
+  }
+
+  /* ---------- three columns ---------- */
+  .ax {
+    --text: 37rem;
+    --side: 16.5rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--side) minmax(0, var(--text)) var(--side);
+    justify-content: center;
+    column-gap: 3.5rem;
+    padding: 5rem 2vw 4rem;
+    color: #11135a;
+  }
+  .ax__text {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    counter-reset: env part;
+    font: 1.2rem/1.62 var(--font-body);
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+  .ax__text > * {
+    margin-block: 0 1em;
+  }
+  .ax__text > p {
+    text-align: justify;
+  }
+  .ax__text > p:first-of-type::first-letter {
+    float: left;
+    margin: 0.06em 0.08em 0 0;
+    font: 400 4.6em/0.78 var(--font-display);
+    color: var(--ultramarine);
+  }
+  .ax__text a {
+    color: var(--ultramarine);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+  }
+  .ax__text strong {
+    font-weight: 600;
+  }
+
+  /* parts: "PART II" over a large heading, on a hairline */
+  .ax__text > h2:not(#footnote-label) {
+    counter-increment: part;
+    margin: 5rem 0 2.2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgb(2 8 135 / 0.35);
+    font: italic 400 clamp(2.2rem, 3.4vw, 3rem) / 1.04 var(--font-display);
+    letter-spacing: -0.01em;
+    color: var(--ultramarine);
+    hyphens: manual;
+    scroll-margin-top: 2.5rem;
+  }
+  .ax__text > h2:not(#footnote-label)::before {
+    content: 'PART ' counter(part, upper-roman);
+    display: block;
+    margin-bottom: 0.9rem;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .ax__text > h3 {
+    margin: 2.6rem 0 0.9rem;
+    font: italic 400 1.75rem/1.15 var(--font-display);
+    color: var(--ultramarine);
+    scroll-margin-top: 2.5rem;
+  }
+  .ax__text > h4 {
+    margin: 2rem 0 0.6rem;
+    font: 0.78rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ultramarine);
+  }
+  .ax__text > hr {
+    margin: 3.5rem auto;
+    border: 0;
+    text-align: center;
+  }
+  .ax__text > hr::before {
+    content: '§';
+    font: 1.3rem var(--font-display);
+    color: var(--ultramarine);
+  }
+  .ax__text ul,
+  .ax__text ol {
+    padding-left: 1.4rem;
+  }
+  .ax__text li + li {
+    margin-top: 0.35em;
+  }
+  .ax__text li::marker {
+    color: var(--ultramarine);
+  }
+  .ax__text img {
+    max-width: 100%;
+    height: auto;
+  }
+  .ax__text figure {
+    margin: 2.4rem 0;
+  }
+  .ax__text figcaption {
+    margin-top: 0.6rem;
+    font: italic 0.95rem var(--font-body);
+  }
+  .ax__text .katex {
+    font-size: 1.04em;
+  }
+  .ax__text .katex-display {
+    margin: 1.2rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* ---------- quotes ---------- */
+  /* long excerpts: small, behind a hairline */
+  .ax__text > blockquote:not(.quote) {
+    margin: 2rem 0 2.2rem;
+    padding-left: 1.6rem;
+    border-left: 1px solid var(--ultramarine);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #2a2c6e;
+  }
+  .ax__text blockquote p {
+    margin: 0 0 0.8em;
+  }
+  .ax__text blockquote p:last-child {
+    margin-bottom: 0;
+  }
+  /* a quote with an attribution ("— Name" as its last line) */
+  .ax__text .quote {
+    position: relative;
+    margin: 2.6rem 0;
+    padding-left: 1.6rem;
+    font: italic 400 1.32rem/1.35 var(--font-display);
+    color: var(--ultramarine);
+  }
+  .ax__text .quote::before {
+    content: '“';
+    position: absolute;
+    left: 0;
+    top: -0.05em;
+    font-size: 2.2rem;
+    line-height: 1;
+  }
+  .ax__text .quote__by {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.7rem !important;
+    font: 0.72rem var(--font-din);
+    font-style: normal;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .ax__text .quote__by::before {
+    content: '';
+    width: 1.6rem;
+    height: 1px;
+    background: currentColor;
+  }
+  .ax__text .env--pull {
+    margin: 3rem -4rem;
+    padding: 1.4rem 0;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1.5px solid var(--ultramarine);
+    text-align: center;
+    font: 400 1.9rem/1.18 var(--font-display);
+    color: var(--ultramarine);
+    text-wrap: balance;
+  }
+  .ax__text .env--pull p {
+    margin: 0;
+  }
+
+  /* ---------- content boxes ---------- */
+  .ax__text .env {
+    margin: 2rem 0;
+    padding: 1.1rem 1.3rem 1rem;
+    text-align: left;
+  }
+  .ax__text .env > p:last-child,
+  .ax__text .env > :last-child {
+    margin-bottom: 0;
+  }
+  .ax__text .env p {
+    margin: 0 0 0.7em;
+  }
+  .env__h {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.7rem;
+    color: var(--ultramarine);
+  }
+  .env__k {
+    font: 400 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .env__name {
+    font: italic 1.15rem var(--font-display);
+  }
+  /* theorem-like boxes and definitions/examples/questions share one count */
+  .env--theorem,
+  .env--lemma,
+  .env--proposition,
+  .env--corollary,
+  .env--definition,
+  .env--example,
+  .env--question,
+  .env--remark {
+    counter-increment: env;
+  }
+  .env--theorem .env__k::after,
+  .env--lemma .env__k::after,
+  .env--proposition .env__k::after,
+  .env--corollary .env__k::after,
+  .env--definition .env__k::after,
+  .env--example .env__k::after,
+  .env--question .env__k::after,
+  .env--remark .env__k::after {
+    content: ' ' counter(env);
+  }
+  .ax__text .env--theorem,
+  .ax__text .env--lemma,
+  .ax__text .env--proposition,
+  .ax__text .env--corollary {
+    background: rgb(210 211 221 / 0.42);
+    border-left: 2px solid var(--ultramarine);
+  }
+  .env--theorem > p:not(.env__h),
+  .env--lemma > p:not(.env__h),
+  .env--proposition > p:not(.env__h),
+  .env--corollary > p:not(.env__h) {
+    font-style: italic;
+  }
+  .ax__text .env--definition {
+    border: 1px solid rgb(2 8 135 / 0.45);
+  }
+  .ax__text .env--example,
+  .ax__text .env--remark {
+    border-left: 1px dashed var(--ultramarine);
+  }
+  .ax__text .env--question {
+    padding-inline: 0;
+    border-top: 1px solid var(--ultramarine);
+    border-bottom: 1px solid var(--ultramarine);
+  }
+  .env__ans {
+    margin-top: 0.4rem;
+  }
+  .env__ans summary {
+    cursor: pointer;
+    list-style: none;
+    width: fit-content;
+    font: italic 1.05rem var(--font-display);
+    color: var(--ultramarine);
+    border-bottom: 1px solid currentColor;
+  }
+  .env__ans summary::-webkit-details-marker {
+    display: none;
+  }
+  .env__ans[open] summary {
+    opacity: 0.5;
+    margin-bottom: 0.8rem;
+  }
+  .env__ans[open] {
+    padding-bottom: 0.2rem;
+  }
+  .ax__text .env--proof {
+    margin-top: -1rem;
+    padding-block: 0.4rem 0;
+  }
+  .env__proof {
+    font-style: italic;
+  }
+  .ax__text .env--proof > :last-child::after {
+    content: '∎';
+    margin-left: 0.4rem;
+    color: var(--ultramarine);
+  }
+
+  /* ---------- code: paper ---------- */
+  .ax__text code {
+    font: 0.84em var(--font-mono);
+    font-variant-ligatures: none;
+    padding: 0.08em 0.3em;
+    background: rgb(210 211 221 / 0.45);
+  }
+  /* a block is wrapped by the script in .codebox with a header; without JS it still reads */
+  .ax__text pre,
+  .codebox {
+    margin: 1.4rem 0 2rem;
+    background: rgb(210 211 221 / 0.45) !important;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+  }
+  .ax__text pre {
+    padding: 1rem 1.1rem 1.1rem;
+    overflow-x: auto;
+    font: 0.86rem/1.65 var(--font-mono);
+    font-variant-ligatures: none;
+    hyphens: none;
+    text-align: left;
+    --astro-code-foreground: #11135a;
+    --astro-code-background: transparent;
+    --astro-code-token-keyword: #020887;
+    --astro-code-token-string: #795663;
+    --astro-code-token-comment: #5a5a9a;
+    --astro-code-token-function: #2233b8;
+    --astro-code-token-constant: #795663;
+    --astro-code-token-parameter: #11135a;
+    --astro-code-token-punctuation: #5a5a9a;
+    --astro-code-token-string-expression: #795663;
+    --astro-code-token-link: #020887;
+  }
+  .codebox pre {
+    margin: 0;
+    border: 0;
+    background: none !important;
+  }
+  .ax__text pre code {
+    padding: 0;
+    background: none;
+    font: inherit;
+  }
+  .codebox__bar {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid rgb(2 8 135 / 0.2);
+    color: var(--ultramarine);
+  }
+  .codebox__lang {
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .codebox__file {
+    font: 0.78rem var(--font-mono);
+  }
+  .code-copy {
+    all: unset;
+    cursor: pointer;
+    margin-left: auto;
+    font: italic 1rem var(--font-display);
+    color: var(--ultramarine);
+    border-bottom: 1px solid transparent;
+  }
+  .code-copy:hover {
+    border-bottom-color: currentColor;
+  }
+
+  /* ---------- footnote references ---------- */
+  .ax__text a[data-footnote-ref] {
+    font: 0.66rem var(--font-din);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    padding: 0.1em 0.25em;
+    margin-left: 0.05em;
+    border-radius: 2px;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  .ax__text sup {
+    line-height: 0;
+  }
+  .ax__text a[data-footnote-ref].is-active {
+    background: var(--ultramarine);
+    color: var(--lavender);
+  }
+
+  /* the plain footnotes list (phones, and without JS) */
+  .ax__text > section.footnotes {
+    margin-top: 5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgb(2 8 135 / 0.35);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .ax__text section.footnotes h2 {
+    margin: 0 0 1rem;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ultramarine);
+  }
+  .ax__text section.footnotes li + li {
+    margin-top: 0.8em;
+  }
+  .ax__text a[data-footnote-backref] {
+    text-decoration: none;
+    margin-left: 0.3em;
+  }
+  .ax.has-sidenotes .ax__text > section.footnotes {
+    display: none;
+  }
+
+  /* ---------- sidenotes: a number and a hairline ---------- */
+  .sidenote-rail {
+    grid-column: 3;
+    grid-row: 1;
+    position: relative;
+  }
+  .sidenote {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding-left: 0.9rem;
+    border-left: 1px solid rgb(2 8 135 / 0.3);
+    font: 0.9rem/1.48 var(--font-body);
+    color: #23256a;
+    transition:
+      border-color 0.3s,
+      color 0.3s;
+  }
+  .sidenote__no {
+    display: block;
+    margin-bottom: 0.3rem;
+    font: 0.64rem var(--font-din);
+    letter-spacing: 0.14em;
+    color: var(--ultramarine);
+  }
+  .sidenote__body > * {
+    margin: 0 0 0.5em;
+  }
+  .sidenote__body > :last-child {
+    margin-bottom: 0;
+  }
+  .sidenote__body blockquote {
+    margin: 0.4em 0;
+    padding-left: 0.7rem;
+    border-left: 1px solid rgb(2 8 135 / 0.3);
+  }
+  .sidenote__body a {
+    color: var(--ultramarine);
+  }
+  .sidenote.is-collapsed .sidenote__body {
+    max-height: 11rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(#000 55%, transparent);
+    mask-image: linear-gradient(#000 55%, transparent);
+  }
+  .sidenote__more {
+    all: unset;
+    cursor: pointer;
+    margin-top: 0.4rem;
+    font: 0.6rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ultramarine);
+    border-bottom: 1px solid;
+  }
+  .sidenote.is-active {
+    border-left-color: var(--ultramarine);
+    color: #11135a;
+  }
+  .sidenote.is-flash {
+    animation: sn-flash 1.4s;
+  }
+  @keyframes sn-flash {
+    0%,
+    30% {
+      background: rgb(210 211 221 / 0.6);
+    }
+  }
+  /* phones: the note opens as a card under the line */
+  .fn-pop {
+    position: absolute;
+    z-index: 60;
+    width: min(22rem, calc(100% - 1rem));
+    padding: 0.9rem 1rem;
+    background: var(--lavender);
+    border: 1px solid var(--ultramarine);
+    box-shadow: 0 20px 40px -20px rgb(17 19 90 / 0.6);
+    font: 0.95rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+  .fn-pop__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  /* ---------- contents (sticky, left) ---------- */
+  .toc {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .toc__in {
+    position: sticky;
+    top: 7rem;
+    color: var(--ultramarine);
+  }
+  .toc__h {
+    margin-bottom: 1.2rem;
+    font: 0.66rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .toc__list {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 1px solid rgb(2 8 135 / 0.25);
+  }
+  .toc__list a {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    margin-left: -1px;
+    padding: 0.42rem 0 0.42rem 1rem;
+    border-left: 1px solid transparent;
+    text-decoration: none;
+    opacity: 0.5;
+    transition:
+      opacity 0.3s,
+      border-color 0.3s;
+  }
+  .toc__list b {
+    font: 400 0.68rem/1.9 var(--font-din);
+    letter-spacing: 0.12em;
+  }
+  .toc__list span {
+    font: italic 1.05rem/1.25 var(--font-display);
+  }
+  .toc__list .is-on a,
+  .toc__list a:hover {
+    opacity: 1;
+    border-left-color: var(--ultramarine);
+  }
+  .toc__bar {
+    height: 1px;
+    margin-top: 1.4rem;
+    background: rgb(2 8 135 / 0.2);
+  }
+  .toc__bar i {
+    display: block;
+    height: 100%;
+    width: calc(var(--p, 0) * 100%);
+    background: var(--ultramarine);
+  }
+  .toc__left {
+    margin-top: 0.6rem;
+    font: 0.6rem var(--font-din);
+    letter-spacing: 0.16em;
+  }
+
+  /* ---------- after the text ---------- */
+  .aa {
+    max-width: calc(37rem + 4vw);
+    margin: 0 auto;
+    padding: 0 2vw 6rem;
+    color: var(--ultramarine);
+  }
+  .aa__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2.4rem;
+  }
+  .aa__tags span {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgb(2 8 135 / 0.4);
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .aa__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-top: 1.2rem;
+    border-top: 1.5px solid var(--ultramarine);
+  }
+  .aa__nav a {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 48%;
+    text-decoration: none;
+  }
+  .aa__nav a:last-child:not(:first-child) {
+    margin-left: auto;
+    text-align: right;
+    justify-items: end;
+  }
+  .aa__k {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font: 0.66rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .aa__t {
+    font: italic 400 1.7rem/1.1 var(--font-display);
+  }
+
+  /* ---------- narrower screens ---------- */
+  @media (max-width: 1179px) {
+    .ax {
+      grid-template-columns: minmax(0, var(--text));
+      padding-top: 3rem;
+    }
+    .ax__text {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .sidenote-rail {
+      display: none;
+    }
+    .toc {
+      grid-column: 1;
+      grid-row: 1;
+      margin-bottom: 2.6rem;
+    }
+    .toc__in {
+      position: static;
+    }
+    .toc__bar,
+    .toc__left {
+      display: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .ax {
+      padding-inline: 1.25rem;
+    }
+    .ax__text > p {
+      text-align: left;
+    }
+    .ax__text .env--pull {
+      margin-inline: 0;
+    }
+    .ah {
+      padding-top: 7rem;
+    }
+  }
+}

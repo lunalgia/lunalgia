@@ -1,0 +1,137 @@
+---
+/**
+ * A piece of writing: centred header, then contents | text | notes.
+ * Boxes, quotes and code are written in Markdown (see src/lib/remark-boxes.mjs).
+ */
+import '@/styles/article.css'
+import { render } from 'astro:content'
+import { Image } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import { WRITING_KINDS } from '@/content.config'
+import { emphasize, getPosts, plain, roman, wordCount } from '@/lib/utils'
+
+export async function getStaticPaths() {
+  const posts = await getPosts()
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }))
+}
+
+const { post, newer, older } = Astro.props
+const d = post.data
+const { Content, headings } = await render(post)
+const words = wordCount(post.body)
+const minutes = Math.max(1, Math.round(words / 230))
+const parts = headings.filter((h) => h.depth === 2 && h.slug !== 'footnote-label')
+const opens = !/^\s*##\s/.test((post.body ?? '').replace(/^---[\s\S]*?---/, '').trimStart()) // text before the first part
+const date = d.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()
+const kind = WRITING_KINDS[d.kind].label.replace(/s$/, '').toUpperCase()
+const L = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M33 7H1M7 1 1 7l6 6"/></svg>'
+const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 7h32M27 1l6 6-6 6"/></svg>'
+---
+
+<Base title={plain(d.title)} description={d.description}>
+  <script>
+    import '@/scripts/sidenotes'
+    import '@/scripts/article'
+  </script>
+
+  <header class="ah" id="top">
+    <p class="ah__k">{kind} · {date}</p>
+    <h1 class="ah__t" set:html={emphasize(d.title)} />
+    {d.description && <p class="ah__d">{d.description}</p>}
+    <p class="ah__k">
+      {words.toLocaleString('en-GB')} WORDS · {minutes} MIN{d.tags.length > 0 && ` · FILED UNDER ${d.tags.join(', ').toUpperCase()}`}
+    </p>
+    {
+      d.image && (
+        <figure class="ah__fig">
+          <Image src={d.image} alt="" widths={[800, 1200, 1600]} sizes="(min-width: 900px) 52rem, 92vw" loading="eager" />
+          {d.imageCaption && <figcaption>{d.imageCaption}</figcaption>}
+        </figure>
+      )
+    }
+  </header>
+
+  <div class="ax" data-sidenotes data-minutes={minutes}>
+    {
+      parts.length > 0 && (
+        <nav class="toc" aria-label="contents">
+          <div class="toc__in">
+            <p class="toc__h">CONTENTS</p>
+            <ol class="toc__list" role="list">
+              {opens && (
+                <li data-target="top">
+                  <a href="#top">
+                    <b>0</b>
+                    <span>Opening</span>
+                  </a>
+                </li>
+              )}
+              {parts.map((h, i) => (
+                <li data-target={h.slug}>
+                  <a href={`#${h.slug}`}>
+                    <b>{roman(i + 1)}</b>
+                    <span>{h.text}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <div class="toc__bar">
+              <i />
+            </div>
+            <p class="toc__left">{minutes} MIN LEFT</p>
+          </div>
+        </nav>
+      )
+    }
+    <article class="ax__text">
+      <Content />
+    </article>
+    <div class="sidenote-rail" aria-hidden="true"></div>
+  </div>
+
+  <footer class="aa">
+    {
+      d.tags.length > 0 && (
+        <p class="aa__tags">
+          {d.tags.map((t) => (
+            <span>{t}</span>
+          ))}
+        </p>
+      )
+    }
+    <nav class="aa__nav" aria-label="more writing">
+      {
+        older && (
+          <a href={`/writing/${older.id}`}>
+            <span class="aa__k">
+              <Fragment set:html={L} /> OLDER
+            </span>
+            <span class="aa__t" set:html={emphasize(older.data.title)} />
+          </a>
+        )
+      }
+      {
+        newer && (
+          <a href={`/writing/${newer.id}`}>
+            <span class="aa__k">
+              NEWER <Fragment set:html={R} />
+            </span>
+            <span class="aa__t" set:html={emphasize(newer.data.title)} />
+          </a>
+        )
+      }
+      {
+        !older && !newer && (
+          <a href="/writing">
+            <span class="aa__k">
+              <Fragment set:html={L} /> ALL WRITING
+            </span>
+          </a>
+        )
+      }
+    </nav>
+  </footer>
+</Base>

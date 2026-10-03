@@ -1,0 +1,75 @@
+---
+import type { MarkdownHeading } from 'astro'
+
+interface Props {
+  headings: MarkdownHeading[]
+  title?: string
+}
+const { headings, title = 'Contents' } = Astro.props
+const items = headings.filter((h) => h.depth === 2 && h.slug !== 'footnote-label')
+---
+
+{
+  items.length > 1 && (
+    <nav class="toc grid" aria-label="Table of contents">
+      <h2 class="toc__title">{title}</h2>
+      <ol class="toc__list" role="list">
+        {items.map((h) => (
+          <li>
+            <a class="sweep" href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    margin-bottom: var(--space-l);
+  }
+  .toc__title {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .toc__list {
+    counter-reset: toc;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .toc__list li {
+    counter-increment: toc;
+    display: grid;
+    grid-template-columns: 3ch 1fr;
+    gap: 1rem;
+  }
+  .toc__list li::before {
+    content: counter(toc, upper-roman) '.';
+    color: var(--muted);
+  }
+  .toc__list a {
+    justify-self: start;
+  }
+  @media (min-width: 900px) {
+    .toc__list {
+      grid-column: 5 / span 8;
+    }
+    .toc__list li {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .toc__list li::before {
+      display: none;
+    }
+    .toc__list a {
+      justify-self: center;
+    }
+    .toc__list a::before {
+      content: counter(toc, upper-roman) '. ';
+      color: var(--muted);
+    }
+  }
+</style>

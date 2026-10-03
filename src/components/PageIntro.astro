@@ -1,0 +1,169 @@
+---
+/**
+ * The framed title card, after henry.codes' "A website to destroy all websites":
+ * a hairline frame with labels sitting on it, a picture in the centre column,
+ * and an enormous title laid across the picture. With `invert`, the part of the
+ * title that crosses the picture turns pale so it reads against dark images.
+ */
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import { emphasize } from '@/lib/utils'
+
+interface Props {
+  title: string
+  subtitle?: [string, string] | string
+  image?: ImageMetadata
+  imageAlt?: string
+  caption?: string
+  invert?: boolean
+  top?: string
+  topHref?: string
+  bottom?: string
+  transitionName?: string
+}
+
+const { title, subtitle, image, imageAlt = '', caption, invert = false, top, topHref, bottom, transitionName } = Astro.props
+const subs = Array.isArray(subtitle) ? subtitle : subtitle ? [subtitle] : []
+---
+
+<section class:list={['intro', 'frame', { 'intro--image': image, 'intro--invert': invert && image }]}>
+  {top && (topHref ? <a class="label label--top" href={topHref}>{top}</a> : <span class="label label--top">{top}</span>)}
+  {bottom && <span class="label label--bottom">{bottom}</span>}
+
+  <div class="intro__inner grid">
+    {
+      image && (
+        <figure class="intro__card">
+          <Image src={image} alt={imageAlt} widths={[480, 800, 1200]} sizes="(min-width: 900px) 36vw, 16rem" loading="eager" />
+          {caption && <figcaption>{caption}</figcaption>}
+        </figure>
+      )
+    }
+    <h1 class="intro__title display" set:html={emphasize(title)} transition:name={transitionName} />
+    {
+      subs.length > 0 && (
+        <div class:list={['intro__subtitle', { 'intro__subtitle--one': subs.length === 1 }]}>
+          {subs.map((s) => (
+            <span set:html={emphasize(s)} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .intro {
+    margin-bottom: var(--space-l);
+    padding-block: calc(var(--space-s) + 1rem) var(--space-s);
+  }
+  .intro__inner {
+    position: relative;
+    row-gap: 2rem;
+  }
+  .intro__card {
+    max-width: 16rem;
+    margin-inline: auto;
+    width: 100%;
+  }
+  .intro__card :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--fog);
+  }
+  .intro__card figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    text-align: right;
+    color: var(--muted);
+  }
+  .intro__title {
+    font-size: clamp(4rem, 17vw, 5.5rem);
+    text-align: center;
+    letter-spacing: -0.04em;
+  }
+  .intro__subtitle {
+    font-size: 1.25rem;
+    text-align: center;
+    text-wrap: balance;
+    display: grid;
+    gap: 0.25rem;
+  }
+  :global(.intro__title em) {
+    font-style: italic;
+  }
+
+  /* without a picture the title simply owns the frame */
+  .intro:not(.intro--image) {
+    min-height: min(78svh, 46rem);
+    display: grid;
+    align-items: center;
+  }
+
+  @media (min-width: 600px) {
+    .intro__card {
+      max-width: 36vw;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .intro--image .intro__inner {
+      min-height: 0;
+    }
+    .intro__card {
+      grid-column: 6 / span 6;
+      grid-row: 1;
+      max-width: none;
+    }
+    .intro--image .intro__title {
+      position: absolute;
+      inset: 50% 0 auto 0;
+      translate: 0 -78%;
+      font-size: clamp(5rem, 7.9vw, 9rem);
+      margin: 0;
+      pointer-events: none;
+    }
+    .intro:not(.intro--image) .intro__title {
+      font-size: clamp(5rem, 9.5vw, 10rem);
+    }
+    /* the slice of title that crosses the picture goes pale */
+    .intro--invert .intro__title {
+      --col: calc((100% - 15rem) / 16);
+      --l: calc(5 * (var(--col) + 1rem));
+      --r: calc(var(--l) + 6 * var(--col) + 5rem);
+      color: transparent;
+      background: linear-gradient(
+        90deg,
+        var(--ink) var(--l),
+        var(--on-image) var(--l) var(--r),
+        var(--ink) var(--r)
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .intro--image .intro__subtitle {
+      position: absolute;
+      top: 56%;
+      inset-inline: 0;
+      display: grid;
+      grid-template-columns: repeat(16, minmax(0, 1fr));
+      column-gap: 1rem;
+      font-size: clamp(1.25rem, 1.9vw, 1.9rem);
+      line-height: 1.25;
+    }
+    .intro--image .intro__subtitle span {
+      max-width: 18ch;
+      margin-inline: auto;
+    }
+    .intro--image .intro__subtitle span:nth-child(1) {
+      grid-column: 1 / span 5;
+    }
+    .intro--image .intro__subtitle span:nth-child(2) {
+      grid-column: 12 / span 5;
+    }
+    .intro--image .intro__subtitle--one span {
+      grid-column: 12 / span 5;
+    }
+  }
+</style>

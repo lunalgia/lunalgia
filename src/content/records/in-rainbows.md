@@ -1,0 +1,21 @@
+---
+title: In Rainbows
+by: Radiohead
+year: 2007
+rating: 100
+genres:
+  - art rock
+  - alternative rock
+meta:
+  released: October 2007
+  label: XL Recordings
+  length: 43 min
+  tracks: '10'
+  producer: Nigel Godrich
+links:
+  Wikipedia: https://en.wikipedia.org/wiki/In_Rainbows
+  MusicBrainz: https://musicbrainz.org/release-group/6e335887-60ba-38f0-95af-fae7774336bf
+  Rate Your Music: https://rateyourmusic.com/release/album/radiohead/in-rainbows/
+wikidata: Q223295
+order: 1
+---

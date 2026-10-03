@@ -1,0 +1,614 @@
+---
+/**
+ * Bookmarks: quotes, articles (filterable by subject tags) and videos (grouped
+ * by topic). Everything comes from src/data/bookmarks.ts.
+ */
+import Base from '@/layouts/Base.astro'
+import { articles, quotes, videos } from '@/data/bookmarks'
+import { youtube } from '@/lib/remote'
+
+const groups = await Promise.all(
+  videos.map(async (g) => ({ topic: g.topic, items: (await Promise.all(g.videos.map(youtube))).filter((v) => v !== null) })),
+)
+const nVideos = groups.reduce((n, g) => n + g.items.length, 0)
+const host = (href: string) => {
+  try {
+    return href.startsWith('/') ? 'lunalgia' : new URL(href).hostname.replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+// filters, most used first
+const tagCounts = [...Map.groupBy(articles.flatMap((a) => a.tags), (t) => t)].map(([t, l]) => [t, l.length] as const)
+tagCounts.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+const pad = (n: number) => String(n).padStart(2, '0')
+---
+
+<Base title="Bookmarks" description="Articles, videos and quotes worth keeping.">
+  <header class="bh">
+    <h1 class="bh__t">Bookmarks</h1>
+    <nav class="bh__nav" aria-label="sections">
+      <a href="#quotes">(quotes)</a>
+      <a href="#articles">(articles)</a>
+      <a href="#videos">(videos)</a>
+    </nav>
+    <p class="bh__lede">
+      This is an amalgamation of articles/videos/quotes that I find interesting. This is pretty incomplete and I'll be
+      expanding this in the future, especially since I've unfortunately not kept track of things.
+    </p>
+  </header>
+
+  <section class="bs" id="quotes" aria-label="quotes">
+    <button type="button" class="bs__top" aria-expanded="true" aria-controls="quotes-body"><span>I · QUOTES</span><span class="bs__right">{pad(quotes.length)}<i class="bs__toggle" aria-hidden="true"></i></span></button>
+    <div class="bs__body" id="quotes-body"><div class="bs__inner">
+    <ul class="qs" role="list">
+      {
+        quotes.map((q) => (
+          <li class="q">
+            <blockquote>“{q.text}”</blockquote>
+            {q.by && <cite>{q.by}</cite>}
+          </li>
+        ))
+      }
+    </ul>
+    </div></div>
+  </section>
+
+  <section class="bs" id="articles" aria-label="articles">
+    <button type="button" class="bs__top" aria-expanded="true" aria-controls="articles-body"><span>II · ARTICLES</span><span class="bs__right"><span class="ar__count">{pad(articles.length)}</span><i class="bs__toggle" aria-hidden="true"></i></span></button>
+    <div class="bs__body" id="articles-body"><div class="bs__inner">
+
+    <div class="ar__filters" role="group" aria-label="filter by subject">
+      <button type="button" class="chip is-on" data-tag="">all <small>{articles.length}</small></button>
+      {
+        tagCounts.map(([t, n]) => (
+          <button type="button" class="chip" data-tag={t} aria-pressed="false">
+            {t} <small>{n}</small>
+          </button>
+        ))
+      }
+      <label class="ar__search">
+        <input type="search" placeholder="search…" autocomplete="off" aria-label="search articles" />
+      </label>
+    </div>
+
+    <ol class="ar" role="list">
+      {
+        articles.map((a, i) => (
+          <li class="ar__row" data-tags={a.tags.join(' ')} style={`view-transition-name: bm-${i}`}>
+            <a class="ar__link" href={a.href} target={a.href.startsWith('/') ? undefined : '_blank'} rel="noopener">
+              <span class="ar__t">{a.title}</span>
+              {a.note && <span class="ar__note">{a.note}</span>}
+            </a>
+            <span class="ar__meta">
+              {a.tags.map((t) => (
+                <button type="button" class="ar__tag" data-tag={t}>
+                  {t}
+                </button>
+              ))}
+              <span class="ar__host">{host(a.href)}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="ar__none" hidden>Nothing matches. <button type="button" class="ar__reset">Clear the filters</button></p>
+    </div></div>
+  </section>
+
+  <section class="bs" id="videos" aria-label="videos">
+    <button type="button" class="bs__top" aria-expanded="true" aria-controls="videos-body"><span>III · VIDEOS</span><span class="bs__right">{pad(nVideos)}<i class="bs__toggle" aria-hidden="true"></i></span></button>
+    <div class="bs__body" id="videos-body"><div class="bs__inner">
+    {
+      groups.map((g) => (
+        <section class="vg">
+          <h2 class="vg__t">
+            {g.topic} <small>{pad(g.items.length)}</small>
+          </h2>
+          <ul class="vg__grid" role="list">
+            {g.items.map((v) => (
+              <li>
+                <a class="vc" href={v.url} target="_blank" rel="noopener">
+                  <span class="vc__thumb">
+                    <img
+                      src={`https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`}
+                      data-fallback={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
+                      onerror="this.onerror=null;this.src=this.dataset.fallback"
+                      alt=""
+                      loading="lazy"
+                      width="1280"
+                      height="720"
+                    />
+                    <span class="vc__play" aria-hidden="true">▶</span>
+                  </span>
+                  {v.author && <span class="vc__by">{v.author}</span>}
+                  <span class="vc__t">{v.title ?? 'untitled video'}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+    </div></div>
+  </section>
+</Base>
+
+<script>
+  const setup = () => {
+    const root = document.getElementById('articles')
+    if (!root || root.dataset.ready) return
+    root.dataset.ready = '1'
+    const rows = [...root.querySelectorAll<HTMLElement>('.ar__row')]
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')]
+    const input = root.querySelector('input')!
+    const count = root.querySelector('.ar__count')!
+    const none = root.querySelector<HTMLElement>('.ar__none')!
+    const picked = new Set<string>()
+
+    // start from ?tag=math,physics if the link carries it
+    new URLSearchParams(location.search).get('tag')?.split(',').filter(Boolean).forEach((t) => picked.add(t))
+
+    const apply = () => {
+      const q = input.value.trim().toLowerCase()
+      let shown = 0
+      for (const r of rows) {
+        const tags = r.dataset.tags!.split(' ')
+        const ok =
+          (picked.size === 0 || tags.some((t) => picked.has(t))) &&
+          (!q || r.textContent!.toLowerCase().includes(q))
+        r.hidden = !ok
+        if (ok) shown++
+      }
+      chips.forEach((c) => {
+        const on = c.dataset.tag ? picked.has(c.dataset.tag) : picked.size === 0
+        c.classList.toggle('is-on', on)
+        c.setAttribute('aria-pressed', String(on))
+      })
+      root.querySelectorAll<HTMLElement>('.ar__tag').forEach((t) => t.classList.toggle('is-on', picked.has(t.dataset.tag!)))
+      count.textContent = shown === rows.length ? String(rows.length).padStart(2, '0') : `${shown} OF ${rows.length}`
+      none.hidden = shown > 0
+      const url = new URL(location.href)
+      picked.size ? url.searchParams.set('tag', [...picked].join(',')) : url.searchParams.delete('tag')
+      history.replaceState(history.state, '', url)
+    }
+    // rows glide to their new places where the browser can do it
+    const update = () => {
+      const d = document as any
+      if (d.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.startViewTransition(apply)
+      else apply()
+    }
+
+    root.addEventListener('click', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-tag], .ar__reset')
+      if (!el) return
+      if (el.classList.contains('ar__reset')) {
+        picked.clear()
+        input.value = ''
+      } else if (!el.dataset.tag) picked.clear()
+      else if (picked.has(el.dataset.tag)) picked.delete(el.dataset.tag)
+      else picked.add(el.dataset.tag)
+      update()
+    })
+    input.addEventListener('input', apply)
+    apply()
+  }
+  document.addEventListener('astro:page-load', setup)
+
+  // collapsible sections, remembered per browser
+  const collapsible = () => {
+    document.querySelectorAll<HTMLElement>('.bs').forEach((sec) => {
+      const btn = sec.querySelector<HTMLButtonElement>('.bs__top')!
+      if (btn.dataset.ready) return
+      btn.dataset.ready = '1'
+      const key = `bm-closed-${sec.id}`
+      const set = (open: boolean, save = true) => {
+        sec.classList.toggle('is-closed', !open)
+        btn.setAttribute('aria-expanded', String(open))
+        if (save)
+          try {
+            open ? localStorage.removeItem(key) : localStorage.setItem(key, '1')
+          } catch {}
+      }
+      let closed = false
+      try {
+        closed = localStorage.getItem(key) === '1'
+      } catch {}
+      if (closed && location.hash !== `#${sec.id}`) {
+        sec.classList.add('no-anim')
+        set(false, false)
+        requestAnimationFrame(() => requestAnimationFrame(() => sec.classList.remove('no-anim')))
+      }
+      btn.addEventListener('click', () => set(sec.classList.contains('is-closed')))
+      document.querySelectorAll<HTMLAnchorElement>(`a[href="#${sec.id}"]`).forEach((a) => a.addEventListener('click', () => set(true)))
+    })
+  }
+  document.addEventListener('astro:page-load', collapsible)
+</script>
+
+<style>
+  .bh {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .bh__t {
+    margin: 0;
+    font: 400 clamp(4rem, 11vw, 10rem) / 0.9 var(--font-din);
+  }
+  .bh__nav {
+    display: flex;
+    gap: 1.6rem;
+    font: italic 1.5rem var(--font-display);
+  }
+  .bh__nav a {
+    text-decoration: none;
+  }
+  .bh__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .bh__lede {
+    grid-column: 1 / -1;
+    max-width: 36rem;
+    font: 1.2rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+
+  .bs {
+    padding: 5rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .bs:last-of-type {
+    padding-bottom: 6rem;
+  }
+  .bs__top {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid var(--ultramarine);
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .bs__top:focus-visible {
+    outline: 1.5px solid var(--ultramarine);
+    outline-offset: 6px;
+  }
+  .bs__right {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+  /* a plus that turns into a minus */
+  .bs__toggle {
+    position: relative;
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+  .bs__toggle::before,
+  .bs__toggle::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1.5px;
+    margin-top: -0.75px;
+    background: currentColor;
+    transition: rotate 0.4s var(--ease-out);
+  }
+  .bs__toggle::after {
+    rotate: 0deg;
+  }
+  .bs.is-closed .bs__toggle::after {
+    rotate: 90deg;
+  }
+  /* the body folds away by animating its grid row */
+  .bs__body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.6s var(--ease-out);
+  }
+  .bs__inner {
+    min-height: 0;
+    /* clipped while folding, with room left for card shadows */
+    overflow: clip;
+    overflow-clip-margin: 2.5rem;
+    transition: opacity 0.4s;
+  }
+  .bs.is-closed .bs__body {
+    grid-template-rows: 0fr;
+  }
+  .bs.is-closed .bs__inner {
+    opacity: 0;
+  }
+  .bs.no-anim .bs__body,
+  .bs.no-anim .bs__inner {
+    transition: none;
+  }
+
+  /* quotes */
+  .qs {
+    columns: 2 26rem;
+    column-gap: 4vw;
+    padding-top: 2.6rem;
+  }
+  .q {
+    break-inside: avoid;
+    padding-bottom: 2.6rem;
+  }
+  .q blockquote {
+    margin: 0;
+    font: italic 400 clamp(1.25rem, 1.6vw, 1.45rem) / 1.3 var(--font-display);
+    text-wrap: pretty;
+  }
+  /* the speaker: DINdong, large enough to hold its own against the quote */
+  .q cite {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    font: 0.8rem var(--font-din);
+    font-style: normal;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .q cite::before {
+    content: '';
+    width: 2.2rem;
+    height: 1px;
+    background: currentColor;
+  }
+
+  /* article filters */
+  .ar__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.6rem 0;
+  }
+  .chip,
+  .ar__tag,
+  .ar__reset {
+    all: unset;
+    cursor: pointer;
+  }
+  .chip {
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid rgb(2 8 135 / 0.45);
+    border-radius: 2rem;
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s;
+  }
+  .chip small {
+    font-size: 0.85em;
+    opacity: 0.6;
+    margin-left: 0.25em;
+  }
+  .chip:hover {
+    border-color: var(--ultramarine);
+  }
+  .chip.is-on {
+    background: var(--ultramarine);
+    border-color: var(--ultramarine);
+    color: var(--lavender);
+  }
+  .ar__search {
+    margin-left: auto;
+  }
+  .ar__search input {
+    width: 13rem;
+    padding: 0.35rem 0;
+    border: 0;
+    border-bottom: 1px solid rgb(2 8 135 / 0.45);
+    background: none;
+    color: var(--ultramarine);
+    font: italic 1.2rem var(--font-display);
+    outline: none;
+  }
+  .ar__search input::placeholder {
+    color: rgb(2 8 135 / 0.5);
+  }
+  .ar__search input:focus {
+    border-color: var(--ultramarine);
+  }
+
+  /* article rows */
+  .ar {
+    border-top: 1px solid rgb(2 8 135 / 0.3);
+  }
+  .ar__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.4rem 2rem;
+    align-items: baseline;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid rgb(2 8 135 / 0.3);
+  }
+  .ar__row[hidden] {
+    display: none;
+  }
+  .ar__link {
+    display: grid;
+    gap: 0.25rem;
+    text-decoration: none;
+  }
+  .ar__t {
+    font: italic 400 clamp(1.4rem, 2vw, 1.85rem) / 1.15 var(--font-display);
+    transition: translate 0.4s var(--ease-out);
+  }
+  .ar__link:hover .ar__t {
+    translate: 0.4rem 0;
+  }
+  .ar__note {
+    font: italic 1rem var(--font-body);
+    color: #11135a;
+  }
+  .ar__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 0.4rem 0.9rem;
+    font: 0.64rem var(--font-din);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .ar__tag {
+    opacity: 0.7;
+    border-bottom: 1px solid transparent;
+  }
+  .ar__tag:hover,
+  .ar__tag.is-on {
+    opacity: 1;
+    border-bottom-color: currentColor;
+  }
+  .ar__host {
+    min-width: 11rem;
+    text-align: right;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .ar__none {
+    padding: 2rem 0;
+    font: italic 1.3rem var(--font-display);
+  }
+  .ar__reset {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+
+  /* videos */
+  .vg {
+    padding-top: 2.8rem;
+  }
+  .vg__t {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin: 0 0 1.4rem;
+    font: italic 400 clamp(1.9rem, 3vw, 2.6rem) / 1 var(--font-display);
+  }
+  .vg__t small {
+    font: 0.68rem var(--font-din);
+    font-style: normal;
+    letter-spacing: 0.16em;
+  }
+  .vg__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    gap: 2.2rem 1.4rem;
+  }
+  .vc {
+    display: grid;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+  .vc__thumb {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--lavender-deep);
+    box-shadow: 0 24px 34px -26px rgb(17 19 90 / 0.8);
+  }
+  .vc__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.8) contrast(0.96);
+    transition:
+      scale 0.7s var(--ease-out),
+      filter 0.5s;
+  }
+  /* a lavender veil that lifts on hover */
+  .vc__thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgb(17 19 90 / 0.45));
+    mix-blend-mode: multiply;
+    transition: opacity 0.5s;
+  }
+  .vc__play {
+    position: absolute;
+    z-index: 1;
+    left: 0.8rem;
+    bottom: 0.8rem;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    padding-left: 0.15rem;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: var(--mist);
+    color: var(--ultramarine);
+    font-size: 0.8rem;
+    opacity: 0;
+    translate: 0 6px;
+    transition:
+      opacity 0.35s,
+      translate 0.35s var(--ease-out);
+  }
+  .vc:hover .vc__thumb img {
+    scale: 1.05;
+    filter: none;
+  }
+  .vc:hover .vc__thumb::after {
+    opacity: 0.6;
+  }
+  .vc:hover .vc__play {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .vc__by {
+    margin-top: 0.3rem;
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .vc__t {
+    font: italic 400 1.35rem / 1.15 var(--font-display);
+  }
+
+  @media (max-width: 760px) {
+    .bh {
+      grid-template-columns: 1fr;
+    }
+    .ar__row {
+      grid-template-columns: 1fr;
+    }
+    .ar__meta {
+      justify-content: flex-start;
+    }
+    .ar__host {
+      min-width: 0;
+      text-align: left;
+    }
+    .ar__search {
+      margin-left: 0;
+      width: 100%;
+    }
+    .ar__search input {
+      width: 100%;
+    }
+  }
+</style>

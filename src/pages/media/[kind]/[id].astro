@@ -1,0 +1,235 @@
+---
+/** A full review: cover and details on the left, the review on the right. */
+import '@/styles/prose.css'
+import { Image } from 'astro:assets'
+import { render } from 'astro:content'
+import Base from '@/layouts/Base.astro'
+import Score from '@/components/media/Score.astro'
+import { KINDS, coverOf, factsOf, getMedia, inkFor, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
+
+export async function getStaticPaths() {
+  const out = []
+  for (const kind of Object.keys(KINDS) as MediaKind[]) {
+    const list = (await getMedia(kind)).filter((e) => paragraphs(e.body).length)
+    for (const [i, entry] of list.entries())
+      out.push({ params: { kind, id: entry.id }, props: { kind, entry, prev: list[i - 1], next: list[i + 1] } })
+  }
+  return out
+}
+
+const { kind, entry, prev, next } = Astro.props
+const d = entry.data
+const { Content } = await render(entry)
+const k = KINDS[kind as MediaKind]
+const n = words(entry.body)
+const hasNotes = /\[\^[^\]]+\]:/.test(entry.body ?? '')
+const color = await spineOf(entry, kind as MediaKind)
+const cover = coverOf(entry, kind as MediaKind)
+const chips = [...(d.genres ?? []), ...(d.tags ?? [])]
+const links: Record<string, string> = d.links ?? {}
+---
+
+<Base title={d.title} description={`${d.title}, ${d.by}: a review.`}>
+  <script>
+    import '@/scripts/sidenotes'
+  </script>
+  <div class:list={['rv', `rv--${k.shelf}`]} style={`--c:${color};--f:${inkFor(color)}`}>
+    <aside class="rv__side">
+      <div class="rv__sticky">
+        <a class="rv__back" href={`/media#${kind}`}>← the {k.one} shelf</a>
+        <div class="rv__cover">
+          {
+            cover ? (
+              <Image src={cover} alt={`Cover of ${d.title}`} width={600} />
+            ) : (
+              <div class="rv__type">
+                <span>{d.by}</span>
+                <b>{d.title}</b>
+                <span>{d.year}</span>
+              </div>
+            )
+          }
+        </div>
+        <div class="rv__score"><Score rating={d.rating} favourite={d.favourite} liked={d.liked} /></div>
+        <dl class="rv__facts">
+          {d.year && (<><dt>year</dt><dd>{d.year}</dd></>)}
+          {d.date && (<><dt>{k.verb.toLowerCase()}</dt><dd>{whenLabel(d.date)}</dd></>)}
+          {factsOf(entry).map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+          <dt>review</dt><dd>{n.toLocaleString('en-GB')} words · {Math.max(1, Math.round(n / 230))} min</dd>
+        </dl>
+        {chips.length > 0 && <p class="rv__tags">{chips.map((t) => <span>{t}</span>)}</p>}
+        {Object.keys(links).length > 0 && (
+          <p class="rv__links">{Object.entries(links).map(([k, u]) => <a href={u} rel="noopener">{k} ↗</a>)}</p>
+        )}
+      </div>
+    </aside>
+
+    <article class="rv__main">
+      <p class="rv__kicker">{k.one.toUpperCase()} · REVIEW</p>
+      <h1 class="rv__title">{d.title}</h1>
+      <p class="rv__by">{d.by}</p>
+      {d.warning && <p class="rv__warn">content note: {d.warning}</p>}
+      <div class:list={['prose', 'rv__body', { 'prose--sidenotes': hasNotes }]}>
+        {hasNotes && <div class="sidenote-rail" aria-hidden="true" />}
+        <Content />
+      </div>
+      <nav class="rv__nav" aria-label={`more ${kind}`}>
+        {prev ? <a href={`/media/${kind}/${prev.id}`}>← {prev.data.title}</a> : <span />}
+        {next && <a href={`/media/${kind}/${next.id}`}>{next.data.title} →</a>}
+      </nav>
+    </article>
+  </div>
+</Base>
+
+<style>
+  .rv {
+    display: grid;
+    grid-template-columns: minmax(16rem, 30%) 1fr;
+    gap: 4vw;
+    padding: 6rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .rv__sticky {
+    position: sticky;
+    top: 5rem;
+  }
+  .rv__back {
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .rv__cover {
+    margin-top: 1.6rem;
+    max-width: 22rem;
+  }
+  .rv__cover :global(img) {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 30px 50px -28px rgb(17 19 90 / 0.75);
+  }
+  .rv--record .rv__cover :global(img) {
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .rv__type {
+    aspect-ratio: 2 / 3;
+    background: var(--c);
+    color: var(--f);
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font: 0.7rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .rv__type b {
+    font: italic 400 2.6rem/1 var(--font-display);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .rv__facts {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.4rem 1rem;
+    margin: 1.8rem 0 0;
+    font: 1.1rem var(--font-display);
+  }
+  .rv__facts dt {
+    font: 0.62rem/2 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .rv__facts dd {
+    margin: 0;
+  }
+  .rv__score {
+    margin-top: 2.2rem;
+    font-size: 1.2rem;
+  }
+  .rv__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    margin-top: 1.2rem;
+    font: italic 1.1rem var(--font-display);
+  }
+  .rv__links a {
+    text-decoration: none;
+  }
+  .rv__links a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .rv__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+  }
+  .rv__tags span {
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgb(2 8 135 / 0.4);
+  }
+  .rv__kicker {
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .rv__title {
+    margin: 0.8rem 0 0.4rem;
+    font: italic 400 clamp(3rem, 6vw, 6rem) / 0.95 var(--font-display);
+  }
+  .rv__by {
+    font: 1.5rem var(--font-display);
+    margin-bottom: 2.4rem;
+  }
+  .rv__warn {
+    font: italic 1rem var(--font-body);
+    margin-bottom: 1.6rem;
+  }
+  /* the review is a single column here; drop the 16-column grid placement */
+  .rv__body {
+    display: block !important;
+    max-width: 44rem;
+    margin: 0 !important;
+    color: #11135a;
+  }
+  .rv__body :global(> *) {
+    margin-inline: 0 !important;
+  }
+  .rv__body :global(> p) {
+    font: 1.22rem/1.65 var(--font-body);
+  }
+  .rv__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 44rem;
+    margin-top: 4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgb(2 8 135 / 0.35);
+    font: italic 1.2rem var(--font-display);
+  }
+  .rv__nav a {
+    text-decoration: none;
+  }
+  .rv__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  @media (max-width: 860px) {
+    .rv {
+      grid-template-columns: 1fr;
+    }
+    .rv__sticky {
+      position: static;
+    }
+    .rv__cover {
+      max-width: 14rem;
+    }
+  }
+</style>

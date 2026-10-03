@@ -1,0 +1,53 @@
+---
+interface Props {
+  home?: boolean
+}
+const { home = false } = Astro.props
+---
+
+<nav class="chrome" aria-label="site">
+  {
+    !home && (
+      <a class="chrome__home" href="/" transition:name="home-mark">
+        <span aria-hidden="true">←</span> <em>lunalgia</em>
+      </a>
+    )
+  }
+
+</nav>
+
+
+
+<style>
+  .chrome {
+    position: fixed;
+    z-index: 50;
+    inset: 0 0 auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: calc(var(--frame-inset) - 0.72rem) calc(var(--frame-inset) + 1.25rem);
+    pointer-events: none;
+    font-size: 1rem;
+  }
+  .chrome > * {
+    pointer-events: auto;
+  }
+  .chrome a,
+  .chrome button {
+    color: var(--ink);
+    text-decoration: none;
+    /* a little patch of paper, like the labels on the frame */
+    padding: 0.05rem 0.625rem;
+    background: var(--chrome-bg, var(--bg));
+    transition: background-color 0.4s var(--ease);
+  }
+  :global(:root:has(.hero)) .chrome {
+    --chrome-bg: var(--bg-hero);
+  }
+  .chrome__home:hover em {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+</style>

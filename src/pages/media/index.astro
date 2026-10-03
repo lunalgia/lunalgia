@@ -1,0 +1,106 @@
+---
+/**
+ * Media: three close-up shelves (books, records, films). Every item is one
+ * Markdown file in src/content/{books,records,films}; its body is the review.
+ */
+import { getImage } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import Shelf, { type ShelfItem } from '@/components/media/Shelf.astro'
+import { KINDS, coverOf, depthOf, factsOf, getMedia, inkFor, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
+
+const shelves = await Promise.all(
+  (Object.keys(KINDS) as MediaKind[]).map(async (kind) => {
+    const entries = await getMedia(kind)
+    const items: ShelfItem[] = await Promise.all(
+      entries.map(async (e) => {
+        const d = e.data
+        const color = await spineOf(e, kind)
+        const src = coverOf(e, kind)
+        const cover = src ? await getImage({ src, width: 700, format: 'webp', quality: 82 }) : null
+        const paras = paragraphs(e.body)
+        return {
+          title: d.title,
+          short: d.short,
+          by: d.by,
+          year: d.year,
+          rating: d.rating,
+          favourite: d.favourite,
+          liked: d.liked,
+          tags: [...(d.genres ?? []), ...(d.tags ?? [])],
+          facts: factsOf(e).slice(0, 4),
+          when: whenLabel(d.date),
+          img: cover?.src,
+          color,
+          ink: inkFor(color),
+          depth: depthOf(e, kind),
+          excerpt: paras.slice(0, 4),
+          words: words(e.body),
+          warning: d.warning,
+          href: paras.length ? `/media/${kind}/${e.id}` : undefined,
+        }
+      }),
+    )
+    return { kind, items }
+  }),
+)
+const roman = ['I', 'II', 'III']
+---
+
+<Base title="Media" description="Books, records and films, with reviews.">
+  <header class="mh">
+    <h1 class="mh__t">Media</h1>
+    <nav class="mh__nav" aria-label="shelves">
+      {shelves.map((s) => <a href={`#${s.kind}`}>({s.kind})</a>)}
+    </nav>
+    <p class="mh__lede">
+      What I read, listen to and watch, kept on three shelves. Move along with the arrows, or open anything for the
+      review.
+    </p>
+  </header>
+  {
+    shelves.map((s, i) =>
+      s.items.length ? (
+        <Shelf id={s.kind} kind={KINDS[s.kind].shelf} heading={`${roman[i]} · ${KINDS[s.kind].heading}`} items={s.items} />
+      ) : null,
+    )
+  }
+</Base>
+
+<style>
+  .mh {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .mh__t {
+    margin: 0;
+    font: 400 clamp(5rem, 12vw, 11rem) / 0.9 var(--font-din);
+  }
+  .mh__nav {
+    display: flex;
+    gap: 1.6rem;
+    font: italic 1.5rem var(--font-display);
+  }
+  .mh__nav a {
+    text-decoration: none;
+  }
+  .mh__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .mh__lede {
+    grid-column: 1 / -1;
+    max-width: 34rem;
+    font: 1.2rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+  @media (max-width: 760px) {
+    .mh {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

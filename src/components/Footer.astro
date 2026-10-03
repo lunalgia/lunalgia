@@ -1,0 +1,310 @@
+---
+/**
+ * Board 5, compressed: the fog band carries the footer text, Monet's water
+ * rises out of it, and "jardin de lys" (Fraunces) sinks into the water as a
+ * pale mist: one copy in soft-light so the water shows through the letters,
+ * one faint copy on top so they stay legible, both fading out downwards.
+ */
+import { getImage } from 'astro:assets'
+import { NAV, SITE } from '@/consts'
+import monet from '@/assets/home/monet.jpg'
+
+interface Props {
+  here?: string
+}
+const { here = 'home' } = Astro.props
+const water = await getImage({ src: monet, width: 2000, format: 'webp', quality: 82 })
+const year = new Date().getFullYear()
+const elsewhere = [
+  { label: 'github', href: SITE.github },
+  { label: 'email', href: `mailto:${SITE.email}` },
+  { label: 'rss', href: '/rss.xml' },
+]
+---
+
+<footer class="foot board">
+  <div class="foot__water" aria-hidden="true">
+    <img src={water.src} alt="" loading="lazy" decoding="async" />
+  </div>
+  <div class="foot__fog" aria-hidden="true"></div>
+
+  <div class="foot__rule"><span>lit. moon pain</span></div>
+
+  <div class="foot__note">
+    <p class="foot__word">lun·algia</p>
+    <p>
+      <em>algia</em> is a suffix for pain; white lilies are funeral flowers. Write to me at{' '}
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>, or find me as <em>@{SITE.discord}</em>.
+    </p>
+    <p class="meta foot__small">
+      © {year} lilian · set in instrument serif, eb garamond, fraunces &amp; dindong · <a href="#top">back to the top ↑</a>
+    </p>
+  </div>
+
+  <nav class="foot__cols" aria-label="footer">
+    <div>
+      <p class="meta">explore</p>
+      <ul role="list">
+        {NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="meta">elsewhere</p>
+      <ul role="list">
+        {elsewhere.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="meta">you are here</p>
+      <ul role="list">
+        <li class="foot__here">{here}</li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="foot__mark" aria-hidden="true">
+    <span class="foot__mist foot__mist--blend">jardin de lys</span>
+    <span class="foot__mist foot__mist--veil">jardin de lys</span>
+  </div>
+</footer>
+
+<script>
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  gsap.registerPlugin(ScrollTrigger)
+
+  const init = () => {
+    const root = document.querySelector<HTMLElement>('.foot')
+    if (!root || root.dataset.ready || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    root.dataset.ready = '1'
+    // the water rises a little slower than the page
+    gsap.fromTo(
+      root.querySelector('.foot__water img'),
+      { yPercent: 7 },
+      { yPercent: 0, ease: 'none', scrollTrigger: { trigger: root, start: 'top bottom', end: 'bottom bottom', scrub: true } },
+    )
+    // and the name surfaces once
+    gsap.from(root.querySelector('.foot__mark'), {
+      yPercent: 22,
+      opacity: 0,
+      duration: 2.2,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: root, start: 'top 55%', once: true },
+    })
+  }
+  document.addEventListener('astro:page-load', init)
+</script>
+
+<style>
+  .foot {
+    --u: calc(100cqi / 1920);
+    overflow: hidden;
+    color: var(--ultramarine);
+    aspect-ratio: 1920 / 900;
+    min-height: 34rem;
+  }
+  .foot__water {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .foot__water img {
+    position: absolute;
+    left: calc(-80 * var(--u));
+    bottom: calc(-18 * var(--u));
+    width: calc(2000 * var(--u));
+    max-width: none;
+    height: auto;
+    min-height: 100%;
+    object-fit: cover;
+  }
+  /* the fog: solid lavender, then thinning out over the water (from board 5) */
+  .foot__fog {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: calc(540 * var(--u));
+    min-height: 19rem;
+    background: linear-gradient(
+      to bottom,
+      var(--lavender) 0%,
+      var(--lavender) 56%,
+      rgb(162 151 203 / 0.67) 72%,
+      rgb(162 151 203 / 0.27) 88%,
+      transparent 100%
+    );
+  }
+
+  .foot__rule {
+    position: absolute;
+    left: calc(108 * var(--u));
+    right: calc(108 * var(--u));
+    top: calc(64 * var(--u));
+    height: 1px;
+    background: rgb(2 8 135 / 0.55);
+  }
+  .foot__rule span {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    translate: -50% -55%;
+    padding-inline: 0.9rem;
+    background: var(--lavender);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: max(1rem, calc(24 * var(--u)));
+  }
+
+  .foot__note {
+    position: absolute;
+    left: calc(108 * var(--u));
+    top: calc(110 * var(--u));
+    width: max(19rem, calc(640 * var(--u)));
+    font-family: var(--font-display);
+    font-size: max(1.05rem, calc(24 * var(--u)));
+    line-height: 1.35;
+  }
+  .foot__word {
+    font-style: italic;
+    font-size: 1.85em;
+    line-height: 1.05;
+    margin-bottom: 0.4em;
+  }
+  .foot__note a {
+    font-style: italic;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .foot__small {
+    margin-top: 1.4em;
+    font-size: max(0.62rem, calc(13 * var(--u)));
+    opacity: 0.85;
+  }
+  .foot__small a {
+    font-style: normal;
+  }
+
+  .foot__cols {
+    position: absolute;
+    right: calc(108 * var(--u));
+    top: calc(114 * var(--u));
+    display: flex;
+    gap: calc(110 * var(--u));
+  }
+  .foot__cols .meta {
+    font-size: max(0.62rem, calc(15 * var(--u)));
+    margin-bottom: 0.9em;
+    opacity: 0.8;
+  }
+  .foot__cols ul {
+    display: grid;
+    gap: 0.25em;
+    font-family: var(--font-display);
+    font-size: max(1.05rem, calc(27 * var(--u)));
+    line-height: 1.1;
+  }
+  .foot__cols a {
+    position: relative;
+    text-decoration: none;
+  }
+  .foot__cols a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.05em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform 0.45s var(--ease-out);
+  }
+  .foot__cols a:hover::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+  .foot__here {
+    font-style: italic;
+  }
+  .foot__here::before {
+    content: '';
+    display: inline-block;
+    width: 1.05em;
+    height: 1px;
+    margin-right: 0.4em;
+    vertical-align: middle;
+    background: currentColor;
+  }
+
+  .foot__mark {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 100%;
+    pointer-events: none;
+  }
+  .foot__mist {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.17em;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-fraunces);
+    font-style: italic;
+    font-size: calc(370 * var(--u));
+    line-height: 1;
+    font-variation-settings:
+      'opsz' 144,
+      'wght' 200,
+      'SOFT' 0,
+      'WONK' 1;
+    color: #efeaff;
+  }
+  /* the water seen through the letters */
+  .foot__mist--blend {
+    mix-blend-mode: soft-light;
+    -webkit-mask-image: linear-gradient(#000 35%, transparent 92%);
+    mask-image: linear-gradient(#000 35%, transparent 92%);
+  }
+  /* a faint veil so the word still reads */
+  .foot__mist--veil {
+    opacity: 0.38;
+    -webkit-mask-image: linear-gradient(#000 30%, transparent 82%);
+    mask-image: linear-gradient(#000 30%, transparent 82%);
+  }
+
+  /* phones: text stacks, the name stays a sign-off at the bottom */
+  @media (max-width: 760px) {
+    .foot {
+      aspect-ratio: auto;
+      min-height: 0;
+      padding: 3.5rem 1.25rem 9rem;
+    }
+    .foot__rule {
+      left: 1.25rem;
+      right: 1.25rem;
+      top: 1.75rem;
+    }
+    .foot__note,
+    .foot__cols {
+      position: relative;
+      inset: auto;
+      width: auto;
+    }
+    .foot__cols {
+      margin-top: 2rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .foot__fog {
+      height: 75%;
+    }
+    .foot__mist {
+      font-size: 22vw;
+    }
+    .foot__water img {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+</style>

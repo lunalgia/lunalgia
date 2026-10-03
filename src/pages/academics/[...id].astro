@@ -1,0 +1,185 @@
+---
+import '@/styles/prose.css'
+import { getCollection, render } from 'astro:content'
+import Base from '@/layouts/Base.astro'
+import FileTree from '@/components/FileTree.astro'
+import { readUniTree, uniHref } from '@/lib/file-tree'
+import { formatDate } from '@/lib/utils'
+
+export async function getStaticPaths() {
+  const lectures = await getCollection('academics')
+  return lectures.map((lecture) => ({ params: { id: lecture.id }, props: { lecture } }))
+}
+
+const { lecture } = Astro.props
+const { Content } = await render(lecture)
+const d = lecture.data
+const pdfHref = d.pdf ? (d.folder ? uniHref(d.folder, d.pdf) : `/academics/${d.pdf}`) : null
+const tree = d.folder ? await readUniTree(d.folder) : []
+const sem = d.semester === 1 ? 'first semester' : d.semester === 2 ? 'second semester' : null
+const kicker = [d.folder?.split('/')[0], ...d.tags.slice(1), [sem, d.year].filter(Boolean).join(' ')].filter(Boolean)
+---
+
+<Base title={d.title} description={`Notes and materials for ${d.title}.`}>
+  <header class="ch">
+    <a class="ch__back" href="/academics">← all courses</a>
+    <p class="ch__k">{kicker.join(' · ').toUpperCase()}</p>
+    <h1 class="ch__t">{d.title}</h1>
+    {d.date && <p class="ch__k">UPDATED {formatDate(d.date).toUpperCase()}</p>}
+  </header>
+
+  <article class="prose prose--plain cb">
+    <Content />
+  </article>
+
+  {
+    pdfHref && (
+      <section class="cs2">
+        <header class="cs2__top">
+          <span>I · THE NOTES</span>
+          <span class="cs2__tools">
+            <button type="button" class="pdf-mode" aria-pressed="true">
+              light pages
+            </button>
+            <a href={pdfHref} target="_blank" rel="noopener">
+              open in a new tab ↗
+            </a>
+          </span>
+        </header>
+        <div class="pdf is-dark">
+          <iframe class="pdf__frame" src={pdfHref} title={`${d.title} (PDF)`} loading="lazy" />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    tree.length > 0 && (
+      <section class="cs2">
+        <header class="cs2__top">
+          <span>{pdfHref ? 'II' : 'I'} · COURSE MATERIALS</span>
+          <span>{String(tree.length).padStart(2, '0')}</span>
+        </header>
+        <div class="cs2__tree">
+          <FileTree nodes={tree} />
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<script>
+  // PDFs open in dark mode (inverted, hues kept); the choice is remembered
+  const KEY = 'pdf-mode'
+  const apply = () => {
+    let mode = 'dark'
+    try {
+      mode = localStorage.getItem(KEY) ?? 'dark'
+    } catch {}
+    document.querySelectorAll<HTMLElement>('.pdf').forEach((p) => p.classList.toggle('is-dark', mode === 'dark'))
+    document.querySelectorAll<HTMLButtonElement>('.pdf-mode').forEach((b) => {
+      b.textContent = mode === 'dark' ? 'light pages' : 'dark pages'
+      b.setAttribute('aria-pressed', String(mode === 'dark'))
+      b.onclick = () => {
+        try {
+          localStorage.setItem(KEY, mode === 'dark' ? 'light' : 'dark')
+        } catch {}
+        if (mode === 'dark') mode = 'light'
+        else mode = 'dark'
+        apply()
+      }
+    })
+  }
+  document.addEventListener('astro:page-load', apply)
+</script>
+
+<style>
+  .ch {
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .ch__back {
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .ch__k {
+    margin-top: 2.4rem;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .ch__t {
+    margin: 0.8rem 0 1.2rem;
+    font: italic 400 clamp(3rem, 7vw, 6.4rem) / 0.95 var(--font-display);
+  }
+  /* the description: one column under the title, like the review pages */
+  .cb {
+    display: block !important;
+    max-width: 44rem;
+    margin: 2.4rem 0 0 4vw !important;
+    color: #11135a;
+  }
+  .cb :global(> *) {
+    margin-inline: 0 !important;
+  }
+  .cb :global(> p) {
+    font: 1.22rem/1.65 var(--font-body);
+  }
+
+  .cs2 {
+    padding: 5rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .cs2:last-of-type {
+    padding-bottom: 6rem;
+  }
+  .cs2__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1.5px solid var(--ultramarine);
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .cs2__tools {
+    display: flex;
+    gap: 1.6rem;
+    font: italic 1.15rem var(--font-display);
+    letter-spacing: 0;
+  }
+  .cs2__tools a,
+  .cs2__tools button {
+    all: unset;
+    cursor: pointer;
+  }
+  .cs2__tools a:hover,
+  .cs2__tools button:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .pdf {
+    background: #fff;
+    box-shadow: 0 30px 60px -36px rgb(17 19 90 / 0.7);
+  }
+  .pdf__frame {
+    display: block;
+    width: 100%;
+    height: 88svh;
+    border: 0;
+    transition: filter 0.4s;
+  }
+  /* dark mode: invert the page, then turn hues back so colours stay roughly right */
+  .pdf.is-dark {
+    background: #16162a;
+  }
+  .pdf.is-dark .pdf__frame {
+    filter: invert(0.9) hue-rotate(180deg);
+  }
+  .cs2__tree {
+    max-width: 44rem;
+  }
+</style>

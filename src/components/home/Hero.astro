@@ -1,0 +1,440 @@
+---
+/**
+ * Board 1: the four roads and the name.
+ *
+ * Every number here comes from design/website/board1.svg (a 1920×1080 board),
+ * so the wide drawing is the artwork itself. Phones get the same drawing
+ * re-bent into a tall frame by `toTall`, which keeps the middle of the board
+ * (the name and the inner ends of the roads) as it is and squeezes the outskirts.
+ *
+ * Intro: the four roads draw in together from the edges of the page; then each
+ * letter of the name is traced along its outline, left to right, and the ink
+ * floods in behind the pen; the labels settle last.
+ */
+import StatusBar from './StatusBar.astro'
+import name from './lunalgia.json' // glyph outlines, positioned as in board1
+
+type Road = {
+  href: string
+  label: string
+  d: string
+  /** translate applied to the path in the board file */
+  t: [number, number]
+  /** which end of the path sits on the edge of the page */
+  edge: 'start' | 'end'
+  /** label origin + rotation, exactly as placed in the board */
+  lx: number
+  ly: number
+  rot: number
+}
+
+const roads: Road[] = [
+  {
+    href: '/bookmarks',
+    label: 'bookmarks',
+    d: 'M-1.694,70.528C138.873,236.195 230.926,276.209 607.518,313.867C782.527,331.368 853.321,467.957 857.76,470.916',
+    t: [-24.145437, -3.113047],
+    edge: 'start',
+    lx: 366.1,
+    ly: 273.6,
+    rot: 6.14,
+  },
+  {
+    href: '/media',
+    label: 'media',
+    d: 'M1152.874,517.513C1306.225,498.344 1395.928,251.659 1406.568,222.4C1504.193,-46.07 1633.374,-73.59 1660.262,-96.875',
+    t: [70.211251, 2.402224],
+    edge: 'end',
+    lx: 1379.6,
+    ly: 393.0,
+    rot: -61.18,
+  },
+  {
+    href: '/academics',
+    label: 'academics',
+    d: 'M1116.632,596.9C1278.731,948.118 1565.266,863.35 1967.456,943.788C2028.351,955.967 2073.084,996.81 2079.634,1000.74',
+    t: [85.529476, 3.129263],
+    edge: 'end',
+    lx: 1423.2,
+    ly: 819.6,
+    rot: 15.69,
+  },
+  {
+    // continues 263px down into the Writings board, as in the artwork
+    href: '/work',
+    label: 'work',
+    d: 'M776.647,605.53C612.651,621.929 449.699,855.587 386.614,981.756C342.878,1069.228 246.9,1359.63 -32.758,1371.789',
+    t: [-64.553931, -28.325576],
+    edge: 'end',
+    lx: 379.9,
+    ly: 828.9,
+    rot: -52.41,
+  },
+]
+
+// ---------- the tall (phone) drawing ----------
+const CX = 960
+const CY = 540
+const bend = (v: number, keep: number, k: number) => {
+  const a = Math.abs(v)
+  return Math.sign(v) * (Math.min(a, keep) + Math.max(a - keep, 0) * k)
+}
+const TALL = { w: 760, h: 1600, s: 0.72, kx: 0.44, ky: 1.45, keepX: 262, keepY: 140 }
+const toTall = (x: number, y: number): [number, number] => [
+  TALL.w / 2 + bend((x - CX) * TALL.s, TALL.keepX * TALL.s, TALL.kx),
+  TALL.h / 2 + bend((y - CY) * TALL.s, TALL.keepY * TALL.s, TALL.ky),
+]
+const mapPath = (d: string, [tx, ty]: [number, number], f: (x: number, y: number) => [number, number]) =>
+  d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, a, b) => {
+    const [x, y] = f(+a + tx, +b + ty)
+    return `${x.toFixed(2)},${y.toFixed(2)}`
+  })
+const tallAngle = (x: number, y: number, deg: number) => {
+  const jx = Math.abs(x - CX) > TALL.keepX ? TALL.kx : 1
+  const jy = Math.abs(y - CY) > TALL.keepY ? TALL.ky : 1
+  const r = (deg * Math.PI) / 180
+  return (Math.atan2(Math.sin(r) * jy, Math.cos(r) * jx) * 180) / Math.PI
+}
+
+const drawings = [
+  {
+    id: 'wide',
+    viewBox: '0 0 1920 1080',
+    roads: roads.map((r) => ({ ...r, path: mapPath(r.d, r.t, (x, y) => [x, y]), x: r.lx, y: r.ly, a: r.rot, k: 1 })),
+    nameAt: '',
+    frame: { x: 44.546, y: 51.983, w: 1830.143, h: 983.8 },
+    tag: { x: 960, y: 51.983 + 7.8, pw: 158.8 },
+  },
+  {
+    id: 'tall',
+    viewBox: `0 0 ${TALL.w} ${TALL.h}`,
+    roads: roads.map((r) => {
+      // labels that would run off a phone screen slide back along their road
+      const nudge: Record<string, [number, number]> = { '/academics': [-30, -200] }
+      const [nx, ny] = nudge[r.href] ?? [0, 0]
+      const [x0, y0] = toTall(r.lx, r.ly)
+      const [x, y] = [x0 + nx, y0 + ny]
+      return { ...r, path: mapPath(r.d, r.t, toTall), x, y, a: tallAngle(r.lx, r.ly, r.rot), k: TALL.s * 1.08 }
+    }),
+    // the whole middle is scaled down by TALL.s, so the name is too
+    nameAt: `translate(${TALL.w / 2} ${TALL.h / 2}) scale(${TALL.s}) translate(${-CX} ${-CY})`,
+    frame: { x: 24, y: 44, w: TALL.w - 48, h: TALL.h - 88 },
+    tag: { x: TALL.w / 2, y: 44 + 7.8, pw: 158.8 },
+  },
+]
+---
+
+<section class="hero" aria-label="lunalgia">
+  <h1 class="visually-hidden">Lunalgia, the website of Lilian</h1>
+  {
+    drawings.map((g) => (
+      <svg
+        class={`hero__art hero__art--${g.id}`}
+        viewBox={g.viewBox}
+        preserveAspectRatio={g.id === 'wide' ? 'xMidYMin meet' : 'xMidYMid slice'}
+        role="navigation"
+        aria-label="sections"
+      >
+
+        <path
+          class="hero__frame"
+          d={`M${g.frame.x + g.frame.w / 2} ${g.frame.y}H${g.frame.x + g.frame.w}V${g.frame.y + g.frame.h}H${g.frame.x}V${g.frame.y}Z`}
+        />
+        <rect class="hero__tagpatch" x={g.tag.x - g.tag.pw / 2} y={g.frame.y - 20} width={g.tag.pw} height="40" />
+        <text class="hero__tag" x={g.tag.x} y={g.tag.y} text-anchor="middle">
+          lit. moon pain
+        </text>
+
+        {g.roads.map((r) => (
+          <a class="road" href={r.href} data-edge={r.edge}>
+            <path class="road__hit" d={r.path} />
+            <path class="road__line" d={r.path} />
+            <g transform={`translate(${r.x.toFixed(1)} ${r.y.toFixed(1)}) rotate(${r.a.toFixed(2)}) scale(${r.k})`}>
+              <text class="road__label">{r.label}</text>
+            </g>
+          </a>
+        ))}
+
+        <a class="hero__name" href="#hello" aria-label="Lunalgia: about me">
+          <g transform={g.nameAt || undefined}>
+            <g class="hero__ink">
+              {name.letters.map((l) => (
+                <path class="hero__letter" d={l.d} />
+              ))}
+            </g>
+          </g>
+        </a>
+      </svg>
+    ))
+  }
+  <StatusBar />
+</section>
+
+<script>
+  import { gsap } from 'gsap'
+
+  /** show only [a, b] of a path (in length units) using a single dash */
+  const range = (p: SVGPathElement, len: number, a: number, b: number) => {
+    p.style.strokeDasharray = `0 ${Math.max(a, 0)} ${Math.max(b - a, 0)} ${len * 2}`
+  }
+
+  /** size the paper patch under "lit. moon pain" to the text as actually rendered */
+  const fitTags = () =>
+    document.fonts.ready.then(() =>
+      document.querySelectorAll<SVGSVGElement>('.hero__art').forEach((svg) => {
+        const text = svg.querySelector<SVGTextElement>('.hero__tag')
+        const patch = svg.querySelector<SVGRectElement>('.hero__tagpatch')
+        if (!text || !patch || getComputedStyle(svg).display === 'none') return
+        const b = text.getBBox()
+        const pad = b.height * 0.45
+        patch.setAttribute('x', String(b.x - pad))
+        patch.setAttribute('width', String(b.width + pad * 2))
+      }),
+    )
+
+  const play = () => {
+    fitTags()
+    const hero = document.querySelector<HTMLElement>('.hero')
+    if (!hero || hero.dataset.ready) return
+    hero.dataset.ready = '1'
+
+    let seen = false
+    try {
+      seen = sessionStorage.getItem('lunalgia:drawn') === '1'
+      sessionStorage.setItem('lunalgia:drawn', '1')
+    } catch {}
+    const instant = seen || matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const svg = [...hero.querySelectorAll<SVGSVGElement>('.hero__art')].find(
+      (el) => getComputedStyle(el).display !== 'none',
+    )
+    if (!svg) return
+    if (instant) {
+      svg.classList.add('is-ready')
+      return
+    }
+
+    const letters = [...svg.querySelectorAll<SVGPathElement>('.hero__letter')]
+    const labels = svg.querySelectorAll('.road__label')
+    const frame = svg.querySelector<SVGPathElement>('.hero__frame')!
+    const frameLen = frame.getTotalLength()
+    const tag = svg.querySelectorAll('.hero__tag, .hero__tagpatch')
+
+    // where the bottom of the screen is, in board units
+    const pt = new DOMPoint(0, innerHeight).matrixTransform(svg.getScreenCTM()!.inverse())
+    const screenBottom = pt.y + 4
+
+    // ---- starting state ----
+    const roads = [...svg.querySelectorAll<SVGAElement>('.road')].map((road) => {
+      const line = road.querySelector<SVGPathElement>('.road__line')!
+      const len = line.getTotalLength()
+      // a road may run on below the screen (work does, into Writings): it is drawn
+      // from the point where it leaves the screen, and the hidden rest is filled in
+      // at the end, so nothing is ever missing on screen
+      let cut = len
+      if (road.dataset.edge === 'end' && line.getPointAtLength(len).y > screenBottom) {
+        let lo = 0
+        let hi = len
+        for (let i = 0; i < 24; i++) {
+          const mid = (lo + hi) / 2
+          if (line.getPointAtLength(mid).y < screenBottom) lo = mid
+          else hi = mid
+        }
+        cut = hi
+      }
+      line.classList.add('is-drawing')
+      return { road, line, len, cut, fromEnd: road.dataset.edge === 'end' }
+    })
+    roads.forEach(({ line, len }) => range(line, len, 0, 0))
+    letters.forEach((l) => {
+      const n = l.getTotalLength()
+      l.style.strokeDasharray = `${n} ${n}`
+      l.style.strokeDashoffset = String(n)
+      l.style.fillOpacity = '0'
+      l.style.strokeOpacity = '1'
+    })
+    gsap.set(labels, { opacity: 0, y: 6 })
+    frame.style.strokeDasharray = `0 ${frameLen}`
+    frame.style.opacity = '0' // a zero-length dash still leaves a speck at the corner
+    gsap.set(tag, { opacity: 0 })
+    svg.classList.add('is-ready')
+
+    const tl = gsap.timeline({ delay: 0.25 })
+
+    // 1. the frame grows both ways from the "lit. moon pain" tag, quietly
+    const f = { t: 0 }
+    tl.to(
+      f,
+      {
+        t: 1,
+        duration: 2.6,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          const h = (frameLen / 2) * f.t
+          frame.style.opacity = h > 0.5 ? '1' : '0'
+          frame.style.strokeDasharray = `${h} ${frameLen - 2 * h} ${h} 0`
+        },
+        onComplete: () => frame.removeAttribute('style'),
+      },
+      0,
+    )
+
+    // 2. four roads, together, from the edges of the screen in to the name
+    const p = { t: 0 }
+    tl.to(
+      p,
+      {
+        t: 1,
+        duration: 2.2,
+        ease: 'power2.inOut',
+        onUpdate: () =>
+          roads.forEach(({ line, len, cut, fromEnd }) =>
+            fromEnd ? range(line, len, cut * (1 - p.t), cut) : range(line, len, 0, len * p.t),
+          ),
+        onComplete: () =>
+          roads.forEach(({ line }) => {
+            line.style.strokeDasharray = ''
+            line.classList.remove('is-drawing')
+          }),
+      },
+      0.1,
+    )
+
+    // 3. the name: each letter's outline is traced, the ink follows the pen
+    const START = 1.75
+    const STAGGER = 0.16
+    letters.forEach((l, i) => {
+      const at = START + i * STAGGER
+      tl.to(l, { strokeDashoffset: 0, duration: 1.15, ease: 'power2.inOut' }, at)
+      tl.to(l, { fillOpacity: 1, duration: 0.9, ease: 'power1.inOut' }, at + 0.55)
+      tl.to(l, { strokeOpacity: 0, duration: 0.6, ease: 'power1.out' }, at + 1.1)
+    })
+    const done = START + letters.length * STAGGER + 1.1
+
+    // 4. labels and the tag settle
+    tl.to(labels, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.1 }, done - 1.2)
+    tl.to(tag, { opacity: 1, duration: 1.2, ease: 'power2.out' }, done - 1)
+    tl.call(() => letters.forEach((l) => l.removeAttribute('style')))
+
+    // any input finishes the drawing at once
+    const finish = () => {
+      tl.progress(1)
+      off()
+    }
+    const events = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const
+    const off = () => events.forEach((e) => removeEventListener(e, finish))
+    events.forEach((e) => addEventListener(e, finish, { passive: true, once: true }))
+    tl.eventCallback('onComplete', off)
+  }
+
+  document.addEventListener('astro:page-load', play)
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    z-index: 2;
+    height: 100svh;
+  }
+  .hero__art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .hero__art--wide {
+    display: none;
+  }
+  @media (min-aspect-ratio: 4/3) {
+    .hero {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+    .hero__art--wide {
+      display: block;
+    }
+    .hero__art--tall {
+      display: none;
+    }
+  }
+  @media (max-aspect-ratio: 4/3) {
+    .hero {
+      overflow: hidden;
+    }
+  }
+  /* nothing shows until the script has set the first frame */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root.js) .hero__art:not(.is-ready) {
+      visibility: hidden;
+    }
+  }
+
+  .hero__frame {
+    fill: none;
+    stroke: var(--ultramarine);
+    stroke-width: 1.93px;
+  }
+  .hero__art--tall .hero__frame {
+    stroke-width: 2.6px;
+  }
+  .hero__tagpatch {
+    fill: var(--lavender);
+  }
+  .hero__tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 26px;
+    fill: var(--ultramarine);
+  }
+
+  .road {
+    outline: none;
+  }
+  .road__hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 40px;
+    vector-effect: non-scaling-stroke;
+  }
+  .road__line {
+    fill: none;
+    stroke: var(--ultramarine);
+    stroke-width: 1.15px;
+    stroke-linecap: round;
+    transition: stroke-width 0.5s var(--ease-out);
+  }
+  .hero__art--tall .road__line {
+    stroke-width: 2.2px;
+  }
+  .road__label {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 60px;
+    fill: var(--ultramarine);
+    transition: letter-spacing 0.6s var(--ease-out);
+  }
+  .road:is(:hover, :focus-visible) .road__line {
+    stroke-width: 2.6px;
+  }
+  .road:is(:hover, :focus-visible) .road__label {
+    letter-spacing: 0.06em;
+  }
+
+  .hero__name {
+    outline: none;
+  }
+  .hero__ink {
+    fill: var(--ultramarine);
+  }
+  .hero__letter {
+    stroke: var(--ultramarine);
+    stroke-width: 1.4px;
+    stroke-opacity: 0;
+    stroke-linejoin: round;
+  }
+  /* while a road is drawing, square ends: a round cap on an empty dash is a dot */
+  .road__line.is-drawing {
+    stroke-linecap: butt;
+  }
+</style>

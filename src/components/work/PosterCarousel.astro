@@ -1,0 +1,358 @@
+---
+/**
+ * Posters in an inverted-perspective coverflow: the poster in front lies flat,
+ * the others turn their inner edges towards you and shrink as they recede.
+ * Drag, swipe, scroll sideways, use the arrow keys, or click one to bring it
+ * forward; clicking the front poster opens it full size.
+ * Each poster is a Markdown file in src/content/posters with its image beside it.
+ */
+import { getImage } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  posters: CollectionEntry<'posters'>[]
+  heading?: string
+}
+const { posters, heading = 'POSTERS' } = Astro.props
+
+const slides = await Promise.all(
+  posters.map(async (p) => {
+    const img = p.data.image
+    const [small, mid, big, full] = await Promise.all(
+      [600, 1000, 1500, 2200].map((w) => getImage({ src: img, width: Math.min(w, img.width), format: 'webp', quality: 84 })),
+    )
+    return {
+      title: p.data.title,
+      year: p.data.year,
+      note: p.data.note,
+      ar: img.width / img.height,
+      src: mid.src,
+      srcset: `${small.src} 600w, ${mid.src} 1000w, ${big.src} 1500w`,
+      full: full.src,
+    }
+  }),
+)
+const pad = (n: number) => String(n).padStart(2, '0')
+---
+
+<section class="pc" aria-roledescription="carousel" aria-label="Posters" tabindex="-1">
+  <header class="pc__top">
+    <span>{heading}</span>
+    <span class="pc__nav">
+      <button type="button" data-step="-1" aria-label="previous poster"><svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M33 7H1M7 1 1 7l6 6" /></svg></button>
+      <span class="pc__count"><b>01</b> / {pad(slides.length)}</span>
+      <button type="button" data-step="1" aria-label="next poster"><svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 7h32M27 1l6 6-6 6" /></svg></button>
+    </span>
+  </header>
+
+  <div class="pc__stage">
+    {
+      slides.map((s, i) => (
+        <figure class="pc__slide" data-i={i} style={`--ar:${s.ar}`} aria-label={`${i + 1} of ${slides.length}: ${s.title}`}>
+          <img src={s.src} srcset={s.srcset} sizes="(min-width: 760px) 44vh, 70vw" alt={s.title} draggable="false" loading={i < 3 ? 'eager' : 'lazy'} data-full={s.full} />
+        </figure>
+      ))
+    }
+  </div>
+
+  <div class="pc__caps" aria-live="polite">
+    {
+      slides.map((s, i) => (
+        <div class="pc__cap" data-i={i}>
+          <h3>{s.title}</h3>
+          {(s.year || s.note) && (
+            <p>
+              {s.year}
+              {s.year && s.note && ' · '}
+              {s.note}
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+
+  <dialog class="pc__box">
+    <img alt="" />
+    <button type="button" class="pc__close" aria-label="close">close ×</button>
+  </dialog>
+</section>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  const setup = (root: HTMLElement) => {
+    if (root.dataset.ready) return
+    root.dataset.ready = '1'
+    const slides = [...root.querySelectorAll<HTMLElement>('.pc__slide')]
+    const caps = [...root.querySelectorAll<HTMLElement>('.pc__cap')]
+    const count = root.querySelector('.pc__count b')!
+    const n = slides.length
+    let pos = 0 // where the carousel is (fractional while moving)
+    let target = 0 // where it is heading
+    let raf = 0
+
+    const unit = () => Math.min(root.querySelector<HTMLElement>('.pc__stage')!.clientHeight * 0.6, innerWidth * 0.42)
+    /** offset of slide i from the front, wrapped so the carousel loops */
+    const offset = (i: number) => {
+      let d = (((i - pos) % n) + n) % n
+      if (d > n / 2) d -= n
+      return d
+    }
+
+    const render = () => {
+      const u = unit()
+      slides.forEach((el, i) => {
+        const d = offset(i)
+        const a = Math.abs(d)
+        const s = Math.sign(d)
+        // spread: the first neighbour sits well out, further ones bunch up
+        const x = s * (a <= 1 ? a * u : u + (a - 1) * u * 0.45)
+        const rot = s * Math.min(a, 1) * 40 // inverted: the inner edge comes forward
+        const z = -Math.min(a, 3) * 140
+        const scale = 1 - Math.min(a, 2.5) * 0.14
+        el.style.transform = `translateX(calc(-50% + ${x}px)) translateZ(${z}px) rotateY(${rot}deg) scale(${scale})`
+        el.style.zIndex = String(100 - Math.round(a * 10))
+        el.style.opacity = String(Math.max(0, Math.min(1, 2.9 - a)))
+        el.classList.toggle('is-front', a < 0.5)
+      })
+      const front = ((Math.round(pos) % n) + n) % n
+      caps.forEach((c, i) => c.classList.toggle('is-on', i === front))
+      count.textContent = String(front + 1).padStart(2, '0')
+    }
+
+    const tick = () => {
+      pos += (target - pos) * (reduce ? 1 : 0.12)
+      if (Math.abs(target - pos) < 0.001) pos = target
+      render()
+      raf = pos === target ? 0 : requestAnimationFrame(tick)
+    }
+    const go = (t: number) => {
+      target = t
+      if (!raf) raf = requestAnimationFrame(tick)
+    }
+    const step = (k: number) => go(Math.round(target) + k)
+
+    // dragging and swiping
+    let dragging = false
+    let moved = 0
+    let startX = 0
+    let startPos = 0
+    let lastX = 0
+    let lastT = 0
+    let v = 0
+    const stage = root.querySelector<HTMLElement>('.pc__stage')!
+    stage.addEventListener('pointerdown', (e) => {
+      dragging = true
+      moved = 0
+      startX = lastX = e.clientX
+      lastT = performance.now()
+      startPos = target = pos
+      v = 0
+      stage.setPointerCapture(e.pointerId)
+    })
+    stage.addEventListener('pointermove', (e) => {
+      if (!dragging) return
+      const now = performance.now()
+      v = (e.clientX - lastX) / Math.max(1, now - lastT)
+      lastX = e.clientX
+      lastT = now
+      moved = Math.max(moved, Math.abs(e.clientX - startX))
+      // follow the finger directly; easing only on release
+      pos = target = startPos - (e.clientX - startX) / unit()
+      render()
+    })
+    const release = () => {
+      if (!dragging) return
+      dragging = false
+      // a flick carries on a little
+      go(Math.round(target - (v * 160) / unit()))
+    }
+    stage.addEventListener('pointerup', release)
+    stage.addEventListener('pointercancel', release)
+
+    // clicks: bring a poster forward, or open the front one
+    const box = root.querySelector<HTMLDialogElement>('.pc__box')!
+    stage.addEventListener('click', (e) => {
+      if (moved > 6) return
+      const el = (e.target as HTMLElement).closest<HTMLElement>('.pc__slide')
+      if (!el) return
+      const d = offset(+el.dataset.i!)
+      if (Math.abs(d) > 0.5) return go(Math.round(target + d))
+      const img = el.querySelector('img')!
+      box.querySelector('img')!.src = img.dataset.full!
+      box.querySelector('img')!.alt = img.alt
+      box.showModal()
+    })
+    box.addEventListener('click', () => box.close())
+
+    // sideways scrolling on trackpads
+    let wheelT = 0
+    stage.addEventListener(
+      'wheel',
+      (e) => {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
+        e.preventDefault()
+        target += e.deltaX / unit()
+        go(target)
+        clearTimeout(wheelT)
+        wheelT = window.setTimeout(() => go(Math.round(target)), 140)
+      },
+      { passive: false },
+    )
+
+    root.querySelectorAll<HTMLElement>('[data-step]').forEach((b) => b.addEventListener('click', () => step(+b.dataset.step!)))
+    addEventListener('keydown', (e) => {
+      if (box.open) return
+      const r = root.getBoundingClientRect()
+      if (r.top > innerHeight * 0.5 || r.bottom < innerHeight * 0.5) return
+      if (e.key === 'ArrowRight') step(1)
+      if (e.key === 'ArrowLeft') step(-1)
+    })
+    addEventListener('resize', render)
+    render()
+  }
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('.pc').forEach(setup))
+</script>
+
+<style>
+  .pc {
+    --H: min(64vh, 680px);
+    position: relative;
+    padding: 2rem 0 3rem;
+    color: var(--ultramarine);
+    overflow: hidden;
+    outline: none;
+  }
+  .pc__top {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4vw;
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .pc__count b {
+    font-weight: 400;
+  }
+  .pc__top {
+    align-items: center;
+  }
+  /* previous · count · next, as one object */
+  .pc__nav { display: inline-flex; align-items: center; gap: 1.3rem; }
+  .pc__nav button { all: unset; cursor: pointer; display: inline-flex; padding: 0.4rem 0; transition: translate 0.3s var(--ease-out), opacity 0.3s; }
+  .pc__nav button:first-child:hover { translate: -4px 0; }
+  .pc__nav button:last-child:hover { translate: 4px 0; }
+  .pc__nav button:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+
+  .pc__stage {
+    position: relative;
+    height: var(--H);
+    margin-top: 2.4rem;
+    perspective: 1500px;
+    perspective-origin: 50% 45%;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  .pc__stage:active {
+    cursor: grabbing;
+  }
+  .pc__slide {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    /* full height, unless that would make it wider than the screen allows */
+    height: min(100%, calc(78vw / var(--ar)));
+    width: auto;
+    aspect-ratio: var(--ar);
+    transform-origin: 50% 50%;
+    will-change: transform;
+    box-shadow: 0 40px 60px -34px rgb(17 19 90 / 0.7);
+  }
+  .pc__slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .pc__slide.is-front {
+    cursor: zoom-in;
+  }
+
+  .pc__caps {
+    position: relative;
+    height: 5.4rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+  .pc__cap {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    translate: 0 8px;
+    transition:
+      opacity 0.5s,
+      translate 0.5s var(--ease-out);
+  }
+  .pc__cap.is-on {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .pc__cap h3 {
+    margin: 0;
+    font: italic 400 clamp(2rem, 3.4vw, 3rem) / 1 var(--font-display);
+  }
+  .pc__cap p {
+    margin-top: 0.5rem;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+
+  .pc__box {
+    max-width: none;
+    max-height: none;
+    width: 100vw;
+    height: 100dvh;
+    margin: 0;
+    padding: 3vh 3vw;
+    border: 0;
+    background: rgb(17 19 90 / 0.92);
+    cursor: zoom-out;
+  }
+  .pc__box::backdrop {
+    background: transparent;
+  }
+  .pc__box[open] {
+    display: grid;
+    place-items: center;
+  }
+  .pc__box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+  }
+  .pc__close {
+    all: unset;
+    cursor: pointer;
+    position: absolute;
+    top: 1.4rem;
+    right: 1.8rem;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+
+  @media (max-width: 760px) {
+    .pc {
+      --H: min(52vh, 460px);
+    }
+  </style>

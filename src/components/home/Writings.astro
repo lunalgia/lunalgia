@@ -1,0 +1,587 @@
+---
+/**
+ * Board 2: Writings. A "garden" in the henry.codes sense: the three kinds of
+ * writing, each with a faint description; hovering a kind opens its latest
+ * pieces. Positions are in board units (1920 wide).
+ */
+import { Image } from 'astro:assets'
+import { WRITING_KINDS } from '@/content.config'
+import { emphasize, getPosts } from '@/lib/utils'
+import lily from '@/assets/home/lily.png'
+import lilyPale from '@/assets/home/lily-pale.png'
+
+const posts = await getPosts()
+const kinds = (Object.keys(WRITING_KINDS) as (keyof typeof WRITING_KINDS)[]).map((k, i) => ({
+  key: k,
+  n: String(i + 1).padStart(2, '0'),
+  ...WRITING_KINDS[k],
+  items: posts.filter((p) => p.data.kind === k).slice(0, 3),
+}))
+const open = kinds.findIndex((k) => k.items.length > 0)
+const date = (d: Date) =>
+  `${String(d.getDate()).padStart(2, '0')} · ${String(d.getMonth() + 1).padStart(2, '0')} · ${String(d.getFullYear()).slice(2)}`
+// DINdong "Writings", with the letter positions from the board
+const letters = [
+  ['W', 106.24],
+  ['r', 254.25],
+  ['i', 305.23],
+  ['t', 342.49],
+  ['i', 392.91],
+  ['n', 429.54],
+  ['g', 508.36],
+  ['s', 590.13],
+] as const
+---
+
+<section class="writings board" aria-labelledby="writings-title">
+  <div class="panel writings__panel">
+    <div class="writings__clip">
+      <div class="writings__lily" aria-hidden="true">
+        <div class="writings__wm">
+          <Image src={lilyPale} alt="" width={1334} class="writings__wm-img" />
+          <canvas></canvas>
+        </div>
+        <Image src={lily} alt="" width={1334} class="writings__ink" />
+      </div>
+      <div class="writings__ring" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <h2 id="writings-title" class="writings__title" aria-label="Writings">
+    <svg viewBox="0 0 760 260" aria-hidden="true">
+      {letters.map(([ch, x]) => (
+        <text x={x} y="224.39">
+          {ch}
+        </text>
+      ))}
+    </svg>
+  </h2>
+
+  <div class="garden">
+    <p class="meta garden__meta">the garden · sorted by how finished it is</p>
+    <ul class="garden__rows" role="list">
+      {
+        kinds.map((k, i) => (
+          <li class:list={['garden__row', { 'is-open': i === (open < 0 ? 0 : open) }]} data-kind={k.key}>
+            <a class="garden__head" href={`/writing#${k.key}`}>
+              <span class="garden__n">({k.n})</span>
+              <span class="garden__kind">{k.label}</span>
+              <span class="garden__blurb">{k.blurb}</span>
+            </a>
+            <div class="garden__drawer">
+              <ol class="garden__entries" role="list">
+                {k.items.map((p) => (
+                  <li>
+                    <a href={`/writing/${p.id}`}>
+                      <span class="garden__entry" set:html={emphasize(p.data.title)} />
+                      <span class="garden__date">{date(p.data.date)}</span>
+                    </a>
+                  </li>
+                ))}
+                {k.items.length < 2 && (
+                  <li class="garden__ghost">
+                    <span class="garden__entry">the next one goes here</span>
+                    <span class="garden__date">— · — · —</span>
+                  </li>
+                )}
+              </ol>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <a class="writings__all" href="/writing">every piece, by date<span aria-hidden="true"></span></a>
+  <p class="meta writings__count">{kinds.length} kinds · {posts.length} {posts.length === 1 ? 'piece' : 'pieces'} so far</p>
+</section>
+
+<script>
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  gsap.registerPlugin(ScrollTrigger)
+
+  /** the lily develops out of an ordered dither, like a print in a tray */
+  const develop = (box: HTMLElement) => {
+    const img = box.querySelector<HTMLImageElement>('img')!
+    const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
+    const run = () => {
+      const w = 900
+      const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+      ctx.drawImage(img, 0, 0, w, h)
+      const src = ctx.getImageData(0, 0, w, h)
+      const out = ctx.createImageData(w, h)
+      // 4×4 Bayer thresholds, a little noise, and a top-to-bottom bias
+      const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+      const thr = new Float32Array(w * h)
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) {
+          const b = bayer[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16
+          thr[y * w + x] = b * 0.55 + Math.random() * 0.25 + (y / h) * 0.2
+        }
+      img.style.opacity = '0'
+      canvas.style.opacity = '1'
+      const state = { p: 0 }
+      gsap.to(state, {
+        p: 1.02,
+        duration: 1.8,
+        ease: 'power1.inOut',
+        onUpdate: () => {
+          const s = src.data
+          const o = out.data
+          for (let i = 0, j = 0; i < thr.length; i++, j += 4) {
+            const on = thr[i] < state.p
+            o[j] = s[j]
+            o[j + 1] = s[j + 1]
+            o[j + 2] = s[j + 2]
+            o[j + 3] = on ? s[j + 3] : 0
+          }
+          ctx.putImageData(out, 0, 0)
+        },
+        onComplete: () => {
+          img.style.opacity = '1'
+          canvas.style.opacity = '0'
+        },
+      })
+    }
+    if (img.complete && img.naturalWidth) run()
+    else img.addEventListener('load', run, { once: true })
+  }
+
+  /**
+   * The lens: under the cursor the watermark gives way to the inked lily,
+   * inside a hard-edged circle with a hairline ring.
+   */
+  const lens = (root: HTMLElement) => {
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    const clip = root.querySelector<HTMLElement>('.writings__clip')!
+    const ink = root.querySelector<HTMLElement>('.writings__ink')!
+    const ring = root.querySelector<HTMLElement>('.writings__ring')!
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const state = { x: 0, y: 0, r: 0 }
+    let target = { x: 0, y: 0 }
+    let open = false
+    const radius = () => (clip.getBoundingClientRect().width / 1920) * 170
+
+    const paint = () => {
+      const ib = ink.getBoundingClientRect()
+      const cb = clip.getBoundingClientRect()
+      ink.style.clipPath = `circle(${state.r}px at ${state.x + cb.left - ib.left}px ${state.y + cb.top - ib.top}px)`
+      ring.style.transform = `translate(${state.x}px, ${state.y}px)`
+      ring.style.width = ring.style.height = `${state.r * 2}px`
+      ring.style.opacity = state.r > 1 ? '1' : '0'
+    }
+    const follow = calm
+      ? () => {
+          state.x = target.x
+          state.y = target.y
+          paint()
+        }
+      : () => gsap.to(state, { x: target.x, y: target.y, duration: 0.35, ease: 'power3.out', overwrite: 'auto', onUpdate: paint })
+
+    root.addEventListener('pointermove', (e) => {
+      const cb = clip.getBoundingClientRect()
+      const ib = ink.getBoundingClientRect()
+      const over = e.clientX > ib.left && e.clientX < ib.right && e.clientY > ib.top && e.clientY < ib.bottom
+      target = { x: e.clientX - cb.left, y: e.clientY - cb.top }
+      if (!open) {
+        state.x = target.x
+        state.y = target.y
+      }
+      if (over !== open) {
+        open = over
+        gsap.to(state, {
+          r: over ? radius() : 0,
+          duration: calm ? 0 : over ? 0.55 : 0.35,
+          ease: over ? 'power3.out' : 'power2.in',
+          onUpdate: paint,
+        })
+      }
+      follow()
+    })
+    root.addEventListener('pointerleave', () => {
+      open = false
+      gsap.to(state, { r: 0, duration: calm ? 0 : 0.35, ease: 'power2.in', onUpdate: paint })
+    })
+    paint()
+  }
+
+  const init = () => {
+    const root = document.querySelector<HTMLElement>('.writings')
+    if (!root || root.dataset.ready) return
+    root.dataset.ready = '1'
+
+    // hovering a kind opens it; leaving the garden keeps the last one open
+    const rows = [...root.querySelectorAll<HTMLElement>('.garden__row')]
+    rows.forEach((row) =>
+      row.addEventListener('mouseenter', () => rows.forEach((r) => r.classList.toggle('is-open', r === row))),
+    )
+    root.querySelector('.garden__rows')?.addEventListener('focusin', (e) => {
+      const row = (e.target as Element).closest<HTMLElement>('.garden__row')
+      if (row) rows.forEach((r) => r.classList.toggle('is-open', r === row))
+    })
+
+    lens(root)
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const title = root.querySelectorAll('.writings__title text')
+    const lily = root.querySelector<HTMLElement>('.writings__lily')!
+    const wm = root.querySelector<HTMLElement>('.writings__wm')!
+    gsap.set(root.querySelector('.writings__panel'), { '--draw': 0 })
+    gsap.set(title, { opacity: 0, y: 40 })
+    gsap.set(wm.querySelector('img'), { opacity: 0 })
+    gsap.set('.garden__meta, .garden__row, .writings__all, .writings__count', { opacity: 0, y: 18 })
+
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const tl = gsap.timeline()
+        tl.to(root.querySelector('.writings__panel'), { '--draw': 1, duration: 1.4, ease: 'power3.inOut' }, 0)
+        tl.to(title, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.05 }, 0.25)
+        tl.call(() => develop(wm), [], 0.5)
+        tl.to(
+          '.garden__meta, .garden__row, .writings__all, .writings__count',
+          { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08 },
+          0.6,
+        )
+      },
+    })
+
+    // the lily drifts a touch slower than the page
+    gsap.fromTo(
+      lily,
+      { yPercent: 6 },
+      { yPercent: -6, ease: 'none', scrollTrigger: { trigger: root, start: 'top bottom', end: 'bottom top', scrub: true } },
+    )
+  }
+
+  document.addEventListener('astro:page-load', init)
+</script>
+
+<style>
+  .writings {
+    z-index: 1;
+    color: var(--mist);
+  }
+
+  /* the panel's top and bottom rules draw across from the left */
+  .writings__panel {
+    --draw: 1;
+    border-block-color: transparent;
+  }
+  .writings__panel::before,
+  .writings__panel::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.89px;
+    background: var(--ultramarine);
+    transform-origin: 0 50%;
+    transform: scaleX(var(--draw));
+  }
+  .writings__panel::before {
+    top: -1.89px;
+  }
+  .writings__panel::after {
+    bottom: -1.89px;
+  }
+
+  .writings__title {
+    margin: 0;
+    font-weight: 400;
+  }
+  .writings__title svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  .writings__title text {
+    font-family: var(--font-din);
+    font-size: 144px;
+    fill: var(--lavender);
+  }
+
+  .writings__clip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .writings__lily {
+    position: absolute;
+    left: 45%;
+    top: 22%;
+    width: 120%;
+  }
+  .writings__wm {
+    position: relative;
+    opacity: 0.16;
+  }
+  .writings__lily :global(img),
+  .writings__wm canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+  .writings__wm canvas {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .writings__lily :global(.writings__ink) {
+    position: absolute;
+    inset: 0;
+    clip-path: circle(0 at 50% 50%);
+  }
+  .writings__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    translate: -50% -50%;
+    border: 1px solid rgb(210 211 221 / 0.7);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .garden__meta {
+    color: var(--lavender);
+  }
+  .garden__rows {
+    border-bottom: 1px solid rgb(160 149 201 / 0.35);
+  }
+  .garden__row {
+    border-top: 1px solid rgb(160 149 201 / 0.35);
+  }
+  .garden__head {
+    display: grid;
+    grid-template-columns: 4.2em 1fr;
+    align-items: baseline;
+    padding-block: 1.1rem 1.2rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .garden__n {
+    font-family: var(--font-mori);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: var(--lavender);
+  }
+  .garden__kind {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 1;
+    transition:
+      color 0.5s var(--ease-out),
+      opacity 0.5s var(--ease-out);
+  }
+  .garden__blurb {
+    grid-column: 2;
+    margin-top: 0.4rem;
+    font-family: var(--font-mori);
+    font-size: 0.95rem;
+    color: rgb(210 211 221 / 0.45);
+    transition: color 0.5s var(--ease-out);
+  }
+  .garden__row.is-open .garden__kind {
+    font-style: italic;
+    color: #fff;
+  }
+  .garden__rows:has(.is-open) .garden__row:not(.is-open) .garden__kind {
+    color: rgb(210 211 221 / 0.4);
+  }
+  .garden__rows:has(.is-open) .garden__row:not(.is-open) .garden__blurb {
+    color: rgb(210 211 221 / 0.25);
+  }
+
+  /* the drawer opens with grid-template-rows 0fr → 1fr */
+  .garden__drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.7s var(--ease-out);
+  }
+  .garden__row.is-open .garden__drawer {
+    grid-template-rows: 1fr;
+  }
+  .garden__entries {
+    overflow: hidden;
+    padding-left: 4.2em;
+    font-size: inherit;
+  }
+  .garden__entries li {
+    padding-bottom: 0.6rem;
+  }
+  .garden__entries li:last-child {
+    padding-bottom: 1.4rem;
+  }
+  .garden__entries a,
+  .garden__ghost {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--mist);
+  }
+  .garden__entry {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+  .garden__entries a:hover .garden__entry {
+    color: #fff;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+  .garden__date {
+    font-family: var(--font-mori);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--lavender);
+  }
+  .garden__ghost {
+    color: rgb(210 211 221 / 0.35);
+  }
+
+  .writings__all {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.5rem;
+    color: var(--lavender);
+    text-decoration: none;
+  }
+  .writings__all span {
+    display: inline-block;
+    width: 2.3rem;
+    height: 1px;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    background: currentColor;
+    transition: width 0.5s var(--ease-out);
+  }
+  .writings__all:hover span {
+    width: 3.6rem;
+  }
+  .writings__count {
+    color: var(--lavender);
+  }
+
+  /* ---------- phones: a plain column inside the panel ---------- */
+  @media (max-aspect-ratio: 4/3) {
+    .writings {
+      padding: 3.5rem 1.25rem 3.5rem;
+    }
+    .writings__panel {
+      inset: 1.25rem 0;
+      height: auto;
+    }
+    .writings > :not(.panel) {
+      position: relative;
+    }
+    .writings__title {
+      width: 72%;
+      margin: 0.5rem 0 1.5rem;
+    }
+    .garden__meta {
+      margin-bottom: 1rem;
+    }
+    .writings__all {
+      display: inline-block;
+      margin-top: 2rem;
+    }
+    .writings__count {
+      margin-top: 0.75rem;
+    }
+    .garden__drawer {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  /* ---------- wide: the board, placed in board units ---------- */
+  @media (min-aspect-ratio: 4/3) {
+    .writings {
+      aspect-ratio: 16 / 9;
+    }
+    .writings > :not(.panel) {
+      position: absolute;
+    }
+    .writings__title {
+      left: 0;
+      top: 0;
+      width: calc(760 * var(--u));
+    }
+    .writings__lily {
+      left: calc(900 * var(--u));
+      top: calc(110 * var(--u));
+      width: calc(1300 * var(--u));
+    }
+    .garden {
+      left: calc(112 * var(--u));
+      top: calc(352 * var(--u));
+      width: calc(1000 * var(--u));
+      font-size: calc(20 * var(--u));
+    }
+    .garden__meta {
+      font-size: calc(15 * var(--u));
+      margin-bottom: calc(26 * var(--u));
+    }
+    .garden__head {
+      padding-block: calc(20 * var(--u)) calc(22 * var(--u));
+      grid-template-columns: calc(70 * var(--u)) calc(300 * var(--u)) 1fr;
+    }
+    .garden__n {
+      font-size: calc(15 * var(--u));
+    }
+    .garden__kind {
+      font-size: calc(62 * var(--u));
+    }
+    .garden__blurb {
+      grid-column: 3;
+      margin: 0;
+      font-size: calc(20 * var(--u));
+    }
+    .garden__entries {
+      padding-left: calc(70 * var(--u));
+    }
+    .garden__entries li {
+      padding-bottom: calc(12 * var(--u));
+    }
+    .garden__entries li:last-child {
+      padding-bottom: calc(24 * var(--u));
+    }
+    .garden__entry {
+      font-size: calc(32 * var(--u));
+    }
+    .garden__date {
+      font-size: calc(16 * var(--u));
+    }
+    .writings__all {
+      left: calc(112 * var(--u));
+      top: calc(918 * var(--u));
+      font-size: calc(30 * var(--u));
+    }
+    .writings__all span {
+      width: calc(46 * var(--u));
+      margin-left: calc(12 * var(--u));
+    }
+    .writings__all:hover span {
+      width: calc(80 * var(--u));
+    }
+    .writings__count {
+      right: calc(76 * var(--u));
+      top: calc(930 * var(--u));
+      font-size: calc(15 * var(--u));
+    }
+  }
+</style>

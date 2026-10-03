@@ -1,0 +1,217 @@
+---
+/**
+ * Work: a poster carousel, then projects. Posters live in src/content/posters,
+ * projects in src/content/work (copy _template.md). The CV and the BL4S
+ * proposal are served from public/files, symlinked to their LaTeX builds.
+ */
+import { getCollection, render } from 'astro:content'
+import { Image } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import PosterCarousel from '@/components/work/PosterCarousel.astro'
+
+const posters = (await getCollection('posters', ({ data }) => import.meta.env.DEV || !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+)
+const work = await Promise.all(
+  (await getCollection('work', ({ data }) => import.meta.env.DEV || !data.draft))
+    .sort((a, b) => a.data.order - b.data.order || b.data.date.valueOf() - a.data.date.valueOf())
+    .map(async (w) => ({ w, Content: (await render(w)).Content, hasBody: Boolean(w.body?.trim()) })),
+)
+const when = (d: Date) => d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+---
+
+<Base title="Work" description="Posters, projects and my CV.">
+  <header class="wh">
+    <h1 class="wh__t">Work</h1>
+    <nav class="wh__nav" aria-label="work">
+      <a href="#posters">(posters)</a>
+      <a href="#projects">(projects)</a>
+      <a href="/files/cv.pdf" target="_blank" rel="noopener">(cv ↗)</a>
+    </nav>
+    <p class="wh__lede">Things I have designed and made. Drag through the posters, or click one to see it whole.</p>
+  </header>
+
+  <div id="posters">
+    <PosterCarousel posters={posters} heading="I · POSTERS" />
+  </div>
+
+  <section class="wp" id="projects" aria-label="projects">
+    <header class="wp__top">
+      <span>II · PROJECTS</span>
+      <span>{String(work.length).padStart(2, '0')}</span>
+    </header>
+    {
+      work.map(({ w, Content, hasBody }) => (
+        <article class="pj">
+          {w.data.cover && (
+            <div class="pj__media">
+              <Image src={w.data.cover} alt="" widths={[600, 1000, 1400]} sizes="(min-width: 900px) 46vw, 92vw" class="pj__cover" />
+              {w.data.gallery.length > 0 && (
+                <div class="pj__gallery">
+                  {w.data.gallery.map((g) => (
+                    <Image src={g} alt="" width={360} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          <div class="pj__text">
+            <p class="pj__when">{when(w.data.date)}</p>
+            <h2 class="pj__t">{w.data.title}</h2>
+            <p class="pj__sum">{w.data.summary}</p>
+            {w.data.role && <p class="pj__role">role: {w.data.role}</p>}
+            {hasBody && (
+              <div class="pj__body">
+                <Content />
+              </div>
+            )}
+            {w.data.tags.length > 0 && (
+              <p class="pj__tags">
+                {w.data.tags.map((t) => (
+                  <span>{t}</span>
+                ))}
+              </p>
+            )}
+            {w.data.links.length > 0 && (
+              <p class="pj__links">
+                {w.data.links.map((l) => (
+                  <a href={l.href} target={l.href.startsWith('/files/') || l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+                    {l.label} ↗
+                  </a>
+                ))}
+              </p>
+            )}
+          </div>
+        </article>
+      ))
+    }
+  </section>
+</Base>
+
+<style>
+  .wh {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .wh__t {
+    margin: 0;
+    font: 400 clamp(5rem, 12vw, 11rem) / 0.9 var(--font-din);
+  }
+  .wh__nav {
+    display: flex;
+    gap: 1.6rem;
+    font: italic 1.5rem var(--font-display);
+  }
+  .wh__nav a,
+  .pj__links a {
+    text-decoration: none;
+  }
+  .wh__nav a:hover,
+  .pj__links a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .wh__lede {
+    grid-column: 1 / -1;
+    max-width: 34rem;
+    font: 1.2rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+  #posters {
+    margin-top: 3rem;
+  }
+
+  .wp {
+    padding: 4rem 4vw 6rem;
+    color: var(--ultramarine);
+  }
+  .wp__top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid var(--ultramarine);
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .pj {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 4vw;
+    padding: 3.5rem 0;
+    border-bottom: 1px solid rgb(2 8 135 / 0.3);
+  }
+  .pj__cover {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    box-shadow: 0 30px 50px -30px rgb(17 19 90 / 0.7);
+  }
+  .pj__gallery {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+  .pj__gallery img {
+    width: 9rem;
+    height: 9rem;
+    object-fit: cover;
+  }
+  .pj__when {
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .pj__t {
+    margin: 0.8rem 0 1rem;
+    font: italic 400 clamp(2.6rem, 4.6vw, 4.6rem) / 0.95 var(--font-display);
+  }
+  .pj__sum {
+    font: 1.3rem/1.5 var(--font-body);
+    color: #11135a;
+    max-width: 34rem;
+  }
+  .pj__role {
+    margin-top: 0.8rem;
+    font: italic 1.15rem var(--font-display);
+  }
+  .pj__body {
+    margin-top: 1rem;
+    max-width: 34rem;
+    font: 1.1rem/1.6 var(--font-body);
+    color: #11135a;
+  }
+  .pj__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.4rem;
+  }
+  .pj__tags span {
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgb(2 8 135 / 0.4);
+  }
+  .pj__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    margin-top: 1.4rem;
+    font: italic 1.3rem var(--font-display);
+  }
+  @media (max-width: 860px) {
+    .wh {
+      grid-template-columns: 1fr;
+    }
+    .pj {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

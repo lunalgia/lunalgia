@@ -1,0 +1,177 @@
+---
+/**
+ * The status line, after henry.codes: the bottom edge of the hero frame
+ * becomes a slow ticker. Weather, time and moon are worked out in the
+ * browser; the rest comes from src/data/now.md.
+ */
+import { frontmatter as now } from '@/data/now.md'
+
+const items: { label: string; value?: string; slot?: string }[] = [
+  { label: '—°C', value: `${now.place}, ${now.coords}`, slot: 'weather' },
+  { label: '—:— IST', slot: 'time' },
+  { label: 'MOON', value: '…', slot: 'moon' },
+  ...(now.reading ? [{ label: 'NOW READING', value: now.reading }] : []),
+  ...(now.listening ? [{ label: 'ON REPEAT', value: now.listening }] : []),
+  ...(now.studying ? [{ label: 'STUDYING', value: now.studying }] : []),
+]
+---
+
+<div class="sbar" data-lat={now.latitude} data-lon={now.longitude} role="status" aria-live="off">
+  <div class="sbar__track">
+    {
+      [0, 1].map((copy) => (
+        <p class="sbar__run" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {items.map((it) => (
+            <span class="sbar__item">
+              <span class="sbar__label" data-slot={it.slot && `${it.slot}-label`}>
+                — {it.label}
+              </span>
+              {it.value !== undefined && (
+                <span class="sbar__value" data-slot={it.slot && `${it.slot}-value`}>
+                  {it.value}
+                </span>
+              )}
+            </span>
+          ))}
+        </p>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const WEATHER: [number[], string][] = [
+    [[0], 'CLEAR'],
+    [[1, 2], 'FAIR'],
+    [[3], 'OVERCAST'],
+    [[45, 48], 'FOG'],
+    [[51, 53, 55, 56, 57], 'DRIZZLE'],
+    [[61, 63, 65, 66, 67, 80, 81, 82], 'RAIN'],
+    [[95, 96, 99], 'THUNDER'],
+  ]
+  const PHASES = [
+    'new moon',
+    'waxing crescent',
+    'first quarter',
+    'waxing gibbous',
+    'full moon',
+    'waning gibbous',
+    'last quarter',
+    'waning crescent',
+  ]
+
+  const set = (root: HTMLElement, slot: string, text: string) =>
+    root.querySelectorAll(`[data-slot="${slot}"]`).forEach((el) => (el.textContent = text))
+
+  const moon = () => {
+    const SYN = 29.530588853
+    const ref = Date.UTC(2000, 0, 6, 18, 14) // a known new moon
+    const age = ((((Date.now() - ref) / 86400000) % SYN) + SYN) % SYN
+    const lit = Math.round(((1 - Math.cos((2 * Math.PI * age) / SYN)) / 2) * 100)
+    return `${PHASES[Math.round((age / SYN) * 8) % 8]}, ${lit}%`
+  }
+
+  const init = () => {
+    const root = document.querySelector<HTMLElement>('.sbar')
+    if (!root || root.dataset.ready) return
+    root.dataset.ready = '1'
+
+    const clock = () =>
+      set(
+        root,
+        'time-label',
+        `— ${new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' }).format(new Date())} IST`,
+      )
+    clock()
+    const timer = setInterval(clock, 20000)
+    document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true })
+    set(root, 'moon-value', moon())
+
+    const { lat, lon } = root.dataset
+    fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Asia%2FKolkata`,
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const c = d?.current
+        if (!c) return
+        const word = WEATHER.find(([codes]) => codes.includes(c.weather_code))?.[1]
+        set(root, 'weather-label', `— ${Math.round(c.temperature_2m)}°C${word ? `, ${word}` : ''}`)
+      })
+      .catch(() => {})
+  }
+  document.addEventListener('astro:page-load', init)
+</script>
+
+<style>
+  .sbar {
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2.6rem;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-block: 1.5px solid var(--ultramarine);
+    background: var(--lavender) url('../../assets/grain.png');
+    background-size: 256px 256px;
+    color: var(--ultramarine);
+  }
+  .sbar__track {
+    display: flex;
+    width: max-content;
+    animation: sbar 70s linear infinite;
+  }
+  .sbar:hover .sbar__track {
+    animation-play-state: paused;
+  }
+  @keyframes sbar {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sbar__track {
+      animation: none;
+    }
+  }
+  .sbar__run {
+    margin: 0;
+    white-space: nowrap;
+    padding-left: 0.9rem;
+  }
+  .sbar__item {
+    margin-right: 1.7em;
+  }
+  .sbar__label {
+    font-family: var(--font-din);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    margin-right: 0.75em;
+  }
+  .sbar__value {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+  }
+
+  /* wide: the frame's bottom edge is the bar's top rule */
+  @media (min-aspect-ratio: 4/3) {
+    .sbar {
+      left: calc(100% * 44.5 / 1920);
+      right: calc(100% * 45.3 / 1920);
+      top: calc(100% * 1035 / 1080);
+      bottom: auto;
+      height: max(2.3rem, calc(100vw * 52 / 1920));
+      border-top-width: 1.93px;
+    }
+    .sbar__label {
+      font-size: max(0.66rem, calc(100vw * 17 / 1920));
+    }
+    .sbar__value {
+      font-size: max(0.92rem, calc(100vw * 23 / 1920));
+    }
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+/**
+ * Board 3: "Hello, I go by Lilian" laid across a dithered painting. The part
+ * of the line that crosses the picture is white: a second copy of the line sits
+ * inside the picture's clip, at the same place, so the split is exact at any
+ * size and survives the reveal animation.
+ */
+import { Image } from 'astro:assets'
+import cobweb from '@/assets/home/cobweb.png'
+
+const line = 'Hello, I go by Lilian'
+---
+
+<section id="hello" class="hello board" aria-label={line}>
+  <p class="hello__line hello__line--ink" aria-hidden="true">{line}</p>
+  <div class="hello__frame">
+    <div class="hello__pic">
+      <Image src={cobweb} alt="" width={608} densities={[1, 2]} loading="lazy" />
+    </div>
+    <p class="hello__line hello__line--light" aria-hidden="true">{line}</p>
+  </div>
+  <h2 class="visually-hidden">{line}</h2>
+</section>
+
+<script>
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  gsap.registerPlugin(ScrollTrigger)
+
+  const init = () => {
+    const root = document.querySelector<HTMLElement>('.hello')
+    if (!root || root.dataset.ready) return
+    root.dataset.ready = '1'
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const frame = root.querySelector('.hello__frame')
+    const pic = root.querySelector('.hello__pic')
+    const lines = root.querySelectorAll('.hello__line')
+
+    gsap.set(frame, { clipPath: 'inset(50% 0% 50% 0%)' })
+    gsap.set(pic, { scale: 1.18 })
+    gsap.set(lines, { opacity: 0, x: -40 })
+
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top 62%',
+      once: true,
+      onEnter: () => {
+        gsap
+          .timeline()
+          .to(frame, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'power3.inOut' }, 0)
+          .to(pic, { scale: 1.04, duration: 2.2, ease: 'power3.out' }, 0)
+          // both copies move as one, so the white part stays on the picture
+          .to(lines, { opacity: 1, x: 0, duration: 1.6, ease: 'power3.out' }, 0.55)
+      },
+    })
+
+    // the painting drifts inside its frame while the frame stays put
+    gsap.fromTo(
+      pic,
+      { yPercent: -3 },
+      { yPercent: 3, ease: 'none', scrollTrigger: { trigger: root, start: 'top bottom', end: 'bottom top', scrub: true } },
+    )
+  }
+
+  document.addEventListener('astro:page-load', init)
+</script>
+
+<style>
+  .hello {
+    /* phones: a 1000-unit board; wide screens: the 1920 board */
+    --bw: 1000;
+    --img-x: 195;
+    --img-y: 70;
+    --img-w: 610;
+    --img-h: 912;
+    --fs: 104;
+    --line-x: 175;
+    --line-y: 560;
+    --u: calc(100cqi / var(--bw));
+    aspect-ratio: 1000 / 1060;
+  }
+  @media (min-aspect-ratio: 4/3) {
+    .hello {
+      --bw: 1920;
+      --img-x: 656;
+      --img-y: 96.08;
+      --img-w: 608;
+      --img-h: 908;
+      --fs: 146.5;
+      --line-x: 509.19;
+      --line-y: 581.43;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .hello__frame {
+    position: absolute;
+    left: calc(var(--img-x) * var(--u));
+    top: calc(var(--img-y) * var(--u));
+    width: calc(var(--img-w) * var(--u));
+    height: calc(var(--img-h) * var(--u));
+    overflow: hidden;
+  }
+  .hello__pic,
+  .hello__pic :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .hello__pic :global(img) {
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+
+  .hello__line {
+    position: absolute;
+    margin: 0;
+    white-space: nowrap;
+    font-family: var(--font-fraunces);
+    font-style: italic;
+    font-size: calc(var(--fs) * var(--u));
+    line-height: 1;
+    /* a lower optical size thickens Fraunces' hairlines; at its display size
+       the bar of the H is thinner than a pixel and vanishes on smaller screens */
+    font-variation-settings:
+      'opsz' 60,
+      'wght' 190,
+      'SOFT' 0,
+      'WONK' 1;
+    /* place the baseline (≈ 0.98em below the top of the line box) on --line-y */
+    top: calc(var(--line-y) * var(--u) - 0.93em);
+    pointer-events: none;
+  }
+  .hello__line--ink {
+    left: calc(var(--line-x) * var(--u));
+    color: var(--ultramarine);
+  }
+  .hello__line--light {
+    left: calc((var(--line-x) - var(--img-x)) * var(--u));
+    top: calc((var(--line-y) - var(--img-y)) * var(--u) - 0.93em);
+    color: #fff;
+  }
+</style>

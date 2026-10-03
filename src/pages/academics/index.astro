@@ -1,0 +1,161 @@
+---
+/**
+ * Academics: one Markdown/MDX file per course in src/content/academics,
+ * grouped by year and semester. Same header and section bars as Media and Work.
+ */
+import { getCollection, type CollectionEntry } from 'astro:content'
+import Base from '@/layouts/Base.astro'
+import { formatDate } from '@/lib/utils'
+
+type Lecture = CollectionEntry<'academics'>
+const lectures = await getCollection('academics')
+
+const semLabel = (s?: number) => (s === 1 ? 'FIRST SEMESTER' : s === 2 ? 'SECOND SEMESTER' : 'UNSORTED')
+const sections = [...Map.groupBy(lectures, (l) => `${l.data.year ?? 0}-${l.data.semester ?? 0}`)]
+  .map(([, items]) => ({
+    year: items[0].data.year,
+    sem: items[0].data.semester,
+    items: items.sort(
+      (a: Lecture, b: Lecture) => (a.data.order ?? 99) - (b.data.order ?? 99) || a.data.title.localeCompare(b.data.title),
+    ),
+  }))
+  .sort((a, b) => (b.year ?? 0) - (a.year ?? 0) || (b.sem ?? 0) - (a.sem ?? 0))
+const years = [...new Set(sections.map((s) => s.year).filter(Boolean))]
+const subject = (l: Lecture) => [l.data.folder?.split('/')[0], ...l.data.tags.slice(1)].filter(Boolean).join(' · ')
+const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+---
+
+<Base title="Academics" description="Course notes and lecture materials from my courses at CMI.">
+  <header class="ah">
+    <h1 class="ah__t">Academics</h1>
+    <nav class="ah__nav" aria-label="years">
+      {years.map((y) => <a href={`#y${y}`}>({y})</a>)}
+    </nav>
+    <p class="ah__lede">
+      Course notes and materials from the courses I have taken at Chennai Mathematical Institute. Open a course for its
+      notes and everything it handed out.
+    </p>
+  </header>
+
+  {
+    sections.map((s, i) => (
+      <section class="as" id={`y${s.year}`}>
+        <header class="as__top">
+          <span>
+            {roman[i]} · {s.year ?? 'UNDATED'} · {semLabel(s.sem)}
+          </span>
+          <span>{String(s.items.length).padStart(2, '0')}</span>
+        </header>
+        <ol class="as__list" role="list">
+          {s.items.map((l) => (
+            <li>
+              <a class="co" href={`/academics/${l.id}`}>
+                <span class="co__sub">{subject(l)}</span>
+                <span class="co__t">{l.data.title}</span>
+                <span class="co__meta">
+                  {l.data.pdf && <span class="co__chip">notes</span>}
+                  {l.data.folder && <span class="co__chip">materials</span>}
+                  {l.data.date && <time datetime={l.data.date.toISOString()}>{formatDate(l.data.date, 'short')}</time>}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .ah {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .ah__t {
+    margin: 0;
+    font: 400 clamp(4rem, 11vw, 10rem) / 0.9 var(--font-din);
+  }
+  .ah__nav {
+    display: flex;
+    gap: 1.6rem;
+    font: italic 1.5rem var(--font-display);
+  }
+  .ah__nav a {
+    text-decoration: none;
+  }
+  .ah__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .ah__lede {
+    grid-column: 1 / -1;
+    max-width: 34rem;
+    font: 1.2rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+
+  .as {
+    padding: 4rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .as:last-of-type {
+    padding-bottom: 6rem;
+  }
+  .as__top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid var(--ultramarine);
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .co {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem 2rem;
+    align-items: baseline;
+    padding: 1.6rem 0;
+    border-bottom: 1px solid rgb(2 8 135 / 0.3);
+    text-decoration: none;
+  }
+  .co__sub {
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .co__t {
+    font: italic 400 clamp(2.2rem, 4vw, 3.6rem) / 1 var(--font-display);
+    transition: translate 0.5s var(--ease-out);
+  }
+  .co:hover .co__t {
+    translate: 0.6rem 0;
+  }
+  .co__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .co__chip {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgb(2 8 135 / 0.4);
+  }
+  @media (min-width: 900px) {
+    .co {
+      grid-template-columns: 13rem 1fr auto;
+    }
+  }
+  @media (max-width: 760px) {
+    .ah {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
