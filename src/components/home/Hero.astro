@@ -172,6 +172,7 @@ const drawings = [
 
 <script>
   import { gsap } from 'gsap'
+  import { markIntroDone, markIntroRunning } from '@/scripts/after-intro'
 
   /** show only [a, b] of a path (in length units) using a single dash */
   const range = (p: SVGPathElement, len: number, a: number, b: number) => {
@@ -208,11 +209,12 @@ const drawings = [
     const svg = [...hero.querySelectorAll<SVGSVGElement>('.hero__art')].find(
       (el) => getComputedStyle(el).display !== 'none',
     )
-    if (!svg) return
+    if (!svg) return markIntroDone()
     if (instant) {
       svg.classList.add('is-ready')
-      return
+      return markIntroDone()
     }
+    markIntroRunning()
 
     const letters = [...svg.querySelectorAll<SVGPathElement>('.hero__letter')]
     const labels = svg.querySelectorAll('.road__label')
@@ -316,15 +318,18 @@ const drawings = [
     tl.to(tag, { opacity: 1, duration: 1.2, ease: 'power2.out' }, done - 1)
     tl.call(() => letters.forEach((l) => l.removeAttribute('style')))
 
-    // any input finishes the drawing at once
+    // any input hurries the drawing to its end (a jump straight to the end reads as a stutter)
     const finish = () => {
-      tl.progress(1)
       off()
+      gsap.to(tl, { timeScale: 7, duration: 0.35, ease: 'power1.in' })
     }
     const events = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const
     const off = () => events.forEach((e) => removeEventListener(e, finish))
     events.forEach((e) => addEventListener(e, finish, { passive: true, once: true }))
-    tl.eventCallback('onComplete', off)
+    tl.eventCallback('onComplete', () => {
+      off()
+      markIntroDone()
+    })
   }
 
   document.addEventListener('astro:page-load', play)

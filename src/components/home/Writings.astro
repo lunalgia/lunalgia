@@ -99,6 +99,7 @@ const letters = [
 <script>
   import { gsap } from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { afterIntro, inSlices } from '@/scripts/after-intro'
   gsap.registerPlugin(ScrollTrigger)
 
   /**
@@ -106,60 +107,74 @@ const letters = [
    *
    * Each pixel gets a threshold (4×4 Bayer, a little noise, a top-to-bottom
    * bias) and appears once the reveal passes it. The pixels are sorted by
-   * threshold ahead of time, while the page is idle, so each frame of the
-   * reveal only touches the pixels that turn on in that frame instead of
-   * re-checking the whole canvas.
+   * threshold ahead of time (after the hero has drawn, in small idle-time
+   * slices; see after-intro.ts), so each frame of the reveal only touches the
+   * pixels that turn on in that frame instead of re-checking the whole canvas.
    */
   const LEVELS = 256
   const MAX_T = 1
   type Plan = { ctx: CanvasRenderingContext2D; out: ImageData; order: Uint32Array; starts: Uint32Array }
 
-  const prepare = (box: HTMLElement): Promise<Plan> =>
-    new Promise((resolve) => {
-      const img = box.querySelector<HTMLImageElement>('img')!
-      const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
-      const build = () => {
-        const w = 900
-        const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
+  const prepare = async (box: HTMLElement): Promise<Plan> => {
+    const img = box.querySelector<HTMLImageElement>('img')!
+    const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
+    // wait for the hero to finish drawing
+    await afterIntro()
+    if (!img.complete) await new Promise((r) => img.addEventListener('load', r, { once: true }))
+    const w = 900
+    const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
+    // decode and resize off the main thread: createImageBitmap on the file's bytes (already in the
+    // HTTP cache) runs on a worker thread, whereas drawing or bitmapping the <img> decodes it right here
+    const bitmap = await fetch(img.currentSrc || img.src)
+      .then((r) => r.blob())
+      .then((blob) => createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' }))
+      .catch(() => null)
+    let plan: Plan | undefined
+    await inSlices(
+      (function* () {
         canvas.width = w
         canvas.height = h
-        const ctx = canvas.getContext('2d')!
-        ctx.drawImage(img, 0, 0, w, h)
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+        ctx.drawImage(bitmap ?? img, 0, 0, w, h)
+        bitmap?.close()
+        yield
         const out = ctx.getImageData(0, 0, w, h)
         ctx.clearRect(0, 0, w, h)
+        yield
         const px = out.data
         const n = w * h
-        // keep each pixel's alpha in a side array, start fully transparent
+        // each pixel's alpha goes to a side array; the canvas starts fully transparent
         const alpha = new Uint8Array(n)
-        for (let i = 0, j = 3; i < n; i++, j += 4) {
-          alpha[i] = px[j]
-          px[j] = 0
-        }
-        // bucket every pixel by its threshold (a counting sort)
+        // bucket every pixel by its threshold (a counting sort), a row at a time
         const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
         const level = new Uint16Array(n)
         const counts = new Uint32Array(LEVELS + 1)
-        for (let y = 0, i = 0; y < h; y++)
+        for (let y = 0, i = 0; y < h; y++) {
           for (let x = 0; x < w; x++, i++) {
+            alpha[i] = px[i * 4 + 3]
+            px[i * 4 + 3] = 0
             const b = bayer[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16
             const t = b * 0.55 + Math.random() * 0.25 + (y / h) * 0.2
             const l = Math.min(LEVELS - 1, Math.floor((t / MAX_T) * LEVELS))
             level[i] = l
             counts[l + 1]++
           }
+          yield
+        }
         const starts = new Uint32Array(LEVELS + 1)
         for (let l = 0; l < LEVELS; l++) starts[l + 1] = starts[l] + counts[l + 1]
         const fill = starts.slice(0, LEVELS)
         // store pixel index and its alpha together: index * 256 + alpha
         const order = new Uint32Array(n)
-        for (let i = 0; i < n; i++) order[fill[level[i]]++] = i * 256 + alpha[i]
-        resolve({ ctx, out, order, starts })
-      }
-      const idle = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1))
-      const go = () => idle(build, { timeout: 1500 })
-      if (img.complete && img.naturalWidth) go()
-      else img.addEventListener('load', go, { once: true })
-    })
+        for (let i = 0; i < n; i++) {
+          order[fill[level[i]]++] = i * 256 + alpha[i]
+          if (i % w === w - 1) yield
+        }
+        plan = { ctx, out, order, starts }
+      })(),
+    )
+    return plan!
+  }
 
   const develop = async (box: HTMLElement, plan: Promise<Plan>) => {
     const img = box.querySelector<HTMLImageElement>('img')!

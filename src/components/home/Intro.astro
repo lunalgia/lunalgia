@@ -38,6 +38,7 @@ const label = 'A FEW WORDS, BEFORE YOU WANDER'
   import { gsap } from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { SplitText } from 'gsap/SplitText'
+  import { afterIntro, whenIdle } from '@/scripts/after-intro'
   gsap.registerPlugin(ScrollTrigger, SplitText)
 
   const init = () => {
@@ -51,20 +52,37 @@ const label = 'A FEW WORDS, BEFORE YOU WANDER'
     gsap.set(frame, { clipPath: 'inset(0 50% 0 50%)' })
     gsap.set(labels, { opacity: 0 })
 
-    document.fonts.ready.then(() => {
-      SplitText.create(root.querySelectorAll('.letter__body p'), {
+    // the frame and labels need no splitting, so they never wait for it
+    gsap
+      .timeline({ scrollTrigger: { trigger: root, start: 'top 62%', once: true } })
+      .to(frame, { clipPath: 'inset(0 0% 0 0%)', duration: 1.4, ease: 'power3.inOut' }, 0)
+      .to(labels, { opacity: 1, duration: 0.9, ease: 'power2.out' }, 0.6)
+
+    // splitting text into lines is slow: do it after the hero has drawn, one
+    // paragraph per idle moment, each paragraph's lines continuing the stagger
+    const paras = [...root.querySelectorAll<HTMLElement>('.letter__body p')]
+    const counts = paras.map(() => 0)
+    const split = (i: number) => {
+      SplitText.create(paras[i], {
         type: 'lines',
         mask: 'lines',
         autoSplit: true,
         onSplit: (self) => {
-          const tl = gsap.timeline({ scrollTrigger: { trigger: root, start: 'top 62%', once: true } })
-          tl.to(frame, { clipPath: 'inset(0 0% 0 0%)', duration: 1.4, ease: 'power3.inOut' }, 0)
-            .to(labels, { opacity: 1, duration: 0.9, ease: 'power2.out' }, 0.6)
-            .from(self.lines, { yPercent: 105, duration: 1.1, ease: 'power3.out', stagger: 0.06 }, 0.35)
-          return tl
+          counts[i] = self.lines.length
+          const before = counts.slice(0, i).reduce((a, n) => a + n, 0)
+          return gsap.from(self.lines, {
+            yPercent: 105,
+            duration: 1.1,
+            ease: 'power3.out',
+            stagger: 0.06,
+            delay: 0.35 + before * 0.06,
+            scrollTrigger: { trigger: root, start: 'top 62%', once: true },
+          })
         },
       })
-    })
+      if (i + 1 < paras.length) whenIdle(() => split(i + 1))
+    }
+    Promise.all([document.fonts.ready, afterIntro()]).then(() => whenIdle(() => split(0)))
   }
 
   document.addEventListener('astro:page-load', init)
