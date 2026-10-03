@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "covers": "node scripts/covers.mjs",
     "meta": "node scripts/meta.mjs",
+    "favicon": "node scripts/favicon.mjs",
     "astro": "astro",
     "files": "node scripts/files.mjs"
   },
