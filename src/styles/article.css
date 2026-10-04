@@ -716,9 +716,12 @@
    One column on white A4: the same type, smaller; notes at the end; no site chrome.
    Unlayered so it wins over the screen rules above. */
 @media print {
+  /* top and bottom margins repeat on every sheet; the sides are padding on the page
+     itself (below), which every browser keeps even when it ignores @page margins
+     or the print dialog's "Margins" setting overrides them */
   @page {
     size: A4;
-    margin: 20mm 24mm 22mm;
+    margin: 22mm 0 24mm;
     @bottom-center {
       content: counter(page);
       font: 8pt 'DINdong', serif;
@@ -763,7 +766,7 @@
     display: none !important;
   }
   main {
-    padding: 0 !important;
+    padding: 0 26mm !important;
   }
 
   /* header */
