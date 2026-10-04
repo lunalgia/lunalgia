@@ -2,7 +2,17 @@
 title: The Forever Story
 by: JID
 year: 2022
+genres:
+  - hip-hop/rap
 tags:
   - album
+meta:
+  released: October 2022
+  tracks: '16'
+  label: Dreamville/Interscope
+links:
+  Wikipedia: https://en.wikipedia.org/wiki/The_Forever_Story
+  MusicBrainz: https://musicbrainz.org/release-group/9817edbb-b1a1-419d-afab-b0ee3f214550
+wikidata: Q113642092
 order: 10
 ---

@@ -1,9 +1,19 @@
 ---
-title: 'Ceres & Calypso in the Deep Time'
-short: 'Ceres & Calypso'
+title: Ceres & Calypso in the Deep Time
+short: Ceres & Calypso
 by: Candy Claws
 year: 2011
+genres:
+  - alternative
 tags:
   - album
+meta:
+  released: '2013'
+  tracks: '12'
+  label: Twosyllable Records
+links:
+  Wikipedia: https://en.wikipedia.org/wiki/Ceres_%26_Calypso_in_the_Deep_Time
+  MusicBrainz: https://musicbrainz.org/release-group/5563d737-dba9-4930-ab05-3b0817816dd5
+wikidata: Q27817110
 order: 10
 ---
