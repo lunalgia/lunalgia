@@ -179,5 +179,15 @@
     "w": 640,
     "h": 828,
     "taken": "2026-10-04"
+  },
+  "https://youtu.be/rZwlAcQVzDE": {
+    "kind": "page",
+    "title": "Who Can Write Whose Story?",
+    "description": "A video by Below the Fray.",
+    "site": "youtube.com",
+    "image": "/previews/2a9f1b1b24ea.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-04"
   }
 }
