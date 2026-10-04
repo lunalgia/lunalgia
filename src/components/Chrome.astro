@@ -1,91 +1,349 @@
 ---
+/**
+ * The top bar on every page but home: the way back on the left, the menu on the
+ * right. Same parts as the page headers (Instrument Serif italic, the hairline
+ * arrow, an ultramarine rule) and the same three bars as the home page's menu.
+ * The menu is a small card under the button on wide screens and fills the
+ * screen on phones, like the home menu.
+ */
+import { NAV } from '@/consts'
+
 interface Props {
   home?: boolean
 }
 const { home = false } = Astro.props
+const section = '/' + (Astro.url.pathname.split('/').filter(Boolean)[0] ?? '')
 ---
 
 {
   !home && (
     <nav class="chrome" aria-label="site">
       <a class="chrome__home" href="/" transition:name="home-mark">
-        <span class="chrome__arrow" aria-hidden="true">←</span> <em>lunalgia</em>
+        <svg viewBox="0 0 22 14" width="22" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+          <path d="M21 7H1M7 1 1 7l6 6" />
+        </svg>
+        <em>lunalgia</em>
       </a>
+      <button class="chrome__btn" type="button" aria-expanded="false" aria-controls="cmenu">
+        <span class="chrome__bars" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span class="visually-hidden">menu</span>
+      </button>
+      <div id="cmenu" class="cmenu" hidden>
+        <ol class="cmenu__list" role="list">
+          {NAV.map((l, i) => (
+            <li style={`--i:${i}`}>
+              <a href={l.href} aria-current={l.href === section ? 'page' : undefined}>
+                <span class="cmenu__n">{String(i + 1).padStart(2, '0')}</span>
+                <em>{l.label}</em>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
     </nav>
   )
 }
 
 <script>
-  const watch = () => {
+  const setup = () => {
     const bar = document.querySelector<HTMLElement>('.chrome')
     if (!bar) return
-    const update = () => bar.classList.toggle('is-scrolled', scrollY > 8)
-    update()
-    addEventListener('scroll', update, { passive: true })
-    document.addEventListener('astro:before-swap', () => removeEventListener('scroll', update), { once: true })
+    const btn = bar.querySelector<HTMLButtonElement>('.chrome__btn')!
+    const menu = bar.querySelector<HTMLElement>('.cmenu')!
+    const phone = matchMedia('(max-width: 760px)')
+    const lenis = () => (window as any).__lenis as { stop(): void; start(): void } | undefined
+
+    const onScroll = () => bar.classList.toggle('is-scrolled', scrollY > 8)
+    onScroll()
+
+    let hideTimer = 0
+    const set = (open: boolean) => {
+      if (open === (btn.getAttribute('aria-expanded') === 'true')) return
+      clearTimeout(hideTimer)
+      btn.setAttribute('aria-expanded', String(open))
+      bar.classList.toggle('is-open', open)
+      // only the full-screen version holds the page still
+      const lock = open && phone.matches
+      document.documentElement.classList.toggle('cmenu-open', lock)
+      if (lock) lenis()?.stop()
+      else lenis()?.start()
+      if (open) {
+        menu.hidden = false
+        void menu.offsetWidth
+        menu.classList.add('is-open')
+      } else {
+        menu.classList.remove('is-open')
+        hideTimer = window.setTimeout(() => (menu.hidden = true), 350)
+      }
+    }
+    btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'))
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)))
+
+    const onDoc = (e: MouseEvent) => !bar.contains(e.target as Node) && set(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || btn.getAttribute('aria-expanded') !== 'true') return
+      set(false)
+      btn.focus({ preventScroll: true })
+    }
+    addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('click', onDoc)
+    document.addEventListener('keydown', onKey)
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        removeEventListener('scroll', onScroll)
+        document.removeEventListener('click', onDoc)
+        document.removeEventListener('keydown', onKey)
+        document.documentElement.classList.remove('cmenu-open')
+        lenis()?.start()
+      },
+      { once: true },
+    )
   }
-  document.addEventListener('astro:page-load', watch)
+  document.addEventListener('astro:page-load', setup)
 </script>
 
 <style>
-  /* a band of the page colour that thins out downwards, so text scrolls away under it */
   .chrome {
     position: fixed;
     z-index: 50;
     inset: 0 0 auto 0;
     display: flex;
-    align-items: flex-start;
-    height: 4rem;
-    /* level with the frame's top hairline and the labels on it */
-    padding: calc(var(--frame-inset) - 0.75rem) calc(var(--frame-inset) + 1.25rem) 0;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.75rem;
+    padding: 0 4vw;
+    color: var(--ultramarine);
     pointer-events: none;
-    font-size: 1rem;
   }
+  /* once something scrolls under it: the page colour, closed by a hairline */
   .chrome::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(
-      to bottom,
-      var(--chrome-bg, var(--bg)) 0%,
-      color-mix(in oklab, var(--chrome-bg, var(--bg)) 85%, transparent) 40%,
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent);
-    mask-image: linear-gradient(to bottom, #000 35%, transparent);
+    background: var(--chrome-bg, var(--bg));
+    border-bottom: 1px solid rgb(2 8 135 / 0.3);
     opacity: 0;
     transition: opacity 0.4s var(--ease);
   }
-  /* only once something has scrolled under it */
   .chrome.is-scrolled::before {
     opacity: 1;
   }
   .chrome > * {
     pointer-events: auto;
   }
-  .chrome a {
-    color: var(--ink);
+
+  .chrome__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: inherit;
     text-decoration: none;
-    padding-inline: 0.625rem;
-    margin-inline: -0.625rem;
-    transition: background-color 0.4s var(--ease);
+    font: italic 1.45rem/1 var(--font-display);
   }
-  /* on a framed page, sit on the hairline like its labels do, with the same
-     patch of paper; once the page scrolls the frame is gone and so is the patch */
-  :global(:root:has(.intro.frame)) .chrome:not(.is-scrolled) a {
-    background: var(--bg);
+  .chrome__home svg {
+    transition: translate 0.3s var(--ease-out);
   }
-  .chrome__arrow {
-    display: inline-block;
-    transition: translate 0.3s var(--ease);
-  }
-  .chrome__home:hover .chrome__arrow {
-    translate: -3px 0;
+  .chrome__home:hover svg {
+    translate: -4px 0;
   }
   .chrome__home:hover em {
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
+  }
+
+  /* the home menu's three bars; open, they cross */
+  .chrome__btn {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    padding: 0.6rem;
+    margin-right: -0.6rem;
+  }
+  .chrome__btn:focus-visible {
+    outline: 1px dashed currentColor;
+    outline-offset: 2px;
+  }
+  .chrome__bars {
+    position: relative;
+    display: grid;
+    gap: 5px;
+    width: 24px;
+  }
+  .chrome__bars i {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition:
+      width 0.35s var(--ease-out),
+      translate 0.35s var(--ease-out),
+      rotate 0.35s var(--ease-out),
+      opacity 0.2s;
+  }
+  .chrome__bars i:nth-child(2) {
+    width: 66%;
+    justify-self: end;
+  }
+  .chrome__btn:hover .chrome__bars i:nth-child(2) {
+    width: 100%;
+  }
+  .chrome.is-open .chrome__bars i:nth-child(1) {
+    translate: 0 6.5px;
+    rotate: 45deg;
+  }
+  .chrome.is-open .chrome__bars i:nth-child(2) {
+    opacity: 0;
+  }
+  .chrome.is-open .chrome__bars i:nth-child(3) {
+    translate: 0 -6.5px;
+    rotate: -45deg;
+  }
+
+  /* on a framed page, sit on the hairline with a patch of paper, like its labels */
+  :global(:root:has(.intro.frame)) .chrome:not(.is-scrolled) :is(.chrome__home, .chrome__btn) {
+    background: var(--bg);
+  }
+  :global(:root:has(.intro.frame)) .chrome:not(.is-scrolled) .chrome__home {
+    padding-inline: 0.625rem;
+    margin-inline: -0.625rem;
+  }
+
+  /* ---------- the menu: a small card under the button ---------- */
+  .cmenu {
+    position: absolute;
+    top: calc(100% - 0.4rem);
+    right: 4vw;
+    width: 17rem;
+    padding: 0.4rem 1.25rem 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--ultramarine);
+    box-shadow: 0 18px 40px -18px rgb(17 19 90 / 0.6);
+    opacity: 0;
+    translate: 0 -6px;
+    transition:
+      opacity 0.25s var(--ease-out),
+      translate 0.3s var(--ease-out);
+  }
+  .cmenu[hidden] {
+    display: none;
+  }
+  .cmenu.is-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .cmenu__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cmenu__list li + li {
+    border-top: 1px solid rgb(2 8 135 / 0.3);
+  }
+  .cmenu__list a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding: 0.55rem 0 0.6rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .cmenu__n {
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.16em;
+    color: var(--muted);
+  }
+  .cmenu__list em {
+    font: italic 1.75rem/1 var(--font-display);
+    transition: translate 0.3s var(--ease-out);
+  }
+  .cmenu__list a:hover em {
+    translate: 0.3rem 0;
+  }
+  .cmenu__list a:hover em,
+  .cmenu__list a[aria-current='page'] em {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+
+  /* ---------- phones: the whole screen, like the home menu ---------- */
+  @media (max-width: 760px) {
+    .chrome {
+      padding: 0 1.25rem;
+    }
+    :global(html.cmenu-open) {
+      overflow: hidden;
+    }
+    .chrome.is-open::before {
+      opacity: 1;
+      border-bottom-color: transparent;
+    }
+    .cmenu {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      width: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 calc(0.75rem + 1.5rem);
+      border: 0;
+      box-shadow: none;
+      translate: none;
+      transition: opacity 0.35s var(--ease-out);
+    }
+    .cmenu[hidden] {
+      display: none;
+    }
+    /* the frame, below the bar */
+    .cmenu::before {
+      content: '';
+      position: absolute;
+      inset: 3.75rem 0.75rem 0.75rem;
+      border: 1.3px solid var(--ultramarine);
+      pointer-events: none;
+    }
+    .cmenu__list {
+      width: 100%;
+      border-block: 1px solid var(--rule);
+    }
+    .cmenu__list li {
+      opacity: 0;
+      translate: 0 14px;
+      transition:
+        opacity 0.5s var(--ease-out),
+        translate 0.6s var(--ease-out);
+      transition-delay: calc(0.08s + var(--i) * 0.06s);
+    }
+    .cmenu__list li + li {
+      border-top-color: var(--rule);
+    }
+    .cmenu.is-open .cmenu__list li {
+      opacity: 1;
+      translate: 0 0;
+    }
+    .cmenu__list a {
+      gap: 1rem;
+      padding: 0.85rem 0 0.95rem;
+    }
+    .cmenu__n {
+      font-size: 0.68rem;
+    }
+    .cmenu__list em {
+      font-size: clamp(2.3rem, 11vw, 3.4rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cmenu,
+    .cmenu__list li,
+    .chrome__bars i {
+      transition: none;
+    }
   }
 </style>
