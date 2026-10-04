@@ -1,11 +1,11 @@
 ---
 title: 'What is an *Author*?'
 description: 'Notes'
-date: 2025-07-31
-tags: ['introspection']
+date: 2026-07-22
+tags: ['literary theory']
 ---
 
-In the essay “Death of The Author”, Barthes argues for the disappearance of an origin for work—the removal of an individual which is the “Author”—and instead posits the idea of a structural evaluation of a work. However, his analysis can be found to be unsatisfactory in his disregard of an “Author” completely, and indeed, much of the work Foucault does in “What is An Author?” is to also consider the “Author” as a function in discourse and consider its properties while continuing to disregard the creative nature that traditional criticism[^1] attributed to a work. In this manner, as he says, he wishes to examine this phenomenon of the disappearance of the “Author”, through the idea of the “Author-function” and liberate himself once and for all, from this conceptual framework of the transcendental and critical tradition of the nineteenth century.
+In the essay [“Death of The Author”](https://writing.upenn.edu/~taransky/Barthes.pdf), Barthes argues for the disappearance of an origin for work—the removal of an individual which is the “Author”—and instead posits the idea of a structural evaluation of a work. However, his analysis can be found to be unsatisfactory in his disregard of an “Author” completely, and indeed, much of the work Foucault does in “What is An Author?” is to also consider the “Author” as a function in discourse and consider its properties while continuing to disregard the creative nature that traditional criticism[^1] attributed to a work. In this manner, as he says, he wishes to examine this phenomenon of the disappearance of the “Author”, through the idea of the “Author-function” and liberate himself once and for all, from this conceptual framework of the transcendental and critical tradition of the nineteenth century.
 
 Since many of the arguments examine the author in the light of “discourses”, it serves to know what he means specifically. From the Stanford Encyclopedia of Philosophy:
 
