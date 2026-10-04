@@ -4,6 +4,7 @@ by: Dorota Kobiela and Hugh Welchman
 year: 2017
 rating: 100
 liked: true
+favourite: true
 genres:
   - drama
   - historical

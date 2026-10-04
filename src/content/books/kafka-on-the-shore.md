@@ -2,7 +2,7 @@
 title: Kafka on the Shore
 by: Haruki Murakami
 year: 2002
-rating: 80
+rating: 75
 genres:
   - magic realist fiction
   - metafiction
@@ -21,3 +21,5 @@ links:
 wikidata: Q579744
 order: 10
 ---
+
+It flows much like a dream and when Murakami is not writing a fetish laden scene, it is such a mysterious little book. Much of it is very enjoyable, but then is soured by Murakami's weird substories that I feel are extremely out of place, and weird at times. For this at least, the score suffers a major hit, because the subplot takes up quite a lot of the book.
