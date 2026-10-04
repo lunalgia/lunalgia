@@ -169,5 +169,15 @@
     "w": 640,
     "h": 960,
     "taken": "2026-10-04"
+  },
+  "https://writing.upenn.edu/~taransky/Barthes.pdf": {
+    "kind": "pdf",
+    "title": "Barthe_DeathofAuthor",
+    "pages": 6,
+    "site": "writing.upenn.edu",
+    "image": "/previews/2020ddf747f7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
   }
 }
