@@ -5,6 +5,8 @@ year: 2023
 rating: 100
 genres:
   - noise pop
+tags:
+  - album
 meta:
   released: December 2023
   tracks: '13'

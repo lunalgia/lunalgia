@@ -7,6 +7,8 @@ rating: 100
 favourite: true
 genres:
   - indie rock
+tags:
+  - album
 meta:
   released: '2018'
   label: Matador Records

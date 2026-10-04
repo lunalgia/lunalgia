@@ -1,0 +1,21 @@
+---
+title: Since I Left You
+by: The Avalanches
+year: 2000
+genres:
+  - plunderphonics
+  - electronic dance
+  - disco
+tags:
+  - album
+meta:
+  released: November 2000
+  label: Modular Recordings
+  length: 61 min
+  tracks: '2'
+links:
+  Wikipedia: https://en.wikipedia.org/wiki/Since_I_Left_You
+  MusicBrainz: https://musicbrainz.org/release-group/28438e4f-3710-459f-a332-a1eba9dd1f26
+wikidata: Q821531
+order: 10
+---

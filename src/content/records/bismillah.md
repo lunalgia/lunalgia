@@ -6,6 +6,8 @@ rating: 85
 genres:
   - sophisti pop
   - jazz pop
+tags:
+  - album
 meta:
   released: June 2019
   tracks: '10'

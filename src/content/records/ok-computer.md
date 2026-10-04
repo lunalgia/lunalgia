@@ -6,6 +6,8 @@ rating: 100
 genres:
   - art rock
   - alternative rock
+tags:
+  - album
 meta:
   released: May 1997
   label: Parlophone, Capitol Records

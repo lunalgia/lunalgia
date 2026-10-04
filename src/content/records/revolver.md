@@ -4,6 +4,8 @@ by: The Beatles
 genres:
   - psychedelic rock
   - progressive rock
+tags:
+  - album
 meta:
   released: August 1966
   label: Parlophone
