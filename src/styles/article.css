@@ -763,6 +763,16 @@
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
     }
+    /* and it leaves the rest of a short last page white; a fixed layer repeats on every sheet */
+    html[data-print='colour'] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: var(--lavender);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
   }
   body {
     font-size: 10.5pt;
@@ -827,11 +837,17 @@
   .ax__text > h4 {
     break-after: avoid;
   }
-  /* pictures and equations stay whole; long quotes and boxes may run over a page */
+  /* pictures and equations stay whole (and no taller than a page); long quotes and boxes
+     may run over a page. Firefox slices a picture unless its paragraph is kept whole too */
   .ax__text figure,
   .ax__text img,
+  .ax__text p:has(> img),
   .ax__text .katex-display {
     break-inside: avoid;
+  }
+  .ax__text img {
+    max-height: 225mm;
+    width: auto;
   }
   .ax__text .env--pull {
     margin-inline: 0;
@@ -887,7 +903,7 @@
   /* pictures in a note (screenshots of quotes) at roughly the notes' own type size */
   .ax__text section.footnotes img {
     display: block;
-    max-width: 95mm;
+    max-width: 80mm;
     margin: 2mm 0;
   }
   .ax__text section.footnotes ol {
