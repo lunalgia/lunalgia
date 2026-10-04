@@ -52,11 +52,15 @@ const setup = () => {
   )
 
   // ---- print: the button, and fold-out answers printed open ----
-  document.querySelector('[data-print]')?.addEventListener('click', async () => {
-    // lazy images further down haven't loaded yet and would print blank
-    await Promise.all(eager().map((img) => img.decode().catch(() => {})))
-    print()
-  })
+  // white for paper, or the site's lavender for a PDF read on screen
+  document.querySelectorAll<HTMLElement>('[data-print]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      // lazy images further down haven't loaded yet and would print blank
+      await Promise.all(eager().map((img) => img.decode().catch(() => {})))
+      document.documentElement.dataset.print = b.dataset.print
+      print()
+    }),
+  )
   // ---- code: a header with the language, file name and a copy button ----
   text.querySelectorAll<HTMLElement>('pre').forEach((pre) => {
     const box = document.createElement('div')
@@ -102,9 +106,10 @@ addEventListener('beforeprint', () => {
     d.dataset.printOpened = ''
   })
 })
-addEventListener('afterprint', () =>
+addEventListener('afterprint', () => {
+  delete document.documentElement.dataset.print
   document.querySelectorAll<HTMLDetailsElement>('.ax__text details[data-print-opened]').forEach((d) => {
     d.open = false
     delete d.dataset.printOpened
-  }),
-)
+  })
+})

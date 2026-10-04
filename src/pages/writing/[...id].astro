@@ -46,7 +46,9 @@ const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="c
     <p class="ah__k">
       {words.toLocaleString('en-GB')} WORDS · {minutes} MIN{d.tags.length > 0 && ` · FILED UNDER ${d.tags.join(', ').toUpperCase()}`}
     </p>
-    <button type="button" class="ah__print" data-print>PRINT / SAVE AS PDF</button>
+    <p class="ah__print">
+      <button type="button" data-print="white">PRINT</button> · <button type="button" data-print="colour">PDF IN COLOUR</button>
+    </p>
     {
       d.image && (
         <figure class="ah__fig">
