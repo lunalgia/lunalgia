@@ -33,6 +33,16 @@ const setup = () => {
   }
   addEventListener('scroll', onScroll, { passive: true })
   addEventListener('resize', onScroll)
+  // otherwise every later page keeps measuring this one's detached headings on scroll
+  document.addEventListener(
+    'astro:before-swap',
+    () => {
+      removeEventListener('scroll', onScroll)
+      removeEventListener('resize', onScroll)
+      cancelAnimationFrame(raf)
+    },
+    { once: true },
+  )
   update()
   // smooth scrolling to a part, through Lenis when it is running
   ax.querySelectorAll<HTMLAnchorElement>('.toc__list a').forEach((a) =>

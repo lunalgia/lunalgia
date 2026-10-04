@@ -35,6 +35,8 @@ const letters = [
 
 <section class="writings board" aria-labelledby="writings-title">
   <div class="panel writings__panel">
+    <i class="writings__rule" aria-hidden="true"></i>
+    <i class="writings__rule writings__rule--end" aria-hidden="true"></i>
     <div class="writings__clip">
       <div class="writings__lily" aria-hidden="true">
         <div class="writings__wm">
@@ -99,21 +101,45 @@ const letters = [
 <script>
   import { gsap } from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
-  import { afterIntro, inSlices } from '@/scripts/after-intro'
+  import { afterIntro, whenIdle } from '@/scripts/after-intro'
   gsap.registerPlugin(ScrollTrigger)
 
   /**
    * The lily develops out of an ordered dither, like a print in a tray.
    *
    * Each pixel gets a threshold (4×4 Bayer, a little noise, a top-to-bottom
-   * bias) and appears once the reveal passes it. The pixels are sorted by
-   * threshold ahead of time (after the hero has drawn, in small idle-time
-   * slices; see after-intro.ts), so each frame of the reveal only touches the
-   * pixels that turn on in that frame instead of re-checking the whole canvas.
+   * bias) and appears once the reveal passes it. The thresholds are worked out
+   * in a WebGL shader, so a frame of the reveal is one draw call on the GPU:
+   * no pixels are touched or re-uploaded from the main thread while the page
+   * scrolls. Without WebGL the picture simply fades in.
    */
-  const LEVELS = 256
-  const MAX_T = 1
-  type Plan = { ctx: CanvasRenderingContext2D; out: ImageData; order: Uint32Array; starts: Uint32Array }
+  const W = 900
+  const VERT = `attribute vec2 p; varying vec2 uv;
+    void main() { uv = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }`
+  const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    varying vec2 uv;
+    uniform sampler2D img;
+    uniform vec2 size;
+    uniform float t;
+    // 2×2 Bayer, nested once for 4×4 (values 0..15/16)
+    float b2(vec2 a) { a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
+    float bayer(vec2 a) { return b2(a * 0.5) * 0.25 + b2(a); }
+    float noise(vec2 c) { return fract(sin(dot(c, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main() {
+      vec2 px = floor(uv * size);
+      // the dither cell is 2×2 canvas pixels
+      float th = bayer(floor(px * 0.5)) * 0.55 + noise(px) * 0.25 + uv.y * 0.2;
+      // premultiplied here, whatever the browser did with the bitmap's alpha
+      vec4 c = texture2D(img, uv);
+      gl_FragColor = vec4(c.rgb * c.a, c.a) * step(th, t);
+    }`
+
+  type Plan = { draw: (t: number) => void; dispose: () => void } | null
 
   const prepare = async (box: HTMLElement): Promise<Plan> => {
     const img = box.querySelector<HTMLImageElement>('img')!
@@ -121,88 +147,94 @@ const letters = [
     // wait for the hero to finish drawing
     await afterIntro()
     if (!img.complete) await new Promise((r) => img.addEventListener('load', r, { once: true }))
-    const w = 900
-    const h = Math.round((img.naturalHeight / img.naturalWidth) * w)
+    const h = Math.round((img.naturalHeight / img.naturalWidth) * W)
     // decode and resize off the main thread: createImageBitmap on the file's bytes (already in the
-    // HTTP cache) runs on a worker thread, whereas drawing or bitmapping the <img> decodes it right here
+    // HTTP cache) runs on a worker thread, whereas uploading the <img> converts it right here
     const bitmap = await fetch(img.currentSrc || img.src)
       .then((r) => r.blob())
-      .then((blob) => createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' }))
+      .then((blob) =>
+        createImageBitmap(blob, { resizeWidth: W, resizeHeight: h, resizeQuality: 'high', premultiplyAlpha: 'none' }),
+      )
       .catch(() => null)
-    let plan: Plan | undefined
-    await inSlices(
-      (function* () {
-        canvas.width = w
-        canvas.height = h
-        const ctx = canvas.getContext('2d', { willReadFrequently: true })!
-        ctx.drawImage(bitmap ?? img, 0, 0, w, h)
-        bitmap?.close()
-        yield
-        const out = ctx.getImageData(0, 0, w, h)
-        ctx.clearRect(0, 0, w, h)
-        yield
-        const px = out.data
-        const n = w * h
-        // each pixel's alpha goes to a side array; the canvas starts fully transparent
-        const alpha = new Uint8Array(n)
-        // bucket every pixel by its threshold (a counting sort), a row at a time
-        const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
-        const level = new Uint16Array(n)
-        const counts = new Uint32Array(LEVELS + 1)
-        for (let y = 0, i = 0; y < h; y++) {
-          for (let x = 0; x < w; x++, i++) {
-            alpha[i] = px[i * 4 + 3]
-            px[i * 4 + 3] = 0
-            const b = bayer[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16
-            const t = b * 0.55 + Math.random() * 0.25 + (y / h) * 0.2
-            const l = Math.min(LEVELS - 1, Math.floor((t / MAX_T) * LEVELS))
-            level[i] = l
-            counts[l + 1]++
-          }
-          yield
-        }
-        const starts = new Uint32Array(LEVELS + 1)
-        for (let l = 0; l < LEVELS; l++) starts[l + 1] = starts[l] + counts[l + 1]
-        const fill = starts.slice(0, LEVELS)
-        // store pixel index and its alpha together: index * 256 + alpha
-        const order = new Uint32Array(n)
-        for (let i = 0; i < n; i++) {
-          order[fill[level[i]]++] = i * 256 + alpha[i]
-          if (i % w === w - 1) yield
-        }
-        plan = { ctx, out, order, starts }
-      })(),
-    )
-    return plan!
+    if (!bitmap) return null
+    // a real pause, not one forced into the middle of a scroll
+    await new Promise<void>((r) => whenIdle(r, 3000))
+    canvas.width = W
+    canvas.height = h
+    // premultiplied all the way through: the default, and the one every browser composites the same
+    const gl = canvas.getContext('webgl', { antialias: false, depth: false })
+    if (!gl) return bitmap.close(), null
+    const shader = (type: number, src: string) => {
+      const sh = gl.createShader(type)!
+      gl.shaderSource(sh, src)
+      gl.compileShader(sh)
+      return sh
+    }
+    const prog = gl.createProgram()!
+    gl.attachShader(prog, shader(gl.VERTEX_SHADER, VERT))
+    gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FRAG))
+    gl.linkProgram(prog)
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return bitmap.close(), null
+    gl.useProgram(prog)
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
+    const loc = gl.getAttribLocation(prog, 'p')
+    gl.enableVertexAttribArray(loc)
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap)
+    bitmap.close()
+    gl.uniform2f(gl.getUniformLocation(prog, 'size'), W, h)
+    const t = gl.getUniformLocation(prog, 't')
+    gl.viewport(0, 0, W, h)
+    gl.clearColor(0, 0, 0, 0)
+    const draw = (v: number) => {
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.uniform1f(t, v)
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
+    const dispose = () => {
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.width = canvas.height = 0
+    }
+    // the check in an idle moment of its own, apart from the upload
+    await new Promise<void>((r) => whenIdle(r, 3000))
+    if (gl.isContextLost()) return null
+    // check the result before trusting it: fully revealed, the image's transparent corner must
+    // stay transparent and its middle must not; anything else means a fade instead
+    // (one read of the whole frame: each read waits for the GPU)
+    draw(2)
+    const px = new Uint8Array(W * h * 4)
+    gl.readPixels(0, 0, W, h, gl.RGBA, gl.UNSIGNED_BYTE, px)
+    const alpha = (x: number, y: number) => px[(Math.round((h - 1) * y) * W + Math.round((W - 1) * x)) * 4 + 3]
+    const corner = alpha(0, 1)
+    const ink = Math.max(...[[0.5, 0.5], [0.4, 0.45], [0.6, 0.55], [0.5, 0.35]].map(([x, y]) => alpha(x, y)))
+    if (corner !== 0 || ink === 0) return dispose(), null
+    draw(-1)
+    return { draw, dispose }
   }
 
   const develop = async (box: HTMLElement, plan: Promise<Plan>) => {
     const img = box.querySelector<HTMLImageElement>('img')!
     const canvas = box.querySelector<HTMLCanvasElement>('canvas')!
-    const { ctx, out, order, starts } = await plan
-    const px = out.data
+    const p = await plan
+    if (!p) return gsap.to(img, { opacity: 1, duration: 1.8, ease: 'power1.inOut' })
     img.style.opacity = '0'
     canvas.style.opacity = '1'
-    ctx.putImageData(out, 0, 0)
-    let done = 0 // levels revealed so far
-    const state = { p: 0 }
+    const state = { t: 0 }
     gsap.to(state, {
-      p: 1,
+      t: 1,
       duration: 1.8,
       ease: 'power1.inOut',
-      onUpdate: () => {
-        const to = Math.min(LEVELS, Math.ceil(state.p * LEVELS))
-        if (to <= done) return
-        for (let k = starts[done], end = starts[to]; k < end; k++) {
-          const v = order[k]
-          px[(v >>> 8) * 4 + 3] = v & 255
-        }
-        done = to
-        ctx.putImageData(out, 0, 0)
-      },
+      onUpdate: () => p.draw(state.t),
       onComplete: () => {
         img.style.opacity = '1'
         canvas.style.opacity = '0'
+        p.dispose()
       },
     })
   }
@@ -299,7 +331,8 @@ const letters = [
     const title = root.querySelectorAll('.writings__title text')
     const lily = root.querySelector<HTMLElement>('.writings__lily')!
     const wm = root.querySelector<HTMLElement>('.writings__wm')!
-    gsap.set(root.querySelector('.writings__panel'), { '--draw': 0 })
+    const rules = root.querySelectorAll('.writings__rule')
+    gsap.set(rules, { scaleX: 0 })
     gsap.set(title, { opacity: 0, y: 40 })
     gsap.set(wm.querySelector('img'), { opacity: 0 })
     const plan = prepare(wm)
@@ -311,7 +344,7 @@ const letters = [
       once: true,
       onEnter: () => {
         const tl = gsap.timeline()
-        tl.to(root.querySelector('.writings__panel'), { '--draw': 1, duration: 1.4, ease: 'power3.inOut' }, 0)
+        tl.to(rules, { scaleX: 1, duration: 1.4, ease: 'power3.inOut' }, 0)
         tl.to(title, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.05 }, 0.25)
         tl.call(() => develop(wm, plan), [], 0.5)
         tl.to(
@@ -339,26 +372,22 @@ const letters = [
     color: var(--mist);
   }
 
-  /* the panel's top and bottom rules draw across from the left */
+  /* the panel's top and bottom rules draw across from the left (a transform,
+     so the browser only recomposites them instead of restyling the panel) */
   .writings__panel {
-    --draw: 1;
     border-block-color: transparent;
   }
-  .writings__panel::before,
-  .writings__panel::after {
-    content: '';
+  .writings__rule {
     position: absolute;
+    top: -1.89px;
     left: 0;
     width: 100%;
     height: 1.89px;
     background: var(--ultramarine);
     transform-origin: 0 50%;
-    transform: scaleX(var(--draw));
   }
-  .writings__panel::before {
-    top: -1.89px;
-  }
-  .writings__panel::after {
+  .writings__rule--end {
+    top: auto;
     bottom: -1.89px;
   }
 
@@ -387,6 +416,9 @@ const letters = [
     left: 45%;
     top: 22%;
     width: 120%;
+    /* its own layer: the parallax moves it every scrolled frame, and without
+       one the browser repaints both large lily images each time */
+    will-change: transform;
   }
   .writings__wm {
     position: relative;

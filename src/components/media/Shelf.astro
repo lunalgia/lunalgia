@@ -192,6 +192,11 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     if (root.dataset.ready) return
     root.dataset.ready = '1'
     const all = [...root.querySelectorAll<HTMLElement>('.bk')]
+    const shelf = root.querySelector<HTMLElement>('.cs__shelf')!
+    const panel = root.querySelector<HTMLElement>('.cs__panel')!
+    /** where each item's spine starts along the shelf (spine widths only) */
+    const starts = all.reduce<number[]>((a, b, j) => (a.push(j ? a[j - 1] + parseFloat(all[j - 1].style.getPropertyValue('--d')) + 2 : 0), a), [])
+    let shelfX = 0
     let switching: ReturnType<typeof setTimeout> | undefined
     const set = (i: number) => {
       i = Math.max(0, Math.min(all.length - 1, i))
@@ -217,13 +222,14 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
       root.querySelectorAll<HTMLElement>('.lab, .pn').forEach((l) => l.classList.toggle('is-on', +l.dataset.i! === i))
       root.querySelector('.cs__count b')!.textContent = String(i + 1).padStart(2, '0')
       // spine widths only: the facing item's own width is still animating
-      const x = all.slice(0, i).reduce((s, b) => s + parseFloat(b.style.getPropertyValue('--d')) + 2, 0)
-      root.querySelector<HTMLElement>('.cs__shelf')!.style.transform = `translateX(${-x}px)`
+      shelfX = starts[i]
+      shelf.style.transform = `translateX(${-shelfX}px)`
     }
     let settling = 0
     const inspect = (on: boolean) => {
       root.classList.toggle('is-inspecting', on)
       if (!on) return
+      panel.scrollTop = 0
       // bring the whole shelf on screen; the panel is fixed to the viewport
       settling = performance.now() + 1200
       const lenis = (window as any).__lenis
@@ -233,15 +239,30 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     /** fade the excerpt only when it is cut short */
     const clip = () =>
       root.querySelectorAll<HTMLElement>('.pn.is-on .pn__body').forEach((b) => b.classList.toggle('is-clipped', b.scrollHeight > b.clientHeight + 2))
-    addEventListener('resize', clip)
     // scrolling away from an open shelf closes it
-    addEventListener(
-      'scroll',
+    const onScroll = () => {
+      if (!root.classList.contains('is-inspecting') || performance.now() < settling) return
+      if (Math.abs(root.getBoundingClientRect().top) > innerHeight * 0.3) root.classList.remove('is-inspecting')
+    }
+    // so does a click anywhere outside the review, except on this shelf's own items and arrows,
+    // which move along with the review open
+    const onOutside = (e: MouseEvent) => {
+      if (!root.classList.contains('is-inspecting')) return
+      const t = e.target as Element
+      if (panel.contains(t) || (root.contains(t) && t.closest('.bk, [data-step], .lab__go'))) return
+      inspect(false)
+    }
+    addEventListener('resize', clip)
+    addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('click', onOutside)
+    document.addEventListener(
+      'astro:before-swap',
       () => {
-        if (!root.classList.contains('is-inspecting') || performance.now() < settling) return
-        if (Math.abs(root.getBoundingClientRect().top) > innerHeight * 0.3) root.classList.remove('is-inspecting')
+        removeEventListener('resize', clip)
+        removeEventListener('scroll', onScroll)
+        document.removeEventListener('click', onOutside)
       },
-      { passive: true },
+      { once: true },
     )
     root.addEventListener('click', (e) => {
       const t = e.target as HTMLElement
@@ -253,18 +274,69 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
       if (t.closest('.cs__back')) inspect(false)
     })
     root.addEventListener('pointermove', (e) => {
-      if (!root.classList.contains('is-inspecting')) return
+      if (e.pointerType !== 'mouse' || !root.classList.contains('is-inspecting')) return
       const r = root.getBoundingClientRect()
       root.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 36}deg`)
       root.style.setProperty('--rx', `${-((e.clientY - r.top) / r.height - 0.5) * 14}deg`)
     })
-    // swipe on touch screens
+    // touch: the shelf follows the finger sideways, then settles on the item nearest
+    // the facing spot; a flick carries on a little. Vertical moves are left to the page.
     let sx = 0
-    root.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true })
-    root.addEventListener('touchend', (e) => {
+    let sy = 0
+    let lastX = 0
+    let lastT = 0
+    let v = 0
+    let axis: 'x' | 'y' | null = null
+    root.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 1 || root.classList.contains('is-inspecting')) return (axis = 'y')
+        sx = lastX = e.touches[0].clientX
+        sy = e.touches[0].clientY
+        lastT = performance.now()
+        v = 0
+        axis = null
+      },
+      { passive: true },
+    )
+    root.addEventListener(
+      'touchmove',
+      (e) => {
+        if (axis === 'y') return
+        const t = e.touches[0]
+        const dx = t.clientX - sx
+        if (!axis) {
+          if (Math.hypot(dx, t.clientY - sy) < 8) return
+          axis = Math.abs(dx) > Math.abs(t.clientY - sy) ? 'x' : 'y'
+          if (axis === 'y') return
+          root.classList.add('is-dragging')
+        }
+        const now = performance.now()
+        v = (t.clientX - lastX) / Math.max(1, now - lastT)
+        lastX = t.clientX
+        lastT = now
+        shelf.style.transform = `translateX(${-shelfX + dx}px)`
+      },
+      { passive: true },
+    )
+    const endDrag = (e: TouchEvent) => {
+      if (axis !== 'x') return
+      axis = null
+      root.classList.remove('is-dragging')
       const dx = e.changedTouches[0].clientX - sx
-      if (Math.abs(dx) > 40 && !root.classList.contains('is-inspecting')) set(+root.dataset.active! + (dx < 0 ? 1 : -1))
-    })
+      // a finger that stopped before lifting has no flick left in it
+      if (performance.now() - lastT > 80) v = 0
+      const want = shelfX - dx - v * 180
+      let i = 0
+      while (i < starts.length - 1 && starts[i + 1] <= want) i++
+      if (i < starts.length - 1 && want - starts[i] > starts[i + 1] - want) i++
+      // a deliberate swipe always moves at least one
+      const at = +root.dataset.active!
+      if (i === at && Math.abs(dx) > 30) i = at + (dx < 0 ? 1 : -1)
+      set(i)
+    }
+    root.addEventListener('touchend', endDrag)
+    root.addEventListener('touchcancel', endDrag)
     ;(root as any).__set = set
     ;(root as any).__inspect = inspect
     set(0)
@@ -326,8 +398,10 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   /* previous · count · next, as one object */
   .cs__nav { display: inline-flex; align-items: center; gap: 1.3rem; }
   .cs__nav button { all: unset; cursor: pointer; display: inline-flex; padding: 0.4rem 0; transition: translate 0.3s var(--ease-out), opacity 0.3s; }
-  .cs__nav button:first-child:hover { translate: -4px 0; }
-  .cs__nav button:last-child:hover { translate: 4px 0; }
+  @media (hover: hover) {
+    .cs__nav button:first-child:hover { translate: -4px 0; }
+    .cs__nav button:last-child:hover { translate: 4px 0; }
+  }
   .cs__nav button:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
 
 
@@ -367,7 +441,13 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
      and saves the browser compositing hundreds of 3D faces */
   .bk:not(.is-near, .is-leaving), .bk:not(.is-near, .is-leaving) .bk__box { transform-style: flat; }
   .bk.is-active { width: calc(var(--W) + var(--gap) + var(--extra)); }
-  .bk:not(.is-active):hover { transform: translateY(-16px); }
+  @media (hover: hover) {
+    .bk:not(.is-active):hover { transform: translateY(-16px); }
+  }
+  .bk { -webkit-tap-highlight-color: transparent; }
+  /* sideways moves belong to the shelf, vertical ones to the page */
+  .cs__stage { touch-action: pan-y; }
+  .cs.is-dragging .cs__shelf { transition: none; }
   .bk__box {
     position: absolute; left: 0; bottom: 0; width: var(--d); height: 100%;
     transform-style: preserve-3d;
@@ -547,6 +627,13 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     .cs__label { right: 0; top: 6.5rem; }
     .lab { padding: 0 1.25rem; gap: 0.2rem 1rem; }
     .lab__t { font-size: 2.4rem; flex-basis: 100%; }
-      .cs__panel { width: 100%; padding: 5rem 1.25rem 2rem; }
+    /* the review covers the screen, so it scrolls on its own instead of being cut short */
+    .cs__panel { width: 100%; padding: 5rem 1.25rem 2rem; overflow-y: auto; overscroll-behavior: contain; }
+    .pn { flex: none; }
+    .pn .pn__body { overflow: visible; }
+    /* thumb-sized targets */
+    .cs__nav { gap: 0.6rem; }
+    .cs__nav button { padding: 0.75rem 0.5rem; }
+    .cs__back { padding-block: 0.75rem; }
   }
 </style>
