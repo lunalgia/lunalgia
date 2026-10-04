@@ -1,18 +1,32 @@
 /**
  * Link previews, after gwern.net's popups.
  *
- * Hovering a link to another page of this site (in running text, not in menus
- * or lists of rows that already say what they point at) opens a small card
- * with that page's title, description and picture. The page is fetched once
- * and read from its <head>: `preview:title`, `description`, `preview:image`
- * (see Base.astro). Only for a mouse; touch screens just follow the link.
+ * Hovering a link (in running text, not in menus or lists of rows that already
+ * say what they point at) opens a small card with a title, description and
+ * picture. Two sources:
+ *   - another page of this site: fetched once and read from its <head>
+ *     (`preview:title`, `description`, `preview:image`; see Base.astro)
+ *   - external links and PDFs: a browser can't read those, so they come from
+ *     snapshots taken by `npm run snapshots` (src/data/previews.json)
+ * Only for a mouse; touch screens just follow the link.
  */
+import snapshots from '@/data/previews.json'
 const OPEN_DELAY = 350
 const CLOSE_DELAY = 180
 const IN_TEXT = 'p, li, blockquote, td, dd, figcaption, .sidenote__body'
 const SKIP = 'nav, footer, .chrome, .row, .lp, [data-no-preview], a[data-footnote-ref], a[data-footnote-backref]'
 
-type Preview = { title: string; description: string; image?: string; section: string }
+type Preview = { title: string; description: string; image?: string; section: string; ratio?: number }
+type Snapshot = { kind: 'pdf' | 'page'; title: string; description?: string; site?: string; pages?: number; image: string; w: number; h: number }
+type Source = { path: string } | { snap: Snapshot }
+
+const SNAPS = snapshots as Record<string, Snapshot>
+
+function fromSnapshot(s: Snapshot): Preview {
+  const pages = s.pages ? `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}` : ''
+  const section = s.kind === 'pdf' ? ['pdf', pages, s.site].filter(Boolean).join(' · ') : (s.site ?? '')
+  return { title: s.title, description: s.description ?? '', image: s.image, section, ratio: s.w / s.h }
+}
 
 const cache = new Map<string, Promise<Preview | null>>()
 
@@ -36,9 +50,9 @@ function read(path: string): Promise<Preview | null> {
   return hit
 }
 
-/** the link's path if it points at another page of this site worth previewing */
-function target(a: HTMLAnchorElement): string | null {
-  if (a.target === '_blank' || a.hasAttribute('download')) return null
+/** where a link's card comes from: a snapshot, or another page of this site; null for no card */
+function target(a: HTMLAnchorElement): Source | null {
+  if (a.hasAttribute('download')) return null
   if (!a.closest(IN_TEXT) || a.closest(SKIP)) return null
   let url: URL
   try {
@@ -46,10 +60,14 @@ function target(a: HTMLAnchorElement): string | null {
   } catch {
     return null
   }
-  if (url.origin !== location.origin) return null
+  const own = url.origin === location.origin
+  // snapshots are keyed by full address (external) or decoded path (files on this site)
+  const snap = SNAPS[own ? decodeURIComponent(url.pathname) : url.href.split('#')[0]]
+  if (snap) return { snap }
+  if (!own || a.target === '_blank') return null
   if (url.pathname === location.pathname) return null // same page, or an in-page anchor
   if (/\.[a-z0-9]{2,5}$/i.test(url.pathname) && !url.pathname.endsWith('.html')) return null // files, the feed
-  return url.pathname
+  return { path: url.pathname }
 }
 
 let card: HTMLElement | null = null
@@ -89,6 +107,8 @@ function build(p: Preview): HTMLElement {
     img.className = 'lp__img'
     img.src = p.image
     img.alt = ''
+    // snapshots keep their shape, but a tall page shows only its top
+    if (p.ratio) img.style.aspectRatio = String(Math.max(p.ratio, 4 / 3))
     el.append(img)
   }
   const body = document.createElement('div')
@@ -112,8 +132,8 @@ function build(p: Preview): HTMLElement {
   return el
 }
 
-async function open(a: HTMLAnchorElement, path: string) {
-  const p = await read(path)
+async function open(a: HTMLAnchorElement, source: Source) {
+  const p = 'snap' in source ? fromSnapshot(source.snap) : await read(source.path)
   if (!p || current !== a) return
   card?.remove()
   card = build(p)
@@ -130,11 +150,11 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
       if (a) clearTimeout(closeTimer)
       return
     }
-    const path = target(a)
-    if (!path) return
+    const source = target(a)
+    if (!source) return
     close()
     current = a
-    openTimer = window.setTimeout(() => open(a, path), OPEN_DELAY)
+    openTimer = window.setTimeout(() => open(a, source), OPEN_DELAY)
   })
   document.addEventListener('mouseout', (e) => {
     if (!current) return
