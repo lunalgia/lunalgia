@@ -1,0 +1,17 @@
+---
+title: Revolver
+by: The Beatles
+genres:
+  - psychedelic rock
+  - progressive rock
+meta:
+  released: August 1966
+  label: Parlophone
+  length: 35 min
+  tracks: '14'
+  producer: George Martin
+links:
+  Wikipedia: https://en.wikipedia.org/wiki/Revolver_(Beatles_album)
+  MusicBrainz: https://musicbrainz.org/release-group/72d15666-99a7-321e-b1f3-a3f8c09dff9f
+wikidata: Q185121
+---

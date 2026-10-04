@@ -18,3 +18,5 @@ links:
 wikidata: Q3045861
 order: 4
 ---
+
+Worth reading if only for Story of Your Life. The rest seem less likeable as stories.
