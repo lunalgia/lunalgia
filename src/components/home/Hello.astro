@@ -105,6 +105,10 @@ const line = 'Hello, I go by Lilian'
     width: 100%;
     height: 100%;
   }
+  /* scaled and drifted on scroll: keep it on its own layer instead of repainting it */
+  .hello__pic {
+    will-change: transform;
+  }
   .hello__pic :global(img) {
     object-fit: cover;
     image-rendering: pixelated;

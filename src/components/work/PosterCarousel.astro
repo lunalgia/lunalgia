@@ -142,8 +142,13 @@ const pad = (n: number) => String(n).padStart(2, '0')
     let lastX = 0
     let lastT = 0
     let v = 0
+    // the slide under the pointer when it went down: pointer capture retargets the
+    // click that follows to the stage itself, so the click can't tell which it was
+    let pressed: HTMLElement | null = null
     const stage = root.querySelector<HTMLElement>('.pc__stage')!
     stage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return
+      pressed = (e.target as HTMLElement).closest<HTMLElement>('.pc__slide')
       dragging = true
       moved = 0
       startX = lastX = e.clientX
@@ -174,10 +179,10 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
     // clicks: bring a poster forward, or open the front one
     const box = root.querySelector<HTMLDialogElement>('.pc__box')!
-    stage.addEventListener('click', (e) => {
-      if (moved > 6) return
-      const el = (e.target as HTMLElement).closest<HTMLElement>('.pc__slide')
-      if (!el) return
+    stage.addEventListener('click', () => {
+      const el = pressed
+      pressed = null
+      if (moved > 6 || !el) return
       const d = offset(+el.dataset.i!)
       if (Math.abs(d) > 0.5) return go(Math.round(target + d))
       const img = el.querySelector('img')!
@@ -203,14 +208,24 @@ const pad = (n: number) => String(n).padStart(2, '0')
     )
 
     root.querySelectorAll<HTMLElement>('[data-step]').forEach((b) => b.addEventListener('click', () => step(+b.dataset.step!)))
-    addEventListener('keydown', (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (box.open) return
       const r = root.getBoundingClientRect()
       if (r.top > innerHeight * 0.5 || r.bottom < innerHeight * 0.5) return
       if (e.key === 'ArrowRight') step(1)
       if (e.key === 'ArrowLeft') step(-1)
-    })
+    }
+    addEventListener('keydown', onKey)
     addEventListener('resize', render)
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        removeEventListener('keydown', onKey)
+        removeEventListener('resize', render)
+        cancelAnimationFrame(raf)
+      },
+      { once: true },
+    )
     render()
   }
 
@@ -355,4 +370,5 @@ const pad = (n: number) => String(n).padStart(2, '0')
     .pc {
       --H: min(52vh, 460px);
     }
-  </style>
+  }
+</style>
