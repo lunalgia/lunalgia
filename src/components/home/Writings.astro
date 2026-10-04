@@ -134,8 +134,8 @@ const letters = [
       vec2 px = floor(uv * size);
       // the dither cell is 2×2 canvas pixels
       float th = bayer(floor(px * 0.5)) * 0.55 + noise(px) * 0.25 + uv.y * 0.2;
-      vec4 c = texture2D(img, uv);
-      gl_FragColor = vec4(c.rgb, c.a * step(th, t));
+      // the texture is premultiplied, so a hidden pixel is simply all zeros
+      gl_FragColor = texture2D(img, uv) * step(th, t);
     }`
 
   type Plan = { draw: (t: number) => void; dispose: () => void } | null
@@ -146,20 +146,14 @@ const letters = [
     // wait for the hero to finish drawing
     await afterIntro()
     if (!img.complete) await new Promise((r) => img.addEventListener('load', r, { once: true }))
+    await img.decode().catch(() => {})
     const h = Math.round((img.naturalHeight / img.naturalWidth) * W)
-    // decode and resize off the main thread: createImageBitmap on the file's bytes (already in the
-    // HTTP cache) runs on a worker thread, whereas drawing or bitmapping the <img> decodes it right here
-    const bitmap = await fetch(img.currentSrc || img.src)
-      .then((r) => r.blob())
-      .then((blob) =>
-        createImageBitmap(blob, { resizeWidth: W, resizeHeight: h, resizeQuality: 'high', premultiplyAlpha: 'none' }),
-      )
-      .catch(() => null)
     await new Promise<void>((r) => whenIdle(r))
     canvas.width = W
     canvas.height = h
-    const gl = canvas.getContext('webgl', { premultipliedAlpha: false, antialias: false, depth: false })
-    if (!gl) return bitmap?.close(), null
+    // premultiplied all the way through: the default, and the one every browser composites the same
+    const gl = canvas.getContext('webgl', { antialias: false, depth: false })
+    if (!gl) return null
     const shader = (type: number, src: string) => {
       const sh = gl.createShader(type)!
       gl.shaderSource(sh, src)
@@ -170,7 +164,7 @@ const letters = [
     gl.attachShader(prog, shader(gl.VERTEX_SHADER, VERT))
     gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FRAG))
     gl.linkProgram(prog)
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return bitmap?.close(), null
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null
     gl.useProgram(prog)
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
@@ -182,8 +176,9 @@ const letters = [
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap ?? img)
-    bitmap?.close()
+    // the decoded <img> itself, premultiplied on upload (an ImageBitmap's alpha handling varies by browser)
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
     gl.uniform2f(gl.getUniformLocation(prog, 'size'), W, h)
     const t = gl.getUniformLocation(prog, 't')
     gl.viewport(0, 0, W, h)
@@ -193,11 +188,23 @@ const letters = [
       gl.uniform1f(t, v)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
-    draw(-1)
     const dispose = () => {
       gl.getExtension('WEBGL_lose_context')?.loseContext()
       canvas.width = canvas.height = 0
     }
+    // check the result before trusting it: fully revealed, the image's transparent corner must
+    // stay transparent and its middle must not; anything else means a fade instead
+    draw(2)
+    const px = new Uint8Array(4)
+    gl.readPixels(0, h - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px)
+    const corner = px[3]
+    let ink = 0
+    for (const [x, y] of [[0.5, 0.5], [0.4, 0.45], [0.6, 0.55], [0.5, 0.35]]) {
+      gl.readPixels(Math.round(W * x), Math.round(h * y), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px)
+      ink = Math.max(ink, px[3])
+    }
+    if (corner !== 0 || ink === 0) return dispose(), null
+    draw(-1)
     return { draw, dispose }
   }
 
