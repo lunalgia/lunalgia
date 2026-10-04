@@ -189,8 +189,11 @@ const pad = (n: number) => String(n).padStart(2, '0')
       box.querySelector('img')!.src = img.dataset.full!
       box.querySelector('img')!.alt = img.alt
       box.showModal()
+      // the page stays where it is underneath
+      ;(window as any).__lenis?.stop()
     })
     box.addEventListener('click', () => box.close())
+    box.addEventListener('close', () => (window as any).__lenis?.start())
 
     // sideways scrolling on trackpads
     let wheelT = 0
@@ -330,40 +333,92 @@ const pad = (n: number) => String(n).padStart(2, '0')
   }
 
 
+  /* the poster, full size: a framed card over a tint on wide screens, the
+     whole screen on phones */
   .pc__box {
     max-width: none;
     max-height: none;
-    width: 100vw;
-    height: 100dvh;
-    margin: 0;
-    padding: 3vh 3vw;
-    border: 0;
-    background: rgb(17 19 90 / 0.92);
+    /* centred (the reset zeroes a dialog's own auto margins) */
+    margin: auto;
+    padding: 0;
+    overflow: visible;
+    border: 1px solid var(--ultramarine);
+    background: var(--bg);
+    box-shadow: 0 40px 80px -30px rgb(17 19 90 / 0.7);
     cursor: zoom-out;
   }
   .pc__box::backdrop {
-    background: transparent;
+    background: rgb(17 19 90 / 0.35);
   }
-  .pc__box[open] {
-    display: grid;
-    place-items: center;
+  .pc__box[open],
+  .pc__box[open]::backdrop {
+    animation: pc-in 0.35s var(--ease-out);
+  }
+  @keyframes pc-in {
+    from {
+      opacity: 0;
+    }
   }
   .pc__box img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 82vw;
+    max-height: 84vh;
   }
+  /* a label on the card's top edge, like the frame labels elsewhere */
   .pc__close {
     all: unset;
     cursor: pointer;
     position: absolute;
-    top: 1.4rem;
-    right: 1.8rem;
-    font: 0.72rem var(--font-din);
+    top: 0;
+    right: 1.25rem;
+    translate: 0 -50%;
+    padding: 0.3rem 0.6rem;
+    background: var(--bg);
+    font: 0.68rem var(--font-din);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--mist);
+    color: var(--ultramarine);
+  }
+  .pc__close:focus-visible {
+    outline: 1px dashed currentColor;
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pc__box[open],
+    .pc__box[open]::backdrop {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .pc__box {
+      width: 100vw;
+      height: 100dvh;
+      margin: 0;
+      padding: 3vh 3vw;
+      border: 0;
+      background: rgb(17 19 90 / 0.92);
+      box-shadow: none;
+    }
+    .pc__box[open] {
+      display: grid;
+      place-items: center;
+    }
+    .pc__box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .pc__close {
+      top: 1.4rem;
+      right: 1.8rem;
+      translate: none;
+      padding: 0.5rem;
+      background: none;
+      color: var(--mist);
+    }
   }
 
   @media (max-width: 760px) {
