@@ -6,6 +6,8 @@ rating: 90
 genres:
   - shoegaze
   - art rock
+tags:
+  - album
 meta:
   released: March 2024
   tracks: '8'

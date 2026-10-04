@@ -6,6 +6,8 @@ rating: 100
 genres:
   - post rock
   - art rock
+tags:
+  - album
 meta:
   released: February 2022
   label: Ninja Tune

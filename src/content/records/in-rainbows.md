@@ -6,6 +6,8 @@ rating: 100
 genres:
   - art rock
   - alternative rock
+tags:
+  - album
 meta:
   released: October 2007
   label: XL Recordings

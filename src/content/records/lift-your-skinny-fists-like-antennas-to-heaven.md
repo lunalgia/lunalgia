@@ -6,6 +6,8 @@ year: 2000
 rating: 100
 genres:
   - post rock
+tags:
+  - album
 meta:
   released: October 2000
   label: Constellation, Kranky Records
