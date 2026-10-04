@@ -1,0 +1,183 @@
+{
+  "/files/bl4s.pdf": {
+    "kind": "pdf",
+    "title": "2025 Beamline For Schools Experimental Proposal",
+    "pages": 8,
+    "image": "/previews/a30a7c4bfd5d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/files/cv.pdf": {
+    "kind": "pdf",
+    "title": "LILIAN",
+    "pages": 1,
+    "image": "/previews/c7d8ef25e156.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-04"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/01-functions-and-types.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming with Haskell - Functions and types",
+    "pages": 79,
+    "image": "/previews/9d8ec59cc59d.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-04"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/02-defining-functions.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming with Haskell - Defining functions",
+    "pages": 42,
+    "image": "/previews/92801b5da901.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-04"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/03-guards-currying.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming with Haskell - Guarded definitions, Currying",
+    "pages": 89,
+    "image": "/previews/f3d0c7494b05.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-04"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/04-recursion.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming with Haskell - Recursive functions",
+    "pages": 66,
+    "image": "/previews/e927bb5c280e.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Assignments/Assignment 1 Solutions.pdf": {
+    "kind": "pdf",
+    "title": "Algebra 1Homework 1",
+    "pages": 5,
+    "image": "/previews/5615e69233a7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Assignments/Assignment 2.pdf": {
+    "kind": "pdf",
+    "title": "Tutorial 2",
+    "pages": 2,
+    "image": "/previews/f8adf49b2a15.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Handouts/functional math handout.pdf": {
+    "kind": "pdf",
+    "title": "Foundational mathematical language: some exercises",
+    "pages": 2,
+    "image": "/previews/ec03acafb3a2.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Handouts/linear algebra musings.pdf": {
+    "kind": "pdf",
+    "title": "Musings about linear algebra",
+    "pages": 2,
+    "image": "/previews/c8005a38ffaf.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Handouts/on solving and writing.pdf": {
+    "kind": "pdf",
+    "title": "On the cycle of solving and writing",
+    "pages": 2,
+    "image": "/previews/16a62904c254.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/linalg.pdf": {
+    "kind": "pdf",
+    "title": "linalg",
+    "pages": 10,
+    "image": "/previews/c9bb6d41a2be.webp",
+    "w": 640,
+    "h": 792,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Practice Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Practice Quiz",
+    "pages": 1,
+    "image": "/previews/35a4d3a3e5b4.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/ana1.pdf": {
+    "kind": "pdf",
+    "title": "ana1",
+    "pages": 23,
+    "image": "/previews/1862f0f43d17.webp",
+    "w": 640,
+    "h": 792,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Assignments/Assignment 1.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1: Aug-Nov 2026 Exercises 1",
+    "pages": 1,
+    "image": "/previews/bfb36059cc80.webp",
+    "w": 640,
+    "h": 836,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Assignments/Assignment 2.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1: Aug-Nov 2026 Exercises set #2",
+    "pages": 1,
+    "image": "/previews/a6ea2a663773.webp",
+    "w": 640,
+    "h": 836,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Assignments/Assignment 3.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1: Aug-Nov 2026 Exercises set #3",
+    "pages": 1,
+    "image": "/previews/b5392309cc2a.webp",
+    "w": 640,
+    "h": 836,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Books/Analysis, Tao Vol 1.pdf": {
+    "kind": "pdf",
+    "title": "Analysis I",
+    "pages": 311,
+    "image": "/previews/e4cdced29412.webp",
+    "w": 640,
+    "h": 964,
+    "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Books/Principles of Mathematical Analysis (Baby), Rudin.pdf": {
+    "kind": "pdf",
+    "title": "PRINICPLES OF MATHEMATICAL ANALYSIS",
+    "pages": 330,
+    "image": "/previews/2bfb450cfc7c.webp",
+    "w": 640,
+    "h": 960,
+    "taken": "2026-10-04"
+  },
+  "https://writing.upenn.edu/~taransky/Barthes.pdf": {
+    "kind": "pdf",
+    "title": "Barthe_DeathofAuthor",
+    "pages": 6,
+    "site": "writing.upenn.edu",
+    "image": "/previews/2020ddf747f7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-04"
+  }
+}

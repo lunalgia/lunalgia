@@ -466,6 +466,7 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+    object-position: top; /* snapshots of pages and PDFs: the top is what identifies them */
     border-bottom: 1px solid var(--rule);
   }
   .lp__body {
