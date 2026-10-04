@@ -186,6 +186,8 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
 </section>
 
 <script>
+  /** items this close to the facing one keep their 3D sides; the rest are drawn flat */
+  const NEAR = 2
   const setup = (root: HTMLElement) => {
     if (root.dataset.ready) return
     root.dataset.ready = '1'
@@ -201,8 +203,17 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
         switching = setTimeout(() => root.classList.remove('is-switching'), 700)
         requestAnimationFrame(() => clip())
       }
+      // the item swinging back keeps its depth until it has settled
+      const prev = all[+root.dataset.active!]
+      if (prev && Math.abs(+root.dataset.active! - i) > NEAR) {
+        prev.classList.add('is-leaving')
+        setTimeout(() => prev.classList.remove('is-leaving'), 1000)
+      }
       root.dataset.active = String(i)
-      all.forEach((b, j) => b.classList.toggle('is-active', j === i))
+      all.forEach((b, j) => {
+        b.classList.toggle('is-active', j === i)
+        b.classList.toggle('is-near', Math.abs(j - i) <= NEAR)
+      })
       root.querySelectorAll<HTMLElement>('.lab, .pn').forEach((l) => l.classList.toggle('is-on', +l.dataset.i! === i))
       root.querySelector('.cs__count b')!.textContent = String(i + 1).padStart(2, '0')
       // spine widths only: the facing item's own width is still animating
@@ -352,6 +363,9 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     transform-style: preserve-3d;
     transition: width 1s var(--ease-cs), transform 0.5s var(--ease-cs), opacity 0.6s;
   }
+  /* only spines next to the facing item show their sides, so drawing the rest flat looks the same
+     and saves the browser compositing hundreds of 3D faces */
+  .bk:not(.is-near, .is-leaving), .bk:not(.is-near, .is-leaving) .bk__box { transform-style: flat; }
   .bk.is-active { width: calc(var(--W) + var(--gap) + var(--extra)); }
   .bk:not(.is-active):hover { transform: translateY(-16px); }
   .bk__box {
