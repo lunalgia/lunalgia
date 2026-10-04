@@ -51,6 +51,16 @@ const setup = () => {
     ),
   )
 
+  // ---- print: the button, and fold-out answers printed open ----
+  // white for paper, or the site's lavender for a PDF read on screen
+  document.querySelectorAll<HTMLElement>('[data-print]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      // lazy images further down haven't loaded yet and would print blank
+      await Promise.all(eager().map((img) => img.decode().catch(() => {})))
+      document.documentElement.dataset.print = b.dataset.print
+      print()
+    }),
+  )
   // ---- code: a header with the language, file name and a copy button ----
   text.querySelectorAll<HTMLElement>('pre').forEach((pre) => {
     const box = document.createElement('div')
@@ -80,3 +90,26 @@ const setup = () => {
   })
 }
 document.addEventListener('astro:page-load', setup)
+
+/** start loading every lazy image in the text */
+const eager = () => {
+  const imgs = [...document.querySelectorAll<HTMLImageElement>('.ax__text img')]
+  imgs.forEach((img) => (img.loading = 'eager'))
+  return imgs
+}
+
+// fold-out answers can't be opened on paper, so print them open and close them again after
+addEventListener('beforeprint', () => {
+  eager()
+  document.querySelectorAll<HTMLDetailsElement>('.ax__text details:not([open])').forEach((d) => {
+    d.open = true
+    d.dataset.printOpened = ''
+  })
+})
+addEventListener('afterprint', () => {
+  delete document.documentElement.dataset.print
+  document.querySelectorAll<HTMLDetailsElement>('.ax__text details[data-print-opened]').forEach((d) => {
+    d.open = false
+    delete d.dataset.printOpened
+  })
+})

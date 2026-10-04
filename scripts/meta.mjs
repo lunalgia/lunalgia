@@ -4,7 +4,8 @@
  * (with Apple Music and Open Library filling gaps). Writes `genres`, `meta`,
  * `links` and `wikidata` into each entry's frontmatter. Everything it writes
  * is plain YAML you can edit or delete afterwards; it won't overwrite an entry
- * that already has a `wikidata:` line unless you pass --force.
+ * that already has a `wikidata:` line unless you pass --force. An entry Wikidata has
+ * nothing on gets `wikidata: none`, so it isn't looked up again either.
  *
  *   npm run meta                                   every entry without metadata yet
  *   npm run meta -- films                          only films (or books, records)
@@ -231,7 +232,8 @@ async function run(e) {
   if (!data.genres?.length) data.genres = out.genres
   data.meta = { ...out.meta, ...(flag('force') ? {} : data.meta) }
   data.links = { ...out.links, ...(flag('force') ? {} : data.links) }
-  if (qid) data.wikidata = qid
+  // "none" marks an entry as looked up, so the next run doesn't ask Wikidata again
+  data.wikidata = qid ?? 'none'
   await writeEntry(e, data)
   console.log(`${qid ?? 'no Wikidata match'} · ${data.genres.join(', ') || 'no genres'} · ${Object.keys(data.meta).join(', ') || 'no facts'}`)
 }

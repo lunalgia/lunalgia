@@ -11,6 +11,7 @@ meta:
   label: Golden Chariot Records
   length: 102 min
   tracks: '28'
+wikidata: none
 order: 10
 link: https://music.apple.com/in/album/disco-elysium/1659525966
 ---

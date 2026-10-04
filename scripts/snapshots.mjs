@@ -11,10 +11,10 @@
  *   npm run snapshots -- --only upenn retake the links whose address contains "upenn"
  *
  * What gets a snapshot:
- *   - every external link (http/https) in src/content (Markdown links and href="…")
+ *   - every external link (http/https) in src/content (Markdown links, href="…" and bare addresses)
  *   - every PDF in public/ (the course files, the CV, …)
  * Web pages are photographed with Playwright (first time: `npx playwright install chromium`);
- * PDFs are drawn from page 1 with pdf.js.
+ * PDFs are drawn from page 1 with pdf.js; YouTube videos use their own thumbnail and title.
  *
  * Writes the pictures to public/previews/ and the details to src/data/previews.json.
  * A snapshot that came out wrong (a cookie wall, a login page): delete its entry
@@ -52,6 +52,16 @@ async function walk(dir, test) {
   return out
 }
 
+/** a bare address as Markdown links it: trailing punctuation and an unmatched ")" belong to the sentence */
+function bare(url) {
+  for (;;) {
+    const before = url
+    url = url.replace(/[.,;:!?'’*_]+$/, '')
+    if (url.endsWith(')') && (url.match(/\(/g) ?? []).length < (url.match(/\)/g) ?? []).length) url = url.slice(0, -1)
+    if (url === before) return url
+  }
+}
+
 async function externalLinks() {
   const files = await walk(CONTENT, (n) => /\.(md|mdx)$/.test(n))
   const urls = new Set()
@@ -59,6 +69,9 @@ async function externalLinks() {
     const text = await fs.readFile(f, 'utf8')
     for (const m of text.matchAll(/\]\((https?:\/\/[^)\s]+)\)|href="(https?:\/\/[^"]+)"|<(https?:\/\/[^>\s]+)>/g))
       urls.add((m[1] ?? m[2] ?? m[3]).split('#')[0])
+    // bare addresses in the text (not the frontmatter), which Markdown turns into links too
+    const body = text.replace(/^---\n[\s\S]*?\n---/, '')
+    for (const m of body.matchAll(/(?<![(<"\w])https?:\/\/[^\s<>\[\]"]+/g)) urls.add(bare(m[0]).split('#')[0])
   }
   return [...urls]
 }
@@ -161,6 +174,33 @@ async function snapWeb(url) {
   }
 }
 
+// ---------- YouTube ----------
+
+/** the video id of a YouTube address, or undefined */
+function youtubeId(url) {
+  const u = new URL(url)
+  if (u.hostname === 'youtu.be') return u.pathname.slice(1) || undefined
+  if (!/(^|\.)youtube\.com$/.test(u.hostname)) return undefined
+  return u.searchParams.get('v') ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/)?.[1]
+}
+
+/** a screenshot of YouTube is a consent wall, so: the video's thumbnail, title and channel */
+async function snapYoutube(url, id) {
+  const info = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) })
+    .then((r) => (r.ok ? r.json() : {}))
+    .catch(() => ({}))
+  for (const size of ['maxresdefault', 'hqdefault']) {
+    const r = await fetch(`https://i.ytimg.com/vi/${id}/${size}.jpg`, { signal: AbortSignal.timeout(15000) })
+    if (r.ok)
+      return {
+        png: Buffer.from(await r.arrayBuffer()),
+        title: info.title || 'YouTube video',
+        description: info.author_name ? `A video by ${info.author_name}.` : '',
+      }
+  }
+  throw new Error('no thumbnail')
+}
+
 // ---------- main ----------
 
 const slug = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 12)
@@ -197,6 +237,14 @@ for (const url of await externalLinks()) {
   if (!wanted(url)) continue
   const site = new URL(url).hostname.replace(/^www\./, '')
   try {
+    const video = youtubeId(url)
+    if (video) {
+      const { png, title, description } = await snapYoutube(url, video)
+      await save(url, png, { kind: 'page', title, description, site: 'youtube.com' })
+      console.log(`video ${url}`)
+      done++
+      continue
+    }
     // a PDF is drawn, anything else photographed
     const res = await fetch(url, { headers: { 'User-Agent': UA }, redirect: 'follow', signal: AbortSignal.timeout(30000) })
     const type = res.headers.get('content-type') ?? ''

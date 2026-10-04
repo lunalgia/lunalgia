@@ -8,6 +8,7 @@ import { render } from 'astro:content'
 import { Image } from 'astro:assets'
 import Base from '@/layouts/Base.astro'
 import { WRITING_KINDS } from '@/content.config'
+import { SITE } from '@/consts'
 import { emphasize, getPosts, plain, roman, wordCount } from '@/lib/utils'
 
 export async function getStaticPaths() {
@@ -26,6 +27,7 @@ const minutes = Math.max(1, Math.round(words / 230))
 const parts = headings.filter((h) => h.depth === 2 && h.slug !== 'footnote-label')
 const opens = !/^\s*##\s/.test((post.body ?? '').replace(/^---[\s\S]*?---/, '').trimStart()) // text before the first part
 const date = d.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()
+const canonical = new URL(Astro.url.pathname, Astro.site)
 const kind = WRITING_KINDS[d.kind].label.replace(/s$/, '').toUpperCase()
 const L = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M33 7H1M7 1 1 7l6 6"/></svg>'
 const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 7h32M27 1l6 6-6 6"/></svg>'
@@ -43,6 +45,9 @@ const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="c
     {d.description && <p class="ah__d">{d.description}</p>}
     <p class="ah__k">
       {words.toLocaleString('en-GB')} WORDS · {minutes} MIN{d.tags.length > 0 && ` · FILED UNDER ${d.tags.join(', ').toUpperCase()}`}
+    </p>
+    <p class="ah__print">
+      <button type="button" data-print="white">PRINT</button> · <button type="button" data-print="colour">PDF IN COLOUR</button>
     </p>
     {
       d.image && (
@@ -88,6 +93,7 @@ const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="c
     }
     <article class="ax__text">
       <Content />
+      <p class="ax__src">{SITE.author} · {date} · {canonical.host}{canonical.pathname}</p>
     </article>
     <div class="sidenote-rail" aria-hidden="true"></div>
   </div>

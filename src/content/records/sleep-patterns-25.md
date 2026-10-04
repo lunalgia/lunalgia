@@ -11,5 +11,6 @@ meta:
   released: August 2025
   tracks: '2'
   label: Merchant Ships
+wikidata: none
 order: 10
 ---
