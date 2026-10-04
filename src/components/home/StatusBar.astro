@@ -71,10 +71,55 @@ const items: { label: string; value?: string; slot?: string }[] = [
     return `${PHASES[Math.round((age / SYN) * 8) % 8]}, ${lit}%`
   }
 
+  /**
+   * The ticker: one run's width per loop, at a steady speed in pixels. A CSS
+   * translateX(-50%) loop is relative to the track's width, so the bar jumped
+   * whenever the weather arrived, a font swapped in or the clock changed width.
+   * Here the animation is rebuilt at the same pixel offset whenever the run
+   * changes size; it still runs on the compositor.
+   */
+  const SPEED = 22 // px per second, the old 70 s loop
+  const ticker = (root: HTMLElement) => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const track = root.querySelector<HTMLElement>('.sbar__track')!
+    const run = root.querySelector<HTMLElement>('.sbar__run')!
+    let anim: Animation | null = null
+    let width = 0
+    const build = () => {
+      const w = run.offsetWidth
+      if (!w || w === width) return
+      // where the bar is now, in pixels
+      const at = anim && width ? ((Number(anim.currentTime) || 0) * SPEED) / 1000 % width : 0
+      const paused = anim?.playState === 'paused'
+      anim?.cancel()
+      width = w
+      anim = track.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${-w}px)` }], {
+        duration: (w / SPEED) * 1000,
+        iterations: Infinity,
+      })
+      anim.currentTime = (Math.min(at, w) / SPEED) * 1000
+      if (paused) anim.pause()
+    }
+    const ro = new ResizeObserver(build)
+    ro.observe(run)
+    build()
+    root.addEventListener('mouseenter', () => anim?.pause())
+    root.addEventListener('mouseleave', () => anim?.play())
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        ro.disconnect()
+        anim?.cancel()
+      },
+      { once: true },
+    )
+  }
+
   const init = () => {
     const root = document.querySelector<HTMLElement>('.sbar')
     if (!root || root.dataset.ready) return
     root.dataset.ready = '1'
+    ticker(root)
 
     const clock = () =>
       set(
@@ -121,20 +166,7 @@ const items: { label: string; value?: string; slot?: string }[] = [
   .sbar__track {
     display: flex;
     width: max-content;
-    animation: sbar 70s linear infinite;
-  }
-  .sbar:hover .sbar__track {
-    animation-play-state: paused;
-  }
-  @keyframes sbar {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sbar__track {
-      animation: none;
-    }
+    will-change: transform;
   }
   .sbar__run {
     margin: 0;
@@ -145,6 +177,7 @@ const items: { label: string; value?: string; slot?: string }[] = [
     margin-right: 1.7em;
   }
   .sbar__label {
+    font-variant-numeric: tabular-nums;
     font-family: var(--font-din);
     font-size: 0.72rem;
     letter-spacing: 0.16em;

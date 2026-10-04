@@ -29,12 +29,7 @@ export function afterIntro(): Promise<void> {
   })
 }
 
-type Deadline = { timeRemaining: () => number }
-const idle: (f: (d: Deadline) => void) => void =
-  typeof requestIdleCallback === 'function'
-    ? (f) => requestIdleCallback(f, { timeout: 400 })
-    : (f) => setTimeout(() => f({ timeRemaining: () => 8 }), 16)
-
-/** a function run once, in an idle moment */
-export const whenIdle = (f: () => void) => idle(() => f())
+/** a function run once, in an idle moment (or after `timeout` ms at the latest) */
+export const whenIdle = (f: () => void, timeout = 400) =>
+  typeof requestIdleCallback === 'function' ? requestIdleCallback(() => f(), { timeout }) : setTimeout(f, 16)
 
