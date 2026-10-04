@@ -751,6 +751,19 @@
   html[data-print='colour'] main {
     page: colour;
   }
+  /* Firefox paints a page's background only inside its margins, which leaves white
+     bands top and bottom; there the colour pages drop their margins and the text
+     keeps its distance with padding that repeats on every page instead */
+  @supports (-moz-appearance: none) {
+    @page colour {
+      margin: 0;
+    }
+    html[data-print='colour'] main {
+      padding-block: 22mm 24mm !important;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
+  }
   body {
     font-size: 10.5pt;
   }
