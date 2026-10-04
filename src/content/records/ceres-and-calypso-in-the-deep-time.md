@@ -4,7 +4,9 @@ short: Ceres & Calypso
 by: Candy Claws
 year: 2011
 genres:
-  - alternative
+  - dream pop
+  - shoegaze
+  - neo-psychedelia
 tags:
   - album
 meta:

@@ -2,6 +2,8 @@
 title: Blush
 by: Kevin Abstract
 year: 2025
+genres:
+  - pop rap
 tags:
   - album
 links:

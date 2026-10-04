@@ -2,6 +2,9 @@
 title: Scrapyard
 by: Quadeca
 year: 2024
+genres:
+  - art pop
+  - experimental hip hop
 tags:
   - album
 links:

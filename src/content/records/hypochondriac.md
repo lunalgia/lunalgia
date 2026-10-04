@@ -2,6 +2,9 @@
 title: Hypochondriac
 by: brakence
 year: 2022
+genres:
+  - glitch pop
+  - emo rap
 tags:
   - album
 meta:

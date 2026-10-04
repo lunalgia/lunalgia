@@ -4,6 +4,8 @@ by: drug bug
 year: 2026
 genres:
   - indie rock
+  - chamber pop
+  - art rock
 tags:
   - album
 meta:

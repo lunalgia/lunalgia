@@ -4,10 +4,10 @@ short: Deathmetal
 by: Panchiko
 year: 2000
 genres:
-  - electronic
-  - indie pop
   - indie rock
-  - industrial
+  - dream pop
+  - neo-psychedelia
+  - indietronica
 tags:
   - ep
 meta:

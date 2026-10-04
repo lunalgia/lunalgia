@@ -2,6 +2,10 @@
 title: Heavy Metal
 by: Cameron Winter
 year: 2024
+genres:
+  - singer-songwriter
+  - contemporary folk
+  - chamber folk
 tags:
   - album
 meta:

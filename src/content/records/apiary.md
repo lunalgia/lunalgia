@@ -3,7 +3,9 @@ title: Apiary
 by: Gingerbee
 year: 2025
 genres:
-  - punk
+  - chamber pop
+  - screamo
+  - indie rock
 tags:
   - ep
 meta:

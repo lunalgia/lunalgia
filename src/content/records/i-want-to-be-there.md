@@ -3,7 +3,8 @@ title: I Want to Be There
 by: Sadness
 year: 2019
 genres:
-  - rock
+  - blackgaze
+  - post-black metal
 tags:
   - album
 meta:

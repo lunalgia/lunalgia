@@ -2,6 +2,10 @@
 title: The New Sound
 by: Geordie Greep
 year: 2024
+genres:
+  - jazz-rock
+  - progressive rock
+  - art rock
 tags:
   - album
 meta:

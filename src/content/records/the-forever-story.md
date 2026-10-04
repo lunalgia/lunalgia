@@ -3,7 +3,8 @@ title: The Forever Story
 by: JID
 year: 2022
 genres:
-  - hip-hop/rap
+  - southern hip hop
+  - conscious hip hop
 tags:
   - album
 meta:

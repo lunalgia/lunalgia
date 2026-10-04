@@ -2,6 +2,10 @@
 title: Pain to Power
 by: Maruja
 year: 2025
+genres:
+  - post-rock
+  - post-punk
+  - jazz-rock
 tags:
   - album
 meta:

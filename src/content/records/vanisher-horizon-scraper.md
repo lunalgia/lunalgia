@@ -4,7 +4,8 @@ short: Vanisher
 by: Quadeca
 year: 2025
 genres:
-  - alternative
+  - art pop
+  - folktronica
 tags:
   - album
 meta:

@@ -3,7 +3,9 @@ title: Giving Birth to Thunder
 by: Indian Summer
 year: 2019
 genres:
-  - rock
+  - emo
+  - post-hardcore
+  - post-rock
 tags:
   - album
 meta:

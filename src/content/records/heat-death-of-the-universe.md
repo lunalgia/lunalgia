@@ -4,7 +4,9 @@ short: Heat Death
 by: Dead Butterflies
 year: 2025
 genres:
-  - alternative
+  - screamo
+  - indietronica
+  - midwest emo
 tags:
   - album
 meta:

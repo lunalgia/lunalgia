@@ -3,6 +3,8 @@ title: By the Time I Get to Phoenix
 short: Phoenix
 by: Injury Reserve
 year: 2021
+genres:
+  - experimental hip hop
 tags:
   - album
 links:
