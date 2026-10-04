@@ -12,5 +12,6 @@ meta:
   released: March 2024
   tracks: '8'
   label: Starrcade Records
+wikidata: none
 order: 2
 ---

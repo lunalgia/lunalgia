@@ -12,5 +12,6 @@ meta:
   released: September 2024
   tracks: '2'
   label: Polyvinyl Record Co.
+wikidata: none
 order: 10
 ---

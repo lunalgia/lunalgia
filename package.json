@@ -15,7 +15,8 @@
     "og": "node scripts/og.mjs",
     "snapshots": "node scripts/snapshots.mjs",
     "astro": "astro",
-    "files": "node scripts/files.mjs"
+    "files": "node scripts/files.mjs",
+    "sync": "node scripts/sync.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",
