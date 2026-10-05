@@ -53,6 +53,141 @@
     "h": 360,
     "taken": "2026-10-04"
   },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/05-lists-intro.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Haskell Programming - Lists",
+    "pages": 61,
+    "image": "/previews/55cbf02da558.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/06-more-lists.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Haskell Programming - Built-in functions on lists, list notations",
+    "pages": 54,
+    "image": "/previews/06bae2eb19a1.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/07-more-datatypes.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Haskell Programming - Characters, strings and tuples",
+    "pages": 64,
+    "image": "/previews/355034369e8e.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/08-higher-order.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Haskell Programming - Higher-order functions: map, filter, fold",
+    "pages": 55,
+    "image": "/previews/b4c19d3724f2.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/09-more-folds.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Haskell Programming - More folds",
+    "pages": 54,
+    "image": "/previews/4b5e7ef8eb49.webp",
+    "w": 640,
+    "h": 360,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Moodle/21 Assignment 1/Assignment 1. Due- October 2, 2026/Assignment1.pdf": {
+    "kind": "pdf",
+    "title": "Assignment 1",
+    "pages": 2,
+    "image": "/previews/df4938ee7ad7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Quizzes/Haskell-Quiz1.pdf": {
+    "kind": "pdf",
+    "title": "NAME=TEJAS SAH Roll NO=BMC_202517",
+    "pages": 2,
+    "image": "/previews/0c6015cfbe5c.webp",
+    "w": 640,
+    "h": 886,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/02 11 August - 17 August/phonetic symbols.pdf": {
+    "kind": "pdf",
+    "title": " ",
+    "pages": 2,
+    "image": "/previews/202a14f77d00.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/02 11 August - 17 August/R K Narayan.pdf": {
+    "kind": "pdf",
+    "title": "PUNCTUALLY at midday he opened his bag and spread out his professional",
+    "pages": 4,
+    "image": "/previews/e41cf91757db.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/03 18 August - 24 August/Drama MOV.pdf": {
+    "kind": "pdf",
+    "title": "Merchant of Venice: Act 4, Scene 1 | The Merchant of Venice | William Shakespeare | Lit2Go ETC",
+    "pages": 11,
+    "image": "/previews/9c2b29bcaf6c.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/05 1 September - 7 September/Biographical piece.pdf": {
+    "kind": "pdf",
+    "title": "Biographical piece",
+    "pages": 4,
+    "image": "/previews/d26d366784a7.webp",
+    "w": 640,
+    "h": 882,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/05 1 September - 7 September/Pearl Buck.pdf": {
+    "kind": "pdf",
+    "title": "Scan-141020-0001.pdf",
+    "pages": 3,
+    "image": "/previews/4cde709a6f10.webp",
+    "w": 640,
+    "h": 453,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/06 8 September - 14 September/Dramatic monologue.pdf": {
+    "kind": "pdf",
+    "title": "Ulysses by Alfred, Lord Tennyson | Poetry Foundation",
+    "pages": 2,
+    "image": "/previews/9cb0417d8572.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/07 15 September - 21 September/Robert Browning.pdf": {
+    "kind": "pdf",
+    "title": "My Last Duchess by Robert Browning | Poetry Foundation",
+    "pages": 2,
+    "image": "/previews/a130cf85634d.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/08 22 September - 28 September/Somerset Maugham.pdf": {
+    "kind": "pdf",
+    "title": "The verger",
+    "pages": 6,
+    "image": "/previews/ca86227981e9.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
   "/uni/Math/Year 1/Sem 1/Algebra 1/Assignments/Assignment 1 Solutions.pdf": {
     "kind": "pdf",
     "title": "Algebra 1Homework 1",
@@ -107,6 +242,96 @@
     "h": 792,
     "taken": "2026-10-04"
   },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/00 Course information and resources/About test 1 on Tue Sep 15 at at 3.30 - test 1 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Test 1 solutions and grading schemes Please let me know about any typos/errors.",
+    "pages": 4,
+    "image": "/previews/bf22710cade5.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/00 Course information and resources/About test 1 on Tue Sep 15 at at 3.30 - test 1.pdf": {
+    "kind": "pdf",
+    "title": "Test 1",
+    "pages": 2,
+    "image": "/previews/9104ce1897df.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Quiz 1/Quiz 1 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 1",
+    "pages": 4,
+    "image": "/previews/1b745ed1da08.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Test 1 - 09_15_2026_8_12_09_PM (3).pdf": {
+    "kind": "pdf",
+    "title": "Test 1 - 09_15_2026_8_12_09_PM (3)",
+    "pages": 22,
+    "image": "/previews/148fe12572dc.webp",
+    "w": 640,
+    "h": 482,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Tutorial sheet 1 and HW 1/Tutorial 1.pdf": {
+    "kind": "pdf",
+    "title": "Tutorial sheet 1",
+    "pages": 1,
+    "image": "/previews/90102ae30182.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Tutorial sheet 2 and HW 2 - Tutorial 2.pdf": {
+    "kind": "pdf",
+    "title": "Tutorial sheet 2",
+    "pages": 2,
+    "image": "/previews/07d7aa24fd9f.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Tutorial sheet 3 and HW 3 - Tutorial 3.pdf": {
+    "kind": "pdf",
+    "title": "Tutorial sheet 3",
+    "pages": 2,
+    "image": "/previews/0ca50e53843a.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Tutorial sheet 4 and HW 4/Simple exercise to understand change of basis.pdf": {
+    "kind": "pdf",
+    "title": "Two simple exercises to understand change of basis formulas",
+    "pages": 1,
+    "image": "/previews/a4990cb9c665.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Moodle/01 Your assigned work- tutorials, HW, quizzes, exams/Tutorial sheet 4 and HW 4/Tutorial 4.pdf": {
+    "kind": "pdf",
+    "title": "Tutorial sheet 4",
+    "pages": 4,
+    "image": "/previews/1282f6fc4de5.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Grading Scheme 4.pdf": {
+    "kind": "pdf",
+    "title": "Grading Scheme 4",
+    "pages": 1,
+    "image": "/previews/6bf209aa7986.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
   "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Practice Quiz 1.pdf": {
     "kind": "pdf",
     "title": "Practice Quiz",
@@ -115,6 +340,15 @@
     "w": 640,
     "h": 828,
     "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 1",
+    "pages": 1,
+    "image": "/previews/ae3e407fbb44.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
   },
   "/uni/Math/Year 1/Sem 1/Analysis 1/ana1.pdf": {
     "kind": "pdf",
@@ -152,6 +386,24 @@
     "h": 836,
     "taken": "2026-10-04"
   },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Assignments/Assignment 4.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1: Aug-Nov 2026",
+    "pages": 1,
+    "image": "/previews/d4f17cc48010.webp",
+    "w": 640,
+    "h": 836,
+    "taken": "2026-10-05"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Assignments/Assignment 5.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1: Aug-Nov 2026",
+    "pages": 1,
+    "image": "/previews/572e6d8334c7.webp",
+    "w": 640,
+    "h": 836,
+    "taken": "2026-10-05"
+  },
   "/uni/Math/Year 1/Sem 1/Analysis 1/Books/Analysis, Tao Vol 1.pdf": {
     "kind": "pdf",
     "title": "Analysis I",
@@ -169,6 +421,1095 @@
     "w": 640,
     "h": 960,
     "taken": "2026-10-04"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/01 4 August - 10 August/Course Information.pdf": {
+    "kind": "pdf",
+    "title": "ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 1,
+    "image": "/previews/a8f336317ea1.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/05 1 September - 7 September/Homework 1 - Not to be submitted - Homework 1 - Algebra 1.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 1 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 1,
+    "image": "/previews/f6e3a67d6624.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/07 15 September - 21 September/Homework 2 - Not to be submitted - Homework 2 - Algebra 1.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 2 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 2,
+    "image": "/previews/2e30e109883b.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/11 13 October - 19 October/Homework 3 - NOT to be submitted - Homework 3 - Algebra 1.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 3 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 1,
+    "image": "/previews/6ccbb1d5ba90.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/14 3 November - 9 November/Homework 4 - NOT to be submitted - Homework 4 - Algebra 1.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 4 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 1,
+    "image": "/previews/a53d8c07a261.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/16 17 November - 23 November/Homework 5 - NOT to be submitted - Homework 5 - Algebra 1.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 5 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 2,
+    "image": "/previews/1d62141226a8.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/17 24 November - 30 November/Sketches of solutions for endterm examination.pdf": {
+    "kind": "pdf",
+    "title": "SKETCHES OF SOLUTIONS : ENDTERM EXAMINATION - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 5,
+    "image": "/previews/8efe5fdd762d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Endsem - Official Solutions.pdf": {
+    "kind": "pdf",
+    "title": "SKETCHES OF SOLUTIONS : ENDTERM EXAMINATION - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 5,
+    "image": "/previews/db3aa6dcfdb3.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Endsem",
+    "pages": 2,
+    "image": "/previews/eaba87dd8d63.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Homeworks.pdf": {
+    "kind": "pdf",
+    "title": "HOMEWORK 1 - ALGEBRA I - AUGUST-NOVEMBER 2024",
+    "pages": 7,
+    "image": "/previews/790a9517e8f7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Midsem",
+    "pages": 2,
+    "image": "/previews/16aa26664d65.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Notes.pdf": {
+    "kind": "pdf",
+    "title": "Class Notes",
+    "pages": 51,
+    "image": "/previews/61ad1e9bd0c7.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 1",
+    "pages": 1,
+    "image": "/previews/2fb8bb041e51.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 2",
+    "pages": 1,
+    "image": "/previews/aa51903541ea.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Quiz 3.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 3",
+    "pages": 1,
+    "image": "/previews/39f915db50b1.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Prof. Aditya Karnataki (Arjun Agarwal)/Quiz 4.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 4",
+    "pages": 1,
+    "image": "/previews/f658df368966.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "27. (a) Fill in the blanks without proofs. There is a bijection between the sets $\\{f | f : \\mathbb{R}^n \\to \\mathbb{R}^",
+    "pages": 1,
+    "image": "/previews/96b8b55a5f13.webp",
+    "w": 640,
+    "h": 915,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Midsem a.k.a. Test 1.pdf": {
+    "kind": "pdf",
+    "title": "matrix N = \\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 2 & 3 & 4 \\\\ 20 & 30 & 40 \\end{bmatrix}. Note that one can recover ",
+    "pages": 2,
+    "image": "/previews/201fee758960.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Quiz 0.pdf": {
+    "kind": "pdf",
+    "title": "Explain/prave everything. and find a basis for it You may use std facts about",
+    "pages": 2,
+    "image": "/previews/dd1db1d7a841.webp",
+    "w": 640,
+    "h": 435,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "1. Let $M = \\begin{bmatrix} \\sqrt{5} & p & q \\\\ 0 & 0 & \\pi \\\\ 0 & e & r \\end{bmatrix}$ and $N = \\begin{bmatrix} \\sqrt{5",
+    "pages": 1,
+    "image": "/previews/ab993813161b.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "3. Let $M = \\begin{bmatrix} 3 & 0 & 0 \\\\ 0 & 5 & 0 \\\\ 0 & 1 & 3 \\end{bmatrix}$. Solve this problem without using any pol",
+    "pages": 1,
+    "image": "/previews/364492290466.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Quiz 3.pdf": {
+    "kind": "pdf",
+    "title": "Suppose T^n v = 0 for some n > 1. Show Tv = 0. (What happens when n=2?)",
+    "pages": 2,
+    "image": "/previews/1bedd4174fd4.webp",
+    "w": 640,
+    "h": 430,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Algebra 1/2025 Fall - Prof. Upendra Kulkarni (fourthground)/Test 2.pdf": {
+    "kind": "pdf",
+    "title": "1. Let $A = \\begin{bmatrix} a & p & x \\\\ b & 10 & y \\\\ c & r & z \\end{bmatrix}$ and let $e_1, e_2, e_3$ denote the stand",
+    "pages": 2,
+    "image": "/previews/9e20cfaaa7af.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Endsem - Official Grading Scheme.pdf": {
+    "kind": "pdf",
+    "title": "Grading schemes for final exam Q1 7.5 points (a) 1.5 True",
+    "pages": 4,
+    "image": "/previews/201d670380b6.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Final Announced corrections/explanations in blue",
+    "pages": 2,
+    "image": "/previews/7a60f2e83b89.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/HW 1 - Official Answers.pdf": {
+    "kind": "pdf",
+    "title": "HW 1 solutions and an addendum Comments are welcome",
+    "pages": 4,
+    "image": "/previews/36ccc490d898.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/HW 1.pdf": {
+    "kind": "pdf",
+    "title": "HW 1",
+    "pages": 2,
+    "image": "/previews/b6bc7f011c1d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Midsem 1.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Test 1",
+    "pages": 1,
+    "image": "/previews/f0a153406561.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Midsem 2.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Test 2",
+    "pages": 1,
+    "image": "/previews/6f7f253cfb7d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Quiz 0.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 0",
+    "pages": 2,
+    "image": "/previews/88d5eb6fc3d4.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Quiz 1 - Official Answers.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Quiz 1 Answers Comments are welcome 1. Short questions.",
+    "pages": 2,
+    "image": "/previews/c37bae55e444.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Quiz 1 This one counts! Name:",
+    "pages": 2,
+    "image": "/previews/ab4b97ab817d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1 Quiz 2 Name:",
+    "pages": 4,
+    "image": "/previews/7f75186d6329.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Revenge Homework 1.pdf": {
+    "kind": "pdf",
+    "title": "Revenge Homework",
+    "pages": 1,
+    "image": "/previews/c0bbdf217094.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2024 Fall - Prof. Upendra Kulkarni (Arjun Agarwal)/Understanding Analysis (Abbott) - Solutions.pdf": {
+    "kind": "pdf",
+    "title": "Understanding Analysis Solutions",
+    "pages": 256,
+    "image": "/previews/2c22cccc9ee6.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "\\int_{0}^{1} x^{m}(1 - x)^{n} = \\frac{m! n!}{(m + n + 1)!}",
+    "pages": 1,
+    "image": "/previews/a7d4e80f5138.webp",
+    "w": 640,
+    "h": 896,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Homework.pdf": {
+    "kind": "pdf",
+    "title": "CMI(BSc I) Calculus/Analysis HA-1 08-08-2025",
+    "pages": 38,
+    "image": "/previews/1181e962dc6f.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "2. (a). Find the radius of convergence of $\\sum \\frac{1}{(17)^n + (29)^n} x^n$",
+    "pages": 1,
+    "image": "/previews/1279c6f61631.webp",
+    "w": 640,
+    "h": 945,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "(a) n^{1000} \\frac{1}{(1000)^n} \\to 1,",
+    "pages": 1,
+    "image": "/previews/b2ac6f22082a.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "\\because The point (u, f(u)) = \\left(24\\sqrt{\\frac{1}{25}}, \\frac{1}{25^{\\frac{24}{25}}}\\right)",
+    "pages": 3,
+    "image": "/previews/63507e323bbb.webp",
+    "w": 640,
+    "h": 896,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Analysis 1/2025 Fall - Prof. B. V. Rao (fourthground)/Theory.pdf": {
+    "kind": "pdf",
+    "title": "CMI/BVR Analysis 1 2025 week 1 Before Beginning:",
+    "pages": 188,
+    "image": "/previews/b49a0f74fbaf.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2024 Fall - Prof. Amitabh Virmani (Arjun Agarwal)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Endsem",
+    "pages": 2,
+    "image": "/previews/b1daf071a37b.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2024 Fall - Prof. Amitabh Virmani (Arjun Agarwal)/Homeworks.pdf": {
+    "kind": "pdf",
+    "title": "CM 1 – HW 1 – Due 16 August Midnight 11.59 pm",
+    "pages": 9,
+    "image": "/previews/b594d67c48c9.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2024 Fall - Prof. Amitabh Virmani (Arjun Agarwal)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Midsem",
+    "pages": 2,
+    "image": "/previews/7da7ff6d5081.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 1.pdf": {
+    "kind": "pdf",
+    "title": "position vectors is shifted to O' = O + a? Relate the torques with respect to the two",
+    "pages": 1,
+    "image": "/previews/52a6ba8d1845.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 2.pdf": {
+    "kind": "pdf",
+    "title": "\\hat{r} = \\cos \\theta \\hat{z} + \\sin \\theta (\\cos \\phi \\hat{x} + \\sin \\phi \\hat{y}), \\quad \\hat{\\theta} = -\\sin \\theta \\",
+    "pages": 1,
+    "image": "/previews/49dd58552915.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 3.pdf": {
+    "kind": "pdf",
+    "title": "2. $\\langle 4 + 5 \\rangle$ Gradient of a scalar field. Consider the scalar field $\\psi = 1/\\sqrt{x^2 + y^2 + z^2}$",
+    "pages": 1,
+    "image": "/previews/653947d4a96d.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 4.pdf": {
+    "kind": "pdf",
+    "title": "location $\\mathbf{r}_0$ but at distinct times $t_A < t_B$, as observed in an inertial frame $K$. Do they",
+    "pages": 1,
+    "image": "/previews/e76f82b39cad.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 5.pdf": {
+    "kind": "pdf",
+    "title": "Write Newton's $2^{\\text{nd}}$ law equations of motion for this system in an inertial frame where the",
+    "pages": 1,
+    "image": "/previews/682b49642361.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 6.pdf": {
+    "kind": "pdf",
+    "title": "\\hat{\\theta} = -\\sin\\theta\\hat{z} + \\cos\\theta(\\cos\\phi\\hat{x} + \\sin\\phi\\hat{y}) \\quad \\text{and} \\quad \\hat{\\phi} = -\\",
+    "pages": 1,
+    "image": "/previews/90f9d5b5cf1e.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 7.pdf": {
+    "kind": "pdf",
+    "title": "(11) Linearization of pendulum equation: Linearize the $\\ddot{\\theta} + \\frac{g}{\\ell}\\sin\\theta = -\\omega^2 \\sin\\theta$",
+    "pages": 1,
+    "image": "/previews/e9eaca8d45ee.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Assignment 8.pdf": {
+    "kind": "pdf",
+    "title": "E = \\frac{1}{2} m \\dot{r}^2 + V_{\\text{eff}}(r) \\text{ where } V_{\\text{eff}} = \\frac{l^2}{2mr^2} - \\frac{\\alpha}{r}. He",
+    "pages": 1,
+    "image": "/previews/808d43dabbfb.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "This question paper has 2 pages. Read questions carefully, write your answers clearly in blue and briefly explain your r",
+    "pages": 2,
+    "image": "/previews/f1387df6bb62.webp",
+    "w": 640,
+    "h": 913,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Classical Mechanics 1/2025 Fall - Prof. Govind Krishnaswami (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "(4 + 4) (a) State Newton's first law of mechanics: (b) Give an example of a frame that may be considered inertial to a r",
+    "pages": 1,
+    "image": "/previews/db274558f660.webp",
+    "w": 640,
+    "h": 916,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2024 Fall - Prof. Usha Mahadevan (Arjun Agarwal)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Endsem",
+    "pages": 2,
+    "image": "/previews/da804b5fb549.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2024 Fall - Prof. Usha Mahadevan (Arjun Agarwal)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Midsem",
+    "pages": 2,
+    "image": "/previews/d83141cc03ed.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2024 Fall - Prof. Usha Mahadevan (Arjun Agarwal)/Textbook (2024 course notes).pdf": {
+    "kind": "pdf",
+    "title": "Empower with English",
+    "pages": 65,
+    "image": "/previews/bcecf3c1d715.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/01 6 August - 12 August/sonnet.pdf": {
+    "kind": "pdf",
+    "title": "Ozymandias of Egypt P.B. Shelley",
+    "pages": 1,
+    "image": "/previews/a330ba95de83.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/03 20 August - 26 August/phonetic symbols.pdf": {
+    "kind": "pdf",
+    "title": " ",
+    "pages": 2,
+    "image": "/previews/f7242067409e.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/03 20 August - 26 August/short story.pdf": {
+    "kind": "pdf",
+    "title": "The Adventure of the Dying Detective",
+    "pages": 9,
+    "image": "/previews/9940b479bb08.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/04 27 August - 2 September/Anita DEsai.pdf": {
+    "kind": "pdf",
+    "title": "Short Story: A Devoted Son by Anita Desai WORDBITES (YUM!)",
+    "pages": 6,
+    "image": "/previews/7cec15e84d37.webp",
+    "w": 640,
+    "h": 904,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/05 3 September - 9 September/one act play.pdf": {
+    "kind": "pdf",
+    "title": "The dear departed, a comedy in one act",
+    "pages": 24,
+    "image": "/previews/755c5294e53d.webp",
+    "w": 640,
+    "h": 1153,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Moodle archive/07 17 September - 23 September/Biography.pdf": {
+    "kind": "pdf",
+    "title": "Biography",
+    "pages": 5,
+    "image": "/previews/8d008458713f.webp",
+    "w": 640,
+    "h": 882,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Prof. Usha Mahadevan (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Say whether the past tense endings are -id. Give reason for your answer. The first one is done for you: 5 marks",
+    "pages": 2,
+    "image": "/previews/d7ed996ffd3a.webp",
+    "w": 640,
+    "h": 877,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Prof. Usha Mahadevan (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "1 . Pick out the odd one in the following groups of words and say why you consider it odd .The first one is done for",
+    "pages": 1,
+    "image": "/previews/22fe24ea8feb.webp",
+    "w": 640,
+    "h": 904,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Empowerment with English/2025 Fall - Prof. Usha Mahadevan (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "When I saw him, I smiled. The doctor had described him well. He looked to be in a terrible condition. As I chatted with ",
+    "pages": 2,
+    "image": "/previews/693e39627baf.webp",
+    "w": 640,
+    "h": 895,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Intro to Programming (Haskell)/2024 Fall - Prof. S. P. Suresh (Arjun Agarwal)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Endsem",
+    "pages": 2,
+    "image": "/previews/51001a75a361.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Intro to Programming (Haskell)/2024 Fall - Prof. S. P. Suresh (Arjun Agarwal)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Midsem",
+    "pages": 2,
+    "image": "/previews/188b3bc5f130.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Intro to Programming (Haskell)/2025 Fall - Prof. S. P. Suresh (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "· There are 5 questions in Part A, each worth 6 marks. For this part, provide the solution and if neces-",
+    "pages": 2,
+    "image": "/previews/a76eb04bb28e.webp",
+    "w": 640,
+    "h": 913,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Intro to Programming (Haskell)/2025 Fall - Prof. S. P. Suresh (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "\\forall x \\exists y (P(x,y) \\rightarrow Q(y)) \\land \\exists z R(z)",
+    "pages": 3,
+    "image": "/previews/d8d1c0cac927.webp",
+    "w": 640,
+    "h": 881,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 1/Intro to Programming (Haskell)/2025 Fall - Prof. S. P. Suresh (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "NAME=TEJAS SAH Roll NO=BMC_202517",
+    "pages": 2,
+    "image": "/previews/0419e5f878fd.webp",
+    "w": 640,
+    "h": 886,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Advanced Programming/2026 Spring - Prof. Ramaseshan Ramachandran (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Aprg-Midsem",
+    "pages": 8,
+    "image": "/previews/1471e5054651.webp",
+    "w": 640,
+    "h": 813,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "Show that in an orbital graph",
+    "pages": 2,
+    "image": "/previews/0dc0056c10c2.webp",
+    "w": 640,
+    "h": 912,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Free groups.pdf": {
+    "kind": "pdf",
+    "title": "Free groups - basics",
+    "pages": 49,
+    "image": "/previews/1230cec39a0c.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "6. Let $G$ be the group generated by $\\left\\{\\begin{pmatrix} 1 & a & b \\\\ 0 & 1 & c \\\\ 0 & 0 & 1 \\end{pmatrix} \\text{ wh",
+    "pages": 2,
+    "image": "/previews/c31cc36fe8b2.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Quiz1.pdf": {
+    "kind": "pdf",
+    "title": "4. Let $a \\in \\mathbb{C}$. Determine whether the two elements $\\begin{pmatrix} a+1 & 0 \\\\ 0 & a \\end{pmatrix}$ and $\\beg",
+    "pages": 1,
+    "image": "/previews/12d28ceaa17d.webp",
+    "w": 640,
+    "h": 910,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Semidirect product.pdf": {
+    "kind": "pdf",
+    "title": "SEMIDIRECT PRODUCTS 1. Introduction",
+    "pages": 23,
+    "image": "/previews/40918440088f.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 1.pdf": {
+    "kind": "pdf",
+    "title": "of first type, E_1 = (identity with a at position (j,i)) and",
+    "pages": 2,
+    "image": "/previews/162256bb70f1.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 10.pdf": {
+    "kind": "pdf",
+    "title": "\\int_{-1}^{1} f(x)g(x)dx.",
+    "pages": 2,
+    "image": "/previews/612fe3f2c495.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 2.pdf": {
+    "kind": "pdf",
+    "title": "Algebra II - Tutorial 3 - Date: 27/1/2025",
+    "pages": 1,
+    "image": "/previews/ed9050690967.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 3.pdf": {
+    "kind": "pdf",
+    "title": "2. Let $G = \\langle x \\rangle$ be a cyclic group of order 12 and $G' = \\langle y \\rangle$ a group of order 6. Let",
+    "pages": 1,
+    "image": "/previews/d6a230c61aa8.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 4.pdf": {
+    "kind": "pdf",
+    "title": "Algebra II - Tutorial 4 - Date: 19/2/2026",
+    "pages": 1,
+    "image": "/previews/76f8781a843f.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 5.pdf": {
+    "kind": "pdf",
+    "title": "11. Show that $GL_n(\\mathbb{R}) = SL_n(\\mathbb{R}) \\times diag(a, 1, \\ldots, 1)$ where $a \\in \\mathbb{R} - \\{0\\}$ and .",
+    "pages": 1,
+    "image": "/previews/32592af02458.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 6.pdf": {
+    "kind": "pdf",
+    "title": "6. Let $G$ be a $p$-group. Show that the normalizer of $H$, $N(H) := \\{g \\in G : g H g^{-1} = H\\}$",
+    "pages": 1,
+    "image": "/previews/a7fa23eac249.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 7 or 8.pdf": {
+    "kind": "pdf",
+    "title": "word in X \\cup X^{-1} of positive length is the identity. (\\ell(w) := length of the word is the",
+    "pages": 1,
+    "image": "/previews/64485803e50f.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Algebra 2/2026 Spring - Prof. Clare D'Cruz (fourthground)/Tutorial 9.pdf": {
+    "kind": "pdf",
+    "title": "and let $Sym(G/K)$ denote the symmetric group on the set $G/K$. Let $\\phi: G \\to Sym(G/K)$ be the map",
+    "pages": 1,
+    "image": "/previews/a6396ed00bfc.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "5. (10 points) Determine the local and global extrema of the function $ f : \\mathbb{R}^2 \\to \\mathbb{R}, f(a,b) = ab e^{",
+    "pages": 1,
+    "image": "/previews/99e18402f3fb.webp",
+    "w": 640,
+    "h": 909,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "f(x,y) = \\begin{cases} \\frac{xy(x^2-y^2)}{x^2+y^2} & \\text{if } (x,y) \\neq (0,0), \\\\ 0 & \\text{if } (x,y) = (0,0). \\end{",
+    "pages": 1,
+    "image": "/previews/af442ce6b2c2.webp",
+    "w": 640,
+    "h": 871,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Q1: Show T: R^n \\to R^m, linear, is continuous. \\Rightarrow Okay to show, \\forall x \\in R^n, \\forall \\varepsilon > 0, \\e",
+    "pages": 1,
+    "image": "/previews/0af73584d013.webp",
+    "w": 640,
+    "h": 908,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "Q1: |f(x)|\\leq|x|^2,\\forall x\\in R^n, to show f is differentiable at (0,...,0) \\Rightarrow |f(0,...,0)|\\leq|0,...,0|^2=0",
+    "pages": 1,
+    "image": "/previews/0ab137f3e8ad.webp",
+    "w": 640,
+    "h": 912,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Quiz 3.pdf": {
+    "kind": "pdf",
+    "title": "b) a=(1,1), b=(0,2) i) End(f\\circ g)(a) > f'(1,1)= \\begin{bmatrix} 2 & -2 \\\\ 2 & 2 \\end{bmatrix} ii) Find g'(b), where g",
+    "pages": 1,
+    "image": "/previews/d523ee3e12f1.webp",
+    "w": 640,
+    "h": 914,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Calculus 1/2026 Spring - Prof. Krishna Hanumanthu (fourthground)/Quiz 4.pdf": {
+    "kind": "pdf",
+    "title": "Given $f(\\vec{a},\\vec{b}) \\in X$ such that $f'(\\vec{a},\\vec{b}) = 0$ and $f''(\\vec{a},\\vec{b})$ has rank $n$, written as",
+    "pages": 1,
+    "image": "/previews/78dbc2ce6c9f.webp",
+    "w": 640,
+    "h": 903,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Assignment 1.pdf": {
+    "kind": "pdf",
+    "title": "5. Let $\\alpha \\leq \\beta$ be two infinite cardinals and let $|B| = \\beta$. An $\\alpha$-covering of",
+    "pages": 2,
+    "image": "/previews/934f38e2d4a5.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Assignment 2.pdf": {
+    "kind": "pdf",
+    "title": "|\\bigcup_{i=1}^{n} A_i| = \\sum_{|I|=1}^{n} (-1)^{|I|-1}|A_I|,",
+    "pages": 2,
+    "image": "/previews/a0af979106b0.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Assignment 3.pdf": {
+    "kind": "pdf",
+    "title": "beads of $k$ different colors. Suppose you have the additional require-",
+    "pages": 1,
+    "image": "/previews/04c6a233732d.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Assignment 4.pdf": {
+    "kind": "pdf",
+    "title": "is bounded by $(n + 1)^{\\left(\\frac{n}{2}\\right)}$.",
+    "pages": 1,
+    "image": "/previews/af7b35f9e35a.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "n! = \\sum_{k=0}^{n} (-1)^{k} \\binom{n}{k} (n - k)^{n}.",
+    "pages": 2,
+    "image": "/previews/fa745ce32419.webp",
+    "w": 640,
+    "h": 896,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "3. Suppose $A$ is a subset of real numbers such that $A \\times A$ can be decomposed as the union $B \\cup C$ where $B$ in",
+    "pages": 1,
+    "image": "/previews/4f70e0362f69.webp",
+    "w": 640,
+    "h": 912,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Problem sheet 1.pdf": {
+    "kind": "pdf",
+    "title": "a = (a_1, a_2, \\dots) and b = (b_1, b_2, \\dots), define a \\leq b if a_i \\leq b_i for all",
+    "pages": 2,
+    "image": "/previews/a627650b0f58.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Problem sheet 2.pdf": {
+    "kind": "pdf",
+    "title": "\\sum_{i=1}^{n} i^3 = \\left( \\frac{n(n+1)}{2} \\right)^2 .",
+    "pages": 2,
+    "image": "/previews/31dad840e3c3.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "describe the sequence $\\{g_n\\}_{n>0}$ generated by $\\frac{f(x)}{(1-x)}$ in terms of the sequence",
+    "pages": 1,
+    "image": "/previews/b403568926bc.webp",
+    "w": 640,
+    "h": 878,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Discrete Math/2026 Spring - Prof. V. Arvind (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "2. Let $G_1 \\leq S_n$ and $G_2 \\leq S_m$ be permutation groups acting on $[n]$ and $[m]$ with cycle index polynomials $P",
+    "pages": 1,
+    "image": "/previews/26d0c58701b4.webp",
+    "w": 640,
+    "h": 886,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Electrodynamics 1/2026 Spring - Prof. V. V. Sreedhar (fourthground)/Problem sheet 1.pdf": {
+    "kind": "pdf",
+    "title": "Exercise 1: An Invitation to Electrodynamics",
+    "pages": 5,
+    "image": "/previews/6eb8b57b35f7.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Electrodynamics 1/2026 Spring - Prof. V. V. Sreedhar (fourthground)/Problem sheet 2.pdf": {
+    "kind": "pdf",
+    "title": "1 Vector and Tensors",
+    "pages": 4,
+    "image": "/previews/0643e54d7e35.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Lean/2026 Spring - Prof. S. P. Suresh (fourthground)/Hoare.pdf": {
+    "kind": "pdf",
+    "title": "Hoare Logic – Lecture Notes",
+    "pages": 12,
+    "image": "/previews/d547965c03c7.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/Endsem.pdf": {
+    "kind": "pdf",
+    "title": "2. (a). Joint density of $(X,Y)$ is given by $f(x,y) = \\frac{e^{-y}}{y}$ for $0 < x < y < \\infty$. Calculate $E(X^2 | Y ",
+    "pages": 2,
+    "image": "/previews/baa501b9ffc6.webp",
+    "w": 640,
+    "h": 909,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/HA.pdf": {
+    "kind": "pdf",
+    "title": "BSc I/BVR Probability HA-1 10-01-2026",
+    "pages": 36,
+    "image": "/previews/cc792c998ee2.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "E\\left[\\frac{1}{n-1}\\sum_{1}^{n}(X_i - \\overline{X})^2\\right] = \\sigma^2.",
+    "pages": 1,
+    "image": "/previews/5eceaafc96b8.webp",
+    "w": 640,
+    "h": 908,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/Notes.pdf": {
+    "kind": "pdf",
+    "title": "BVR/B1 Probability 2026 week 1 Before beginning: Books:",
+    "pages": 168,
+    "image": "/previews/189df76a5a3a.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Let $X =$ number of balls in Box 2, Want $E X$ $x = 0, 1, 2, \\dots, 30$ $\\mathbb{P}(X = x) = \\binom{30}{x}$ you did not ",
+    "pages": 4,
+    "image": "/previews/3d4ac01a6bc6.webp",
+    "w": 640,
+    "h": 882,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 2/Probability/2026 Spring - Prof. B. V. Rao (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "\\lim_{n} P^{n} = \\begin{pmatrix} \\frac{1}{3} & \\frac{1}{3} & \\frac{1}{3} & 0 \\\\ \\frac{1}{3} & \\frac{1}{3} & \\frac{1}{3} ",
+    "pages": 3,
+    "image": "/previews/833485f074b1.webp",
+    "w": 640,
+    "h": 894,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Algebra 3/2026 Fall - Prof. Anwesh Ray (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "A = \\frac{\\mathbb{C}[x]}{(x^n)}?",
+    "pages": 1,
+    "image": "/previews/84f2bababfc4.webp",
+    "w": 640,
+    "h": 698,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Algebra 3/2026 Fall - Prof. Anwesh Ray (fourthground)/Quiz 2.pdf": {
+    "kind": "pdf",
+    "title": "2. Let $R$ be a unique factorization domain and let $K$ be its field of fractions. Suppose that $\\alpha \\in K$ satisfies",
+    "pages": 2,
+    "image": "/previews/4af95c212c0e.webp",
+    "w": 640,
+    "h": 906,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Analysis 2/2026 Fall - Prof. B. V. Rao (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "And there should be nothing in K between these two boundary points. One of them must pick the boundary point, wlog, let ",
+    "pages": 2,
+    "image": "/previews/a1e30d41e6d7.webp",
+    "w": 640,
+    "h": 879,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Calculus 2/2026 Fall - Prof. Manoj Kummini (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "1. (a) (8 marks) Let $f : [0, 1] \\to \\mathbb{R}$ be a continuous function. Show the graph of $f$, $\\Gamma_f := \\{(x, f(x",
+    "pages": 1,
+    "image": "/previews/f7ee10dcf6c8.webp",
+    "w": 640,
+    "h": 389,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Design and Analysis of Algorithms/2026 Fall - Prof. Prajakta Nimbhorkar (fourthground)/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "\\bullet This exam has 5 questions for a total of 60 marks.",
+    "pages": 2,
+    "image": "/previews/f079b1ebd852.webp",
+    "w": 640,
+    "h": 935,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Design and Analysis of Algorithms/2026 Fall - Prof. Prajakta Nimbhorkar (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "\\rightarrow distinct elements",
+    "pages": 1,
+    "image": "/previews/da4bbd8792b8.webp",
+    "w": 640,
+    "h": 981,
+    "taken": "2026-10-05"
+  },
+  "/uni/Past Material/Sem 3/Theory Of Computation/2026 Fall - Prof. C Aiswarya (fourthground)/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "K^{-1}L = \\bigcup_{u \\in K} u^{-1}L",
+    "pages": 1,
+    "image": "/previews/9b4ecaa58587.webp",
+    "w": 640,
+    "h": 855,
+    "taken": "2026-10-05"
+  },
+  "/uni/Physics/Year 1/Sem 1/Classical Mechanics 1/Assignments/Assignment 1.pdf": {
+    "kind": "pdf",
+    "title": "CM1_2026_Prob1",
+    "pages": 2,
+    "image": "/previews/17c29c59b480.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Physics/Year 1/Sem 1/Classical Mechanics 1/Assignments/Assignment 2.pdf": {
+    "kind": "pdf",
+    "title": "CM1_2026_Prob2",
+    "pages": 3,
+    "image": "/previews/7dd66f661431.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
+  },
+  "/uni/Physics/Year 1/Sem 1/Classical Mechanics 1/Assignments/Assignment 3.pdf": {
+    "kind": "pdf",
+    "title": "CM1_2026_Prob3",
+    "pages": 2,
+    "image": "/previews/e8ea20c8b62b.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-05"
   },
   "https://writing.upenn.edu/~taransky/Barthes.pdf": {
     "kind": "pdf",
