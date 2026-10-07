@@ -4,9 +4,9 @@ import { z } from 'astro/zod'
 
 /** The three kinds of writing, in order of how finished they are. */
 export const WRITING_KINDS = {
-  essay: { label: 'Essays', blurb: 'long, finished pieces, argued to the end' },
-  note: { label: 'Notes', blurb: 'thinking out loud; seedlings, half-baked' },
-  journal: { label: 'Journal', blurb: 'days as they happened, written down and left as they are' },
+  essay: { label: 'Essays', blurb: 'long, finished pieces' },
+  note: { label: 'Notes', blurb: 'academic, expository articles' },
+  journal: { label: 'Journal', blurb: 'days as they happened' },
 } as const
 
 const writing = defineCollection({

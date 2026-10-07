@@ -5,179 +5,214 @@
  * DINdong label on the top edge and the same label upside down on the bottom.
  * Lines rise into place, one after another, as the panel comes into view.
  */
-const label = 'A FEW WORDS, BEFORE YOU WANDER'
+const label = "A FEW WORDS, BEFORE YOU WANDER";
 ---
 
 <section class="letter board" aria-labelledby="letter-label">
-  <div class="panel"></div>
-  <div class="letter__frame" aria-hidden="true"></div>
-  <p id="letter-label" class="letter__label">{label}</p>
-  <div class="letter__body">
-    <p>
-      <span class="ln">I love literature, music, art, humanities, math and physics.</span>
-      <span class="ln">In life I subscribe to rationalism, being altruist,</span>
-      <span class="ln">but also to people and nature <em>and the wonders of the soul.</em></span>
+    <div class="panel"></div>
+    <div class="letter__frame" aria-hidden="true"></div>
+    <p id="letter-label" class="letter__label">
+        {label}
     </p>
-    <p>
-      <span class="ln">During the day, I try not to get swallowed</span>
-      <span class="ln">by the mess of contradictions that are my beliefs,</span>
-      <span class="ln">but when I do, I try to write about them.</span>
+    <div class="letter__body">
+        <p>
+            <span class="ln">
+                I love literature, music, art, humanities, math and physics.
+            </span>
+            <span class="ln">In life I subscribe to rationalism,</span>
+            <span class="ln">
+                but also to people and nature{" "}
+                <em>and the wonders of the soul.</em>
+            </span>
+        </p>
+        <p>
+            <span class="ln">During the day, I try not to get swallowed</span>
+            <span class="ln">
+                by the mess of contradictions that are my beliefs,
+            </span>
+            <span class="ln">but when I do, I try to write about them.</span>
+        </p>
+        <p>
+            <span class="ln">
+                Here you will find a few of them, alongside design,
+            </span>
+            <span class="ln">my work, what I study, and what I consume.</span>
+        </p>
+        <p>
+            <span class="ln">
+                <em>I hope you enjoy your stay here.</em>
+            </span>
+        </p>
+    </div>
+    <p class="letter__label letter__label--flip" aria-hidden="true">
+        {label}
     </p>
-    <p>
-      <span class="ln">Here you will find a few of them, alongside design,</span>
-      <span class="ln">my work, what I study, and what I consume.</span>
-    </p>
-    <p>
-      <span class="ln"><em>I hope you enjoy your stay here.</em></span>
-    </p>
-  </div>
-  <p class="letter__label letter__label--flip" aria-hidden="true">{label}</p>
 </section>
 
 <script>
-  import { gsap } from 'gsap'
-  import { ScrollTrigger } from 'gsap/ScrollTrigger'
-  import { SplitText } from 'gsap/SplitText'
-  import { afterIntro, whenIdle } from '@/scripts/after-intro'
-  gsap.registerPlugin(ScrollTrigger, SplitText)
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { SplitText } from "gsap/SplitText";
+    import { afterIntro, whenIdle } from "@/scripts/after-intro";
+    gsap.registerPlugin(ScrollTrigger, SplitText);
 
-  const init = () => {
-    const root = document.querySelector<HTMLElement>('.letter')
-    if (!root || root.dataset.ready) return
-    root.dataset.ready = '1'
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const init = () => {
+        const root = document.querySelector<HTMLElement>(".letter");
+        if (!root || root.dataset.ready) return;
+        root.dataset.ready = "1";
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const frame = root.querySelector('.letter__frame')
-    const labels = root.querySelectorAll('.letter__label')
-    gsap.set(frame, { clipPath: 'inset(0 50% 0 50%)' })
-    gsap.set(labels, { opacity: 0 })
+        const frame = root.querySelector(".letter__frame");
+        const labels = root.querySelectorAll(".letter__label");
+        gsap.set(frame, { clipPath: "inset(0 50% 0 50%)" });
+        gsap.set(labels, { opacity: 0 });
 
-    // the frame and labels need no splitting, so they never wait for it
-    gsap
-      .timeline({ scrollTrigger: { trigger: root, start: 'top 62%', once: true } })
-      .to(frame, { clipPath: 'inset(0 0% 0 0%)', duration: 1.4, ease: 'power3.inOut' }, 0)
-      .to(labels, { opacity: 1, duration: 0.9, ease: 'power2.out' }, 0.6)
+        // the frame and labels need no splitting, so they never wait for it
+        gsap.timeline({
+            scrollTrigger: { trigger: root, start: "top 62%", once: true },
+        })
+            .to(
+                frame,
+                {
+                    clipPath: "inset(0 0% 0 0%)",
+                    duration: 1.4,
+                    ease: "power3.inOut",
+                },
+                0,
+            )
+            .to(labels, { opacity: 1, duration: 0.9, ease: "power2.out" }, 0.6);
 
-    // splitting text into lines is slow: do it after the hero has drawn, one
-    // paragraph per idle moment, each paragraph's lines continuing the stagger
-    const paras = [...root.querySelectorAll<HTMLElement>('.letter__body p')]
-    const counts = paras.map(() => 0)
-    const split = (i: number) => {
-      SplitText.create(paras[i], {
-        type: 'lines',
-        mask: 'lines',
-        autoSplit: true,
-        onSplit: (self) => {
-          counts[i] = self.lines.length
-          const before = counts.slice(0, i).reduce((a, n) => a + n, 0)
-          return gsap.from(self.lines, {
-            yPercent: 105,
-            duration: 1.1,
-            ease: 'power3.out',
-            stagger: 0.06,
-            delay: 0.35 + before * 0.06,
-            scrollTrigger: { trigger: root, start: 'top 62%', once: true },
-          })
-        },
-      })
-      if (i + 1 < paras.length) whenIdle(() => split(i + 1))
-    }
-    Promise.all([document.fonts.ready, afterIntro()]).then(() => whenIdle(() => split(0)))
-  }
+        // splitting text into lines is slow: do it after the hero has drawn, one
+        // paragraph per idle moment, each paragraph's lines continuing the stagger
+        const paras = [
+            ...root.querySelectorAll<HTMLElement>(".letter__body p"),
+        ];
+        const counts = paras.map(() => 0);
+        const split = (i: number) => {
+            SplitText.create(paras[i], {
+                type: "lines",
+                mask: "lines",
+                autoSplit: true,
+                onSplit: (self) => {
+                    counts[i] = self.lines.length;
+                    const before = counts
+                        .slice(0, i)
+                        .reduce((a, n) => a + n, 0);
+                    return gsap.from(self.lines, {
+                        yPercent: 105,
+                        duration: 1.1,
+                        ease: "power3.out",
+                        stagger: 0.06,
+                        delay: 0.35 + before * 0.06,
+                        scrollTrigger: {
+                            trigger: root,
+                            start: "top 62%",
+                            once: true,
+                        },
+                    });
+                },
+            });
+            if (i + 1 < paras.length) whenIdle(() => split(i + 1));
+        };
+        Promise.all([document.fonts.ready, afterIntro()]).then(() =>
+            whenIdle(() => split(0)),
+        );
+    };
 
-  document.addEventListener('astro:page-load', init)
+    document.addEventListener("astro:page-load", init);
 </script>
 
 <style>
-  .letter {
-    color: var(--mist);
-    text-align: center;
-    padding: 6rem 1.5rem 6rem;
-  }
-  .letter .panel {
-    inset: 1.25rem 0;
-    height: auto;
-  }
-  .letter__frame {
-    position: absolute;
-    inset: 2.25rem 1rem;
-    border: 1px solid rgb(210 211 221 / 0.45);
-    pointer-events: none;
-  }
-  .letter__label {
-    position: absolute;
-    left: 50%;
-    top: 2.25rem;
-    translate: -50% -50%;
-    margin: 0;
-    padding: 0 1rem;
-    background: var(--lavender-deep);
-    font-family: var(--font-din);
-    font-size: 0.7rem;
-    line-height: 1.6;
-    letter-spacing: 0.18em;
-    white-space: nowrap;
-  }
-  .letter__label--flip {
-    top: auto;
-    bottom: 2.25rem;
-    translate: -50% 50%;
-    rotate: 180deg;
-  }
-  .letter__body {
-    position: relative;
-    font-family: var(--font-body);
-    font-size: clamp(1.2rem, 4.6vw, 1.6rem);
-    line-height: 1.45;
-    text-wrap: balance;
-  }
-  .letter__body p + p {
-    margin-top: 1.2em;
-  }
-  /* the hand-set line breaks only make sense on wide screens */
-  .ln + .ln::before {
-    content: ' ';
-  }
-  @media (min-width: 900px) {
-    .ln {
-      display: block;
-    }
-    .ln + .ln::before {
-      content: none;
-    }
-  }
-
-  @media (min-aspect-ratio: 4/3) {
     .letter {
-      aspect-ratio: 16 / 9;
-      padding: 0;
+        color: var(--mist);
+        text-align: center;
+        padding: 6rem 1.5rem 6rem;
     }
     .letter .panel {
-      inset: calc(48.1 * var(--u)) 0 auto 0;
-      height: calc(983.8 * var(--u));
+        inset: 1.25rem 0;
+        height: auto;
     }
     .letter__frame {
-      inset: calc(70 * var(--u)) calc(22 * var(--u)) calc(70 * var(--u)) calc(22 * var(--u));
+        position: absolute;
+        inset: 2.25rem 1rem;
+        border: 1px solid rgb(210 211 221 / 0.45);
+        pointer-events: none;
     }
     .letter__label {
-      top: calc(70 * var(--u));
-      font-size: max(0.62rem, calc(15 * var(--u)));
+        position: absolute;
+        left: 50%;
+        top: 2.25rem;
+        translate: -50% -50%;
+        margin: 0;
+        padding: 0 1rem;
+        background: var(--lavender-deep);
+        font-family: var(--font-din);
+        font-size: 0.7rem;
+        line-height: 1.6;
+        letter-spacing: 0.18em;
+        white-space: nowrap;
     }
     .letter__label--flip {
-      top: auto;
-      bottom: calc(70 * var(--u));
+        top: auto;
+        bottom: 2.25rem;
+        translate: -50% 50%;
+        rotate: 180deg;
     }
     .letter__body {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      translate: 0 -50%;
-      font-size: calc(34 * var(--u));
-      line-height: 1.42;
+        position: relative;
+        font-family: var(--font-body);
+        font-size: clamp(1.2rem, 4.6vw, 1.6rem);
+        line-height: 1.45;
+        text-wrap: balance;
     }
     .letter__body p + p {
-      margin-top: calc(44 * var(--u));
+        margin-top: 1.2em;
     }
-  }
+    /* the hand-set line breaks only make sense on wide screens */
+    .ln + .ln::before {
+        content: " ";
+    }
+    @media (min-width: 900px) {
+        .ln {
+            display: block;
+        }
+        .ln + .ln::before {
+            content: none;
+        }
+    }
+
+    @media (min-aspect-ratio: 4/3) {
+        .letter {
+            aspect-ratio: 16 / 9;
+            padding: 0;
+        }
+        .letter .panel {
+            inset: calc(48.1 * var(--u)) 0 auto 0;
+            height: calc(983.8 * var(--u));
+        }
+        .letter__frame {
+            inset: calc(70 * var(--u)) calc(22 * var(--u)) calc(70 * var(--u))
+                calc(22 * var(--u));
+        }
+        .letter__label {
+            top: calc(70 * var(--u));
+            font-size: max(0.62rem, calc(15 * var(--u)));
+        }
+        .letter__label--flip {
+            top: auto;
+            bottom: calc(70 * var(--u));
+        }
+        .letter__body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            translate: 0 -50%;
+            font-size: calc(34 * var(--u));
+            line-height: 1.42;
+        }
+        .letter__body p + p {
+            margin-top: calc(44 * var(--u));
+        }
+    }
 </style>
