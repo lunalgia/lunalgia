@@ -6,7 +6,7 @@ import { z } from 'astro/zod'
 export const WRITING_KINDS = {
   essay: { label: 'Essays', blurb: 'long, finished pieces, argued to the end' },
   note: { label: 'Notes', blurb: 'thinking out loud; seedlings, half-baked' },
-  fragment: { label: 'Fragments', blurb: 'quotes, scraps, things too small for a page' },
+  journal: { label: 'Journal', blurb: 'days as they happened, written down and left as they are' },
 } as const
 
 const writing = defineCollection({
@@ -19,7 +19,7 @@ const writing = defineCollection({
       /** Optional two-part subtitle, shown left and right of the title card. */
       subtitle: z.tuple([z.string(), z.string()]).optional(),
       date: z.coerce.date(),
-      kind: z.enum(['essay', 'note', 'fragment']).default('essay'),
+      kind: z.enum(['essay', 'note', 'journal']).default('essay'),
       image: image().optional(),
       imageCaption: z.string().optional(),
       tags: z.array(z.string()).default([]),
