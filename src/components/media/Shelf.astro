@@ -413,7 +413,9 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     perspective: 2600px; perspective-origin: calc(var(--sx) + var(--W) / 2 + 20px) 42%;
     transition: perspective-origin 1s var(--ease-cs);
   }
-  .cs__stage::after {
+  /* the shadow along the back of the shelf: ::before, so it paints behind the items rather than as
+     a blurred band across their bottom edges */
+  .cs__stage::before {
     content: ''; position: absolute; left: 0; right: 0; bottom: 104px; height: 40px;
     background: linear-gradient(rgb(17 19 90 / 0.28), transparent); filter: blur(6px); pointer-events: none;
   }
@@ -461,11 +463,17 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     left: 0; top: 0; width: var(--d); height: 100%; box-sizing: border-box;
     background: var(--c); color: var(--f);
     transform: translateZ(calc(var(--W) / 2));
-    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px;
     padding: 24px 0 20px;
     box-shadow: inset 4px 0 0 rgb(255 255 255 / 0.1), inset -5px 0 0 rgb(0 0 0 / 0.18);
   }
-  .bk__st { writing-mode: vertical-rl; rotate: 180deg; font: italic 1.35rem/1 var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 76%; }
+  /* the title never wider than its spine (records are thin), and it shortens to make room for the name */
+  .bk__st {
+    --st: 1.35rem;
+    writing-mode: vertical-rl; rotate: 180deg; font: italic min(var(--st), calc(var(--d) * 0.7))/1 var(--font-display);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; flex: 0 1 auto;
+  }
+  .bk__sa, .bk__no { flex: none; }
   .bk__sa { writing-mode: vertical-rl; rotate: 180deg; font: 0.62rem var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; }
   .bk__cover {
     top: 0; height: 100%; width: var(--W); left: calc((var(--d) - var(--W)) / 2);
@@ -497,7 +505,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   }
 
   /* records: thin sleeves, plain card top, and the vinyl */
-  .cs--record .bk__st { font-size: 0.95rem; }
+  .cs--record .bk__st { --st: 0.95rem; }
   .cs--record .bk__sa { font-size: 0.5rem; }
   .cs--record .bk__spine { padding: 14px 0 12px; }
   .cs--record .bk__pages { background: var(--c); filter: brightness(0.8); }
@@ -537,7 +545,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   /* films: DVD-style cases with a numbered spine, and a ticket stub */
   .cs--film .bk__spine { padding-top: 14px; }
   .bk__no { font: 0.6rem var(--font-din); letter-spacing: 0.1em; padding-bottom: 8px; border-bottom: 1px solid currentColor; margin-bottom: 4px; }
-  .cs--film .bk__st { font-size: 1.15rem; max-height: 68%; }
+  .cs--film .bk__st { --st: 1.15rem; }
   .cs--film .bk__pages { background: #1a1a1f; }
   .cs--film .bk__cover { box-shadow: inset 10px 0 0 rgb(0 0 0 / 0.35), inset 11px 0 0 rgb(255 255 255 / 0.15); }
   .bk__ticket {
@@ -624,7 +632,9 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   /* phones: the facing item fills the width, swipe to move along */
   @media (max-width: 760px) {
     .cs { --H: min(52vh, 440px); }
-    .cs--record { --H: min(36vh, 300px); }
+    .cs--record { --H: min(42vh, 330px); }
+    /* the ticket rises less, clear of the label above the case */
+    .cs--film .bk.is-active .bk__ticket { translate: 0 -64px; }
     .cs__stage { --sx: 6vw; }
     .cs__label { right: 0; top: 6.5rem; }
     .lab { padding: 0 1.25rem; gap: 0.2rem 1rem; }
