@@ -109,12 +109,16 @@ export const factsOf = (e: MediaEntry): [string, string][] =>
     .map(([k, v]) => [k, String(v)] as [string, string])
     .filter(([, v]) => v !== String(e.data.year ?? ''))
 
-/** where to listen, read or watch: the entry's own `link` first (named after its site), then its other links */
+/** where to listen, read or watch: the entry's own `link` (named after its site) and its other links, listening services first */
 export const linksOf = (e: MediaEntry): [string, string][] => {
   const own = e.data.link
   const site = (u: string) =>
     /music\.apple\.com/.test(u) ? 'Apple Music' : /bandcamp\.com/.test(u) ? 'Bandcamp' : /spotify\.com/.test(u) ? 'Spotify' : /letterboxd\.com/.test(u) ? 'Letterboxd' : new URL(u).hostname.replace(/^www\./, '')
-  return [...(own ? [[site(own), own] as [string, string]] : []), ...Object.entries(e.data.links ?? {})]
+  const all: [string, string][] = [...(own ? [[site(own), own] as [string, string]] : []), ...Object.entries(e.data.links ?? {})]
+  // places to listen or watch first, in this order, then everything else as written
+  const LISTEN = ['Apple Music', 'Spotify', 'YouTube Music', 'Bandcamp', 'Letterboxd']
+  const rank = (k: string) => (LISTEN.includes(k) ? LISTEN.indexOf(k) : LISTEN.length)
+  return all.map((l, i) => [l, i] as const).sort((a, b) => rank(a[0][0]) - rank(b[0][0]) || a[1] - b[1]).map(([l]) => l)
 }
 
 /** plain-text paragraphs from a Markdown body, for previews */
