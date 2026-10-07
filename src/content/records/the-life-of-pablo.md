@@ -18,4 +18,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/kanye-west/the-life-of-pablo/
 wikidata: Q21996865
 order: 10
+link: https://music.apple.com/in/album/the-life-of-pablo/1443063578
 ---

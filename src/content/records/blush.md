@@ -10,4 +10,5 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Blush_(Kevin_Abstract_album)
 wikidata: Q135012763
 order: 10
+link: https://music.apple.com/in/album/blush/1827345688
 ---

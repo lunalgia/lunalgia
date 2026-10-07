@@ -14,4 +14,5 @@ meta:
   label: Polyvinyl Record Co.
 wikidata: none
 order: 10
+link: https://music.apple.com/in/album/for-sure-single/1756615090
 ---

@@ -14,4 +14,5 @@ meta:
   label: Starrcade Records
 wikidata: none
 order: 2
+link: https://music.apple.com/in/album/a-lonely-sinner/1738545794
 ---

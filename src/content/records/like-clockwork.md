@@ -17,4 +17,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/queens-of-the-stone-age/_like-clockwork/
 wikidata: Q8328875
 order: 10
+link: https://music.apple.com/in/album/like-clockwork/1586476451
 ---

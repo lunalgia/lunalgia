@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/quadeca/i-didnt-mean-to-haunt-you/
 wikidata: Q114200663
 order: 10
+link: https://music.apple.com/in/album/i-didnt-mean-to-haunt-you/1652831428
 ---

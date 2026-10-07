@@ -18,4 +18,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/black-country-new-road/for-the-first-time/
 wikidata: Q105564108
 order: 10
+link: https://music.apple.com/in/album/for-the-first-time/1533822061
 ---

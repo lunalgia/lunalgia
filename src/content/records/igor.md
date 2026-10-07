@@ -19,4 +19,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/0f1b9e07-b38b-4bba-9794-55e0924d7177
 wikidata: Q63567532
 order: 10
+link: https://music.apple.com/in/album/igor/1463409338
 ---

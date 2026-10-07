@@ -12,4 +12,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/242b18ed-5d47-4a4b-823d-645785525ae0
 wikidata: Q108822352
 order: 10
+link: https://music.apple.com/in/album/by-the-time-i-get-to-phoenix/1578980409
 ---

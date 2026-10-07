@@ -19,4 +19,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/kanye_west/my_beautiful_dark_twisted_fantasy/
 wikidata: Q547624
 order: 10
+link: https://music.apple.com/in/album/my-beautiful-dark-twisted-fantasy/1440742903
 ---

@@ -12,4 +12,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/324e1bb9-2087-4979-b9c9-627f745bd67d
 wikidata: Q133352703
 order: 10
+link: https://music.apple.com/in/album/scrapyard/1745245323
 ---

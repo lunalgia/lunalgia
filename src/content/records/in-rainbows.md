@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/radiohead/in-rainbows/
 wikidata: Q223295
 order: 1
+link: https://music.apple.com/in/album/in-rainbows/1109714933
 ---

@@ -19,4 +19,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/jpegmafia/i-lay-down-my-life-for-you/
 wikidata: Q128247892
 order: 10
+link: https://music.apple.com/in/album/i-lay-down-my-life-for-you/1760036431
 ---

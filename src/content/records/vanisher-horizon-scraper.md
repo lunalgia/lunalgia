@@ -17,4 +17,5 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Vanisher%2C_Horizon_Scraper
 wikidata: Q134996109
 order: 10
+link: https://music.apple.com/in/album/vanisher-horizon-scraper/1828735764
 ---

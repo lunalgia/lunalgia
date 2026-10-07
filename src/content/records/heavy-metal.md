@@ -17,4 +17,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/a9b6e76b-190b-4802-b120-ddef0fd852b7
 wikidata: Q133478247
 order: 10
+link: https://music.apple.com/in/album/heavy-metal/1766984761
 ---

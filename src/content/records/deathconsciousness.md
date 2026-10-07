@@ -15,4 +15,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/have-a-nice-life/deathconsciousness/
 wikidata: Q3704343
 order: 10
+link: https://music.apple.com/in/album/deathconsciousness/913726094
 ---

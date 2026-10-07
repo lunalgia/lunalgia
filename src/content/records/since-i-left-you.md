@@ -18,4 +18,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/28438e4f-3710-459f-a332-a1eba9dd1f26
 wikidata: Q821531
 order: 10
+link: https://music.apple.com/in/album/since-i-left-you/1440847381
 ---

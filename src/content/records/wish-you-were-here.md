@@ -19,4 +19,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/1a272023-10d3-38ee-bab3-317b55fcc21d
 wikidata: Q200872
 order: 10
+link: https://music.apple.com/in/album/wish-you-were-here/1065973975
 ---

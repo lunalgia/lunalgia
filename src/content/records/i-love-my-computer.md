@@ -18,4 +18,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/6ab2d1f5-1730-499d-a814-6fe6eb9ec1f0
 wikidata: Q141205165
 order: 10
+link: https://music.apple.com/in/album/i-love-my-computer/1824602984
 ---
