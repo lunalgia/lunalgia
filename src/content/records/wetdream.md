@@ -10,6 +10,8 @@ tags:
 meta:
   released: December 2023
   tracks: '13'
+links:
+  YouTube Music: https://music.youtube.com/browse/MPREb_awqVow4krKn
 wikidata: none
 order: 4
 warning: the lyrics mention sexual abuse and suicide

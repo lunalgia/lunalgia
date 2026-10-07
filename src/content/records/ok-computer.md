@@ -18,6 +18,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/OK_Computer
   MusicBrainz: https://musicbrainz.org/release-group/b1392450-e666-3926-a536-22c65f834433
   Rate Your Music: https://rateyourmusic.com/release/album/radiohead/ok-computer/
+  Spotify: https://open.spotify.com/album/6dVIqQ8qmQ5GBnJ9shOYGE
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_nc6afxSnmK8OFML8dF9q_0D1MBMXsGnL4
 wikidata: Q202996
 order: 3
 link: https://music.apple.com/in/album/ok-computer/1097861387

@@ -17,6 +17,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Ants_from_Up_There
   MusicBrainz: https://musicbrainz.org/release-group/d622ed70-ccc3-4658-8a0a-b7a2d577c28d
   Rate Your Music: https://rateyourmusic.com/release/album/black-country-new-road/ants-from-up-there-1//
+  Spotify: https://open.spotify.com/album/21xp7NdU1ajmO1CX0w2Egd
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_lZfs0LSy8e0wgrU8sOAOINMzHeTq_NchE
 wikidata: Q109570526
 order: 7
 link: https://geo.music.apple.com/hu/album/ants-from-up-there/1586070259

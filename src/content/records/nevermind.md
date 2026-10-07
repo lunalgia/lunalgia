@@ -17,6 +17,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Nevermind
   MusicBrainz: https://musicbrainz.org/release-group/1b022e01-4da6-387b-8658-8678046e4cef
   Rate Your Music: https://rateyourmusic.com/release/album/nirvana/nevermind/
+  Spotify: https://open.spotify.com/album/4MRXGUCB89CliYc7YWICI0
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_kEQJGO2SZ0k-vJ8b-F2AJLfKnw0cFydNg
 wikidata: Q17444
 order: 10
 link: https://music.apple.com/in/album/nevermind/1440783617

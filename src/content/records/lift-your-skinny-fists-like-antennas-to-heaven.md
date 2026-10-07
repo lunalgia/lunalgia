@@ -15,6 +15,7 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Lift_Your_Skinny_Fists_like_Antennas_to_Heaven
   MusicBrainz: https://musicbrainz.org/release-group/3822abb6-ca53-3ae1-a4ec-7718cb321e9b
   Rate Your Music: https://rateyourmusic.com/release/album/godspeed-you-black-emperor/lift-yr-skinny-fists-like-antennas-to-heaven/
+  Spotify: https://open.spotify.com/album/2rT82YYlV9UoxBYLIezkRq
 wikidata: Q920503
 order: 6
 link: https://godspeedyoublackemperor.bandcamp.com/album/lift-your-skinny-fists-like-antennas-to-heaven

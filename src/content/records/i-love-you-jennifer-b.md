@@ -13,6 +13,7 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/I_Love_You_Jennifer_B
   MusicBrainz: https://musicbrainz.org/release-group/722e378e-a922-436a-b3ad-2419b27f971b
+  Spotify: https://open.spotify.com/album/4YFlC5Abaj48ERwaOPfpu8
 wikidata: Q114289436
 order: 10
 link: https://music.apple.com/in/album/i-love-you-jennifer-b/1625455552

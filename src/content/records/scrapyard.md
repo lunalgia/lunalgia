@@ -10,6 +10,8 @@ tags:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/Scrapyard_(mixtape)
   MusicBrainz: https://musicbrainz.org/release-group/324e1bb9-2087-4979-b9c9-627f745bd67d
+  Spotify: https://open.spotify.com/album/1S9MukUQEFAYCqlfrwqMd6
+  YouTube Music: https://music.youtube.com/browse/MPREb_tJUi3PUVUjD
 wikidata: Q133352703
 order: 10
 link: https://music.apple.com/in/album/scrapyard/1745245323

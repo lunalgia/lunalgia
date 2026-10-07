@@ -16,6 +16,8 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/Sometimes_I_Might_Be_Introvert
   MusicBrainz: https://musicbrainz.org/release-group/e95de3f4-84db-4d24-8d06-fd970576a6ef
+  Spotify: https://open.spotify.com/album/0DBoWQ52XUHtrZQdfAqOVj
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_lgr79u3wxCLGr7ns01X_9dK1FsU-eizgg
 wikidata: Q108395006
 order: 10
 link: https://music.apple.com/in/album/sometimes-i-might-be-introvert/1561184260

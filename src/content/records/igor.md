@@ -17,6 +17,8 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/Igor_(album)
   MusicBrainz: https://musicbrainz.org/release-group/0f1b9e07-b38b-4bba-9794-55e0924d7177
+  Spotify: https://open.spotify.com/album/5zi7WsKlIiUXv09tbGLKsE
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_lpv17dzKsIp6huLYAxQEYFw3vK8Wsd1FQ
 wikidata: Q63567532
 order: 10
 link: https://music.apple.com/in/album/igor/1463409338

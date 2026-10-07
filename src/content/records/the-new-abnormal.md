@@ -15,6 +15,8 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/The_New_Abnormal
   MusicBrainz: https://musicbrainz.org/release-group/43ca5aa6-92de-47e9-8f0b-9112e4881426
+  Spotify: https://open.spotify.com/album/2xkZV2Hl1Omi8rk2D7t5lN
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_mIPgAqJi0-TwDIDkX8x0jvBb9TqXTEdVw
 wikidata: Q85552601
 order: 10
 link: https://music.apple.com/in/album/the-new-abnormal/1498121188

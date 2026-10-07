@@ -16,6 +16,8 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/I_Love_My_Computer
   MusicBrainz: https://musicbrainz.org/release-group/6ab2d1f5-1730-499d-a814-6fe6eb9ec1f0
+  Spotify: https://open.spotify.com/album/77CZUF57sYqgtznUe3OikQ
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_kTo7Di8vEXkXIO8htaONhtVbXsfZHbCco
 wikidata: Q141205165
 order: 10
 link: https://music.apple.com/in/album/i-love-my-computer/1824602984

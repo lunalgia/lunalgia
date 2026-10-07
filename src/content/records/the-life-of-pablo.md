@@ -16,6 +16,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/The_Life_of_Pablo
   MusicBrainz: https://musicbrainz.org/release-group/8c18657a-6338-490d-a952-897663596b96
   Rate Your Music: https://rateyourmusic.com/release/album/kanye-west/the-life-of-pablo/
+  Spotify: https://open.spotify.com/album/7gsWAHLeT0w7es6FofOXk1
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_kPR4FKADrZ1hZftipUfdMuBIup-mumHHE
 wikidata: Q21996865
 order: 10
 link: https://music.apple.com/in/album/the-life-of-pablo/1443063578
