@@ -186,7 +186,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
 </section>
 
 <script>
-  /** items this close to the facing one keep their 3D sides; the rest are drawn flat */
+  /** items this close to the facing one keep their 3D sides; the rest show only their spines */
   const NEAR = 2
   const setup = (root: HTMLElement) => {
     if (root.dataset.ready) return
@@ -437,9 +437,11 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     transform-style: preserve-3d;
     transition: width 1s var(--ease-cs), transform 0.5s var(--ease-cs), opacity 0.6s;
   }
-  /* only spines next to the facing item show their sides, so drawing the rest flat looks the same
-     and saves the browser compositing hundreds of 3D faces */
-  .bk:not(.is-near, .is-leaving), .bk:not(.is-near, .is-leaving) .bk__box { transform-style: flat; }
+  /* only spines next to the facing item show their sides, so the rest skip their other faces (edge-on
+     anyway) and the browser composites one plane per spine instead of five. They stay in 3D: flattening
+     them, the obvious way to do this, made Firefox drop spines that left the 3D window, which showed
+     as gaps along the shelf. */
+  .bk:not(.is-near, .is-leaving) .bk__box > span:not(.bk__spine) { visibility: hidden; }
   .bk.is-active { width: calc(var(--W) + var(--gap) + var(--extra)); }
   @media (hover: hover) {
     .bk:not(.is-active):hover { transform: translateY(-16px); }
