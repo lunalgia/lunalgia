@@ -19,4 +19,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/nirvana/nevermind/
 wikidata: Q17444
 order: 10
+link: https://music.apple.com/in/album/nevermind/1440783617
 ---

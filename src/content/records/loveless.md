@@ -20,4 +20,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/cb76227e-3ac0-3002-9a10-615a5b73cc59
 wikidata: Q174163
 order: 10
+link: https://music.apple.com/in/album/loveless/1556921230
 ---

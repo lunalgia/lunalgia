@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/charli-xcx/brat/
 wikidata: Q124691269
 order: 10
+link: https://music.apple.com/in/album/brat/1739079974
 ---

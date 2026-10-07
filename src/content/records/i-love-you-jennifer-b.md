@@ -15,4 +15,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/722e378e-a922-436a-b3ad-2419b27f971b
 wikidata: Q114289436
 order: 10
+link: https://music.apple.com/in/album/i-love-you-jennifer-b/1625455552
 ---

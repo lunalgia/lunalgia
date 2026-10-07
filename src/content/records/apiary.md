@@ -14,4 +14,5 @@ meta:
   label: gingerbee
 wikidata: none
 order: 10
+link: https://music.apple.com/in/album/apiary-ep/1829466312
 ---

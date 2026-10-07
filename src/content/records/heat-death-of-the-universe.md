@@ -15,4 +15,5 @@ meta:
   label: Dead Butterflies
 wikidata: none
 order: 10
+link: https://music.apple.com/in/album/heat-death-of-the-universe/1816361386
 ---

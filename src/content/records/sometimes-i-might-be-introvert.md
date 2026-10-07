@@ -18,4 +18,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/e95de3f4-84db-4d24-8d06-fd970576a6ef
 wikidata: Q108395006
 order: 10
+link: https://music.apple.com/in/album/sometimes-i-might-be-introvert/1561184260
 ---

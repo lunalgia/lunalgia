@@ -17,4 +17,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/brakence/hypochondriac/
 wikidata: Q117032090
 order: 10
+link: https://music.apple.com/in/album/hypochondriac/1653651532
 ---

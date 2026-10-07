@@ -16,4 +16,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/frank-ocean/blonde/
 wikidata: Q26450992
 order: 10
+link: https://music.apple.com/in/album/blonde/1146195596
 ---

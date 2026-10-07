@@ -18,4 +18,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/e53da1e9-2197-4755-baf1-182de0c74e26
 wikidata: Q122962060
 order: 10
+link: https://music.apple.com/in/album/d-e-a-t-h-m-e-t-a-l/6814986952
 ---

@@ -18,4 +18,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/gorillaz/demon-days/
 wikidata: Q834418
 order: 10
+link: https://music.apple.com/in/album/demon-days/850571319
 ---

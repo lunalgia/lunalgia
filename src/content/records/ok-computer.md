@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/radiohead/ok-computer/
 wikidata: Q202996
 order: 3
+link: https://music.apple.com/in/album/ok-computer/1097861387
 ---

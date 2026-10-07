@@ -18,4 +18,5 @@ links:
   MusicBrainz: https://musicbrainz.org/release-group/5563d737-dba9-4930-ab05-3b0817816dd5
 wikidata: Q27817110
 order: 10
+link: https://music.apple.com/in/album/ceres-calypso-in-the-deep-time/1198188125
 ---

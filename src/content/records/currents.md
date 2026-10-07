@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/tame-impala/currents/
 wikidata: Q19824616
 order: 10
+link: https://music.apple.com/in/album/currents/1440838039
 ---

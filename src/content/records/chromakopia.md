@@ -20,4 +20,5 @@ links:
   Rate Your Music: https://rateyourmusic.com/release/album/tyler-the-creator/chromakopia//
 wikidata: Q130550178
 order: 10
+link: https://music.apple.com/in/album/chromakopia/1776500452
 ---

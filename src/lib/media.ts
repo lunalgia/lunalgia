@@ -88,7 +88,7 @@ export const spineOf = (e: MediaEntry, kind: MediaKind): Promise<string> => {
 /** spine thickness, stable per item */
 export const depthOf = (e: MediaEntry, kind: MediaKind) => {
   const h = hash(e.id + e.data.title)
-  if (kind === 'records') return 13 + (h % 9)
+  if (kind === 'records') return 17 + (h % 7)
   if (kind === 'films') return 22 + (h % 5)
   return 34 + (h % 30)
 }
@@ -108,6 +108,14 @@ export const factsOf = (e: MediaEntry): [string, string][] =>
   Object.entries(e.data.meta ?? {})
     .map(([k, v]) => [k, String(v)] as [string, string])
     .filter(([, v]) => v !== String(e.data.year ?? ''))
+
+/** where to listen, read or watch: the entry's own `link` first (named after its site), then its other links */
+export const linksOf = (e: MediaEntry): [string, string][] => {
+  const own = e.data.link
+  const site = (u: string) =>
+    /music\.apple\.com/.test(u) ? 'Apple Music' : /bandcamp\.com/.test(u) ? 'Bandcamp' : /spotify\.com/.test(u) ? 'Spotify' : /letterboxd\.com/.test(u) ? 'Letterboxd' : new URL(u).hostname.replace(/^www\./, '')
+  return [...(own ? [[site(own), own] as [string, string]] : []), ...Object.entries(e.data.links ?? {})]
+}
 
 /** plain-text paragraphs from a Markdown body, for previews */
 export const paragraphs = (body?: string) =>
