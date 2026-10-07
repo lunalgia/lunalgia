@@ -13,6 +13,8 @@ meta:
   released: June 2025
   tracks: '9'
   label: Dead Butterflies
+links:
+  Spotify: https://open.spotify.com/album/3VIE68WKIBUO6JkHG8CDE9
 wikidata: none
 order: 10
 link: https://music.apple.com/in/album/heat-death-of-the-universe/1816361386

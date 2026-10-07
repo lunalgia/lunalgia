@@ -18,6 +18,7 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/Loveless_(album)
   MusicBrainz: https://musicbrainz.org/release-group/cb76227e-3ac0-3002-9a10-615a5b73cc59
+  Spotify: https://open.spotify.com/album/3GH4IiI6jQAIvnHVdb5FB6
 wikidata: Q174163
 order: 10
 link: https://music.apple.com/in/album/loveless/1556921230

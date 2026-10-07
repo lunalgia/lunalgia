@@ -17,6 +17,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/My_Beautiful_Dark_Twisted_Fantasy
   MusicBrainz: https://musicbrainz.org/release-group/5d6e21e1-deb5-428e-bb42-c2a567f3619b
   Rate Your Music: https://rateyourmusic.com/release/album/kanye_west/my_beautiful_dark_twisted_fantasy/
+  Spotify: https://open.spotify.com/album/20r762YmB5HeofjMCiPMLv
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_lh6e__g89bgNq1BF7EM9GMlXMLzwvatgA
 wikidata: Q547624
 order: 10
 link: https://music.apple.com/in/album/my-beautiful-dark-twisted-fantasy/1440742903

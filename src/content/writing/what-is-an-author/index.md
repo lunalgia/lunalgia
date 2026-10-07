@@ -2,6 +2,7 @@
 title: 'What is an *Author*?'
 description: 'Notes'
 date: 2026-07-22
+kind: note
 tags: ['literary theory']
 ---
 

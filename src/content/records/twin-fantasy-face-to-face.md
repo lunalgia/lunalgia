@@ -15,6 +15,8 @@ meta:
 links:
   Wikipedia: https://en.wikipedia.org/wiki/Twin_Fantasy_(Face_to_Face)
   MusicBrainz: https://musicbrainz.org/release-group/eeab54c6-ad8d-40c9-b595-87bae6a42397
+  Spotify: https://open.spotify.com/album/20U1UWeGcGq7JVW0tf8yfH
+  YouTube Music: https://music.youtube.com/browse/MPREb_uHqhqEkLRa4
 wikidata: Q48815233
 order: 5
 link: https://music.apple.com/in/album/twin-fantasy/1586483380

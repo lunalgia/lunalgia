@@ -18,6 +18,8 @@ links:
   Wikipedia: https://en.wikipedia.org/wiki/Brat_(album)
   MusicBrainz: https://musicbrainz.org/release-group/e0fdb431-0109-420d-8a37-f99eaeb4d671
   Rate Your Music: https://rateyourmusic.com/release/album/charli-xcx/brat/
+  Spotify: https://open.spotify.com/album/2lIZef4lzdvZkiiCzvPKj7
+  YouTube Music: https://music.youtube.com/playlist?list=OLAK5uy_kmzoSOa_tCizE-r4sweNz91d9qBv1UCVY
 wikidata: Q124691269
 order: 10
 link: https://music.apple.com/in/album/brat/1739079974

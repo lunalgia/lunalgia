@@ -3,7 +3,7 @@
 title: 'A title, *italic words* in asterisks'
 description: 'One line for lists and previews.'
 date: 2026-01-01
-kind: note               # essay | note | fragment
+kind: note               # essay | note | journal
 tags: []
 # image: ./cover.jpg     # optional; shown under the title and on /writing when it is the latest
 draft: true

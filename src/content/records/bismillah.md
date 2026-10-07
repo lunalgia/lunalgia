@@ -12,6 +12,8 @@ meta:
   released: June 2019
   tracks: '10'
   label: Panache
+links:
+  Spotify: https://open.spotify.com/album/6IJYnCp5MidYLgOINAz7Em
 wikidata: none
 order: 1
 link: https://music.apple.com/in/album/bismillah/1833862435

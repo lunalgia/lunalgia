@@ -18,7 +18,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 const one = (k: string) => WRITING_KINDS[k as keyof typeof WRITING_KINDS].label.replace(/s$/, '').toLowerCase()
 ---
 
-<Base title="Writings" description="Essays, notes and half-baked thoughts.">
+<Base title="Writings" description="Essays, notes and a journal.">
   <header class="wh">
     <h1 class="wh__t">Writings</h1>
     <nav class="wh__nav" aria-label="filter by kind">
@@ -27,8 +27,8 @@ const one = (k: string) => WRITING_KINDS[k as keyof typeof WRITING_KINDS].label.
       <a href="/rss.xml">(rss ↗)</a>
     </nav>
     <p class="wh__lede">
-      Essays, notes and half-baked thoughts. Essays are finished and argued to the end; notes are thinking out loud;
-      fragments are too small for a page.
+      Essays, notes and a journal. Essays are finished and argued to the end; notes are thinking out loud; the
+      journal is days as they happened.
     </p>
   </header>
 

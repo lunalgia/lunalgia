@@ -274,6 +274,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
       { once: true },
     )
     root.addEventListener('click', (e) => {
+      if (performance.now() - dragged < 400) return
       const t = e.target as HTMLElement
       const bk = t.closest<HTMLElement>('.bk')
       if (bk) bk.classList.contains('is-active') ? inspect(true) : set(+bk.dataset.i!)
@@ -288,22 +289,23 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
       root.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 36}deg`)
       root.style.setProperty('--rx', `${-((e.clientY - r.top) / r.height - 0.5) * 14}deg`)
     })
-    // touch: the shelf follows the finger sideways, then settles on the item nearest
-    // the facing spot; a flick carries on a little. Vertical moves are left to the page.
+    // touch: one swipe moves one item, like the arrows. While the finger is down the shelf gives
+    // a little under it (with resistance, never more than a spine or so) so the swipe feels held;
+    // following the finger one to one skipped a dozen thin record spines per swipe.
+    // Vertical moves are left to the page.
+    const PULL = 44
     let sx = 0
     let sy = 0
-    let lastX = 0
-    let lastT = 0
-    let v = 0
+    let t0 = 0
+    let dragged = 0
     let axis: 'x' | 'y' | null = null
     root.addEventListener(
       'touchstart',
       (e) => {
         if (e.touches.length !== 1 || root.classList.contains('is-inspecting')) return (axis = 'y')
-        sx = lastX = e.touches[0].clientX
+        sx = e.touches[0].clientX
         sy = e.touches[0].clientY
-        lastT = performance.now()
-        v = 0
+        t0 = performance.now()
         axis = null
       },
       { passive: true },
@@ -320,11 +322,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
           if (axis === 'y') return
           root.classList.add('is-dragging')
         }
-        const now = performance.now()
-        v = (t.clientX - lastX) / Math.max(1, now - lastT)
-        lastX = t.clientX
-        lastT = now
-        shelf.style.transform = `translateX(${-shelfX + dx}px)`
+        shelf.style.transform = `translateX(${-shelfX + PULL * Math.tanh(dx / 140)}px)`
       },
       { passive: true },
     )
@@ -333,16 +331,12 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
       axis = null
       root.classList.remove('is-dragging')
       const dx = e.changedTouches[0].clientX - sx
-      // a finger that stopped before lifting has no flick left in it
-      if (performance.now() - lastT > 80) v = 0
-      const want = shelfX - dx - v * 180
-      let i = 0
-      while (i < starts.length - 1 && starts[i + 1] <= want) i++
-      if (i < starts.length - 1 && want - starts[i] > starts[i + 1] - want) i++
-      // a deliberate swipe always moves at least one
+      dragged = performance.now()
       const at = +root.dataset.active!
-      if (i === at && Math.abs(dx) > 30) i = at + (dx < 0 ? 1 : -1)
-      set(i)
+      // a deliberate swipe, or a short quick flick, moves one; anything less springs back
+      const flick = dragged - t0 < 250 && Math.abs(dx) > 12
+      const dir = Math.abs(dx) > 30 || flick ? Math.sign(dx) : 0
+      set(at - dir)
     }
     root.addEventListener('touchend', endDrag)
     root.addEventListener('touchcancel', endDrag)
