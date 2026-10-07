@@ -6,7 +6,7 @@
 import { getImage } from 'astro:assets'
 import Base from '@/layouts/Base.astro'
 import Shelf, { type ShelfItem } from '@/components/media/Shelf.astro'
-import { KINDS, coverOf, depthOf, factsOf, getMedia, inkFor, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
+import { KINDS, coverOf, depthOf, factsOf, getMedia, inkFor, linksOf, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
 
 const shelves = await Promise.all(
   (Object.keys(KINDS) as MediaKind[]).map(async (kind) => {
@@ -28,6 +28,7 @@ const shelves = await Promise.all(
           liked: d.liked,
           tags: [...(d.genres ?? []), ...(d.tags ?? [])],
           facts: factsOf(e).slice(0, 4),
+          links: linksOf(e),
           when: whenLabel(d.date),
           img: cover?.src,
           color,

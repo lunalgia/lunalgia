@@ -22,6 +22,8 @@ export interface ShelfItem {
   tags?: string[]
   /** a few facts for the panel: [label, value] */
   facts?: [string, string][]
+  /** where to find it, Apple Music and the like: [label, url] */
+  links?: [string, string][]
   /** e.g. "September 2026" */
   when?: string
   /** cover image URL; a typeset cover is drawn when missing */
@@ -161,6 +163,13 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
             <p class="pn__tags">
               {b.tags.map((t) => (
                 <span>{t}</span>
+              ))}
+            </p>
+          )}
+          {b.links && b.links.length > 0 && (
+            <p class="pn__links">
+              {b.links.map(([label, url]) => (
+                <a href={url} target="_blank" rel="noopener">{label} ↗</a>
               ))}
             </p>
           )}
@@ -467,11 +476,12 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     padding: 24px 0 20px;
     box-shadow: inset 4px 0 0 rgb(255 255 255 / 0.1), inset -5px 0 0 rgb(0 0 0 / 0.18);
   }
-  /* the title never wider than its spine (records are thin), and it shortens to make room for the name */
+  /* the title is sized to its spine (--sr of its width, at most --st) and sits centred in the space
+     above the name; a long one shortens with an ellipsis rather than run into the name */
   .bk__st {
-    --st: 1.35rem;
-    writing-mode: vertical-rl; rotate: 180deg; font: italic min(var(--st), calc(var(--d) * 0.7))/1 var(--font-display);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; flex: 0 1 auto;
+    --st: 1.75rem; --sr: 0.55;
+    writing-mode: vertical-rl; rotate: 180deg; font: italic min(var(--st), calc(var(--d) * var(--sr)))/1 var(--font-display);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; flex: 0 1 auto; margin: auto 0; /* physical: on vertical text "block" runs across the spine */
   }
   .bk__sa, .bk__no { flex: none; }
   .bk__sa { writing-mode: vertical-rl; rotate: 180deg; font: 0.62rem var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; }
@@ -505,7 +515,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   }
 
   /* records: thin sleeves, plain card top, and the vinyl */
-  .cs--record .bk__st { --st: 0.95rem; }
+  .cs--record .bk__st { --st: 0.95rem; --sr: 0.7; }
   .cs--record .bk__sa { font-size: 0.5rem; }
   .cs--record .bk__spine { padding: 14px 0 12px; }
   .cs--record .bk__pages { background: var(--c); filter: brightness(0.8); }
@@ -545,7 +555,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   /* films: DVD-style cases with a numbered spine, and a ticket stub */
   .cs--film .bk__spine { padding-top: 14px; }
   .bk__no { font: 0.6rem var(--font-din); letter-spacing: 0.1em; padding-bottom: 8px; border-bottom: 1px solid currentColor; margin-bottom: 4px; }
-  .cs--film .bk__st { --st: 1.15rem; }
+  .cs--film .bk__st { --st: 1.15rem; --sr: 0.68; }
   .cs--film .bk__pages { background: #1a1a1f; }
   .cs--film .bk__cover { box-shadow: inset 10px 0 0 rgb(0 0 0 / 0.35), inset 11px 0 0 rgb(255 255 255 / 0.15); }
   .bk__ticket {
@@ -605,6 +615,10 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   .pn__facts dd { margin: 0.2rem 0 0; font: 1.05rem/1.3 var(--font-display); }
   .pn__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.6rem; }
   .pn__tags span { font: 0.65rem var(--font-din); letter-spacing: 0.14em; text-transform: uppercase; padding: 0.3rem 0.6rem; border: 1px solid rgb(210 211 221 / 0.4); }
+  .pn__links { display: flex; flex-wrap: wrap; gap: 0.3rem 1.3rem; margin: -0.4rem 0 1.6rem; font: italic 1.15rem var(--font-display); }
+  .pn__links a { color: #fff; text-decoration: none; }
+  .pn__links a:first-child { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .pn__links a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
   .pn__warn { font: italic 1rem var(--font-body); color: var(--lavender); margin-bottom: 1rem; }
   .pn__none { font: italic 1.2rem var(--font-display); color: var(--lavender); }
   .bk__cover--type { display: flex; flex-direction: column; justify-content: space-between; padding: 8% 7%; box-sizing: border-box; color: var(--f); }

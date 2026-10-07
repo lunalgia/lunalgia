@@ -5,7 +5,7 @@ import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 import Base from '@/layouts/Base.astro'
 import Score from '@/components/media/Score.astro'
-import { KINDS, coverOf, factsOf, getMedia, inkFor, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
+import { KINDS, coverOf, factsOf, getMedia, inkFor, linksOf, paragraphs, spineOf, whenLabel, words, type MediaKind } from '@/lib/media'
 
 export async function getStaticPaths() {
   const out = []
@@ -26,7 +26,7 @@ const hasNotes = /\[\^[^\]]+\]:/.test(entry.body ?? '')
 const color = await spineOf(entry, kind as MediaKind)
 const cover = coverOf(entry, kind as MediaKind)
 const chips = [...(d.genres ?? []), ...(d.tags ?? [])]
-const links: Record<string, string> = d.links ?? {}
+const links = linksOf(entry)
 ---
 
 <Base title={d.title} description={`${d.title}, ${d.by}: a review.`} preview={cover}>
@@ -58,8 +58,8 @@ const links: Record<string, string> = d.links ?? {}
           <dt>review</dt><dd>{n.toLocaleString('en-GB')} words · {Math.max(1, Math.round(n / 230))} min</dd>
         </dl>
         {chips.length > 0 && <p class="rv__tags">{chips.map((t) => <span>{t}</span>)}</p>}
-        {Object.keys(links).length > 0 && (
-          <p class="rv__links">{Object.entries(links).map(([k, u]) => <a href={u} rel="noopener">{k} ↗</a>)}</p>
+        {links.length > 0 && (
+          <p class="rv__links">{links.map(([k, u]) => <a href={u} rel="noopener">{k} ↗</a>)}</p>
         )}
       </div>
     </aside>
