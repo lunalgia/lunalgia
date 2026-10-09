@@ -171,7 +171,10 @@ which cannot be $vb(0)$ unless all the $b_i$ are $0$. Thus $(vb(w_1), dots, vb(w
   (d) Row vectors of $A$
 ]
 
-#b() 
+#b()
+(a) This is just a rephrasing of injective and surjective. It is injective iff there is a unique solution to $A vb(x) = vb(0)$ #footnote[Since $A vb(x) = A vb(y) <=> A(vb(x) - vb(y)) = 0$.], and surjective if there is a solution to $A vb(x) = vb(b)$ for all $vb(b)$ in the co-domain of the function.
+
+(b) It is injective iff every column of the REF has a pivot. It is surjective iff every row has a pivot. For the first, $vb(0)$ must be the only solution to $A vb(x) = vb(0)$. But 
 #Q()
 
 #pagebreak()

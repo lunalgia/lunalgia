@@ -35,7 +35,56 @@ _Submit: 2(a), 9(b), 10(a). Optional: 1, 2(b), 4(b), 6, 7. If you are not fully 
   
   (b) (Optional) Having solved Problem 1 and part (a), you should be able to do part (a) for any matrix A. Explain and justify your procedure for each subspace. Can you find multiple bases for each subspace?]
 
-#b() I will do this in general. Consider 
+#b()
+Remember the RREF of A,
+$ 
+A_"RREF" = mat(1, 2, 0, 0, 3; 0, 0, 1, 0, -1; 0, 0, 0, 1, 0)
+$
+
+Then, as we showed in 2(a), the magic vectors
+$
+x_2 vec(-2, 1, 0, 0, 0) + x_5 vec(-3, 0, 1, 0, 1), quad x_2, x_5 in RR
+$
+span the null space of $A$. It is also clear that they're linearly independent, so they form a basis.
+
+For the row space, note that the non-zero rows (so all of them, here) of $A_"RREF"$ form a basis. 
+
+It is clear that they're independent. We show that span of the rows do not change if you perform elementary row operations. But note that all elementary row operations form linear combinations of the rows, in particular if the rows of the matrix are $(vb(r)_i^"T")$. Then, it is obvious that swapping does not change the span. Neither does scaling, because for
+$
+vb(u) in "span"{vb(r)_i^"T"} "such that" vb(u) = sum_i c_i vb(r)_i^"T"
+$
+we still have,
+$
+vb(u) in "span"{vb(r_1)^"T", dots, lambda vb(r)_k^"T", dots} 
+$
+as 
+$
+vb(u) = sum_(i eq.not k) c_i vb(r)_i^"T" + (c_k\/lambda) vb(r)_k^"T" 
+$
+Similarly, adding a scaled row to another does not change the span, because for $vb(r)_k^"T" |-> vb(r)_k^"T" + lambda vb(r)_ell^"T"$,
+
+$
+vb(u) = sum_(i eq.not ell) c_i vb(r)_i^"T" + (c_ell - lambda c_k) vb(r)_ell^"T"
+$
+So, these rows do indeed form a basis.
+
+Finally, for the column space, we claim that the columns of $A$ which have pivots in $A_"RREF"$--$(1, 2, 1)^"T"$, $(1, 0, 2)^"T"$ and $(3, 4, 5)^"T"$---form a basis. If we show that these are (maximally) independent, then we would be done, because this would be the maximally independent set of a spanning set.
+
+Anyway, this is obvious because elementary row operations do not change the dependency relations. Swapping rows swaps the entries of the columns, scaling scales a specific entry of each column, both of which do not change the dependency relation. Adding a scaled row is a little more non-trivial. Let the columns be $vb(c)_i$. In particular, $vb(c)_i = a_(j i)vb(e)_j$ for $A = (a_(i j))$. The row operation, $vb(r)_k |-> vb(r)_k + lambda vb(r)_ell$, results in the new columns, $vb(c)'_i = vb(c)_i$ for $i eq.not k$, and $vb(c)'_k = vb(c)_k + lambda vb(c)_ell$. Therefore we get that:
+$
+vb(c)'_i = vb(c)_i + lambda vb(c)_ell vb(e)_k
+$
+So the linear combination becomes,
+$
+sum_i a_i vb(c)'_i = sum a_i vb(c)_i + lambda (sum_i a_i vb(c)_i) vb(e)_k
+$
+Now if $vb(c)'_i$ are independent, and that $vb(c)_i$ are not. Then there exists a non-trivial linear combination of them that equates to $vb(0)$. Therefore,
+$
+sum_i a_i vb(c)'_i = lambda (sum_i a_i vb(c)_i) vb(e)_k
+$
+for some $a_i$, not all zero. Note that the sum on the right hand side must too be $0$, as it is the $k"th"$ entry in the linear combination of $vb(c)_i$. This forces a non-trivial linear combination of $vb(c)'_i$ to be $vb(0)$! Which cannot be. Hence, we are done.
+
+(b). Note that we did the row, and column parts in full generality. For the null space, it is a little trickier. We convert $A$ to its RREF, and do the magic vector procedure.
 #Q()
 
 #pagebreak()
@@ -49,11 +98,28 @@ _Submit: 2(a), 9(b), 10(a). Optional: 1, 2(b), 4(b), 6, 7. If you are not fully 
 I claim that a representative for each class is a matrix of the form:
 
 $
-mat(1, 0, dots.c, 0, |, 0, dots.c, 0; 0, 1 , dots.c, 0, |, 0, dots.c, 0 ; dots.v, dots.v, dots.v, dots.v, |, dots.v, dots.v, dots.v; 0, 0, dots.c, 1, |, 0, dots.c, 0;-, -, -, -, |, ; 0, dots.c, dots.c, dots.c, dots.c , dots.c, dots.c, 0; dots.v, dots.v, dots.v, dots.v, |, dots.v, dots.v, dots.v; 0, dots.c, dots.c, dots.c, dots.c, dots.c, dots.c,0)
+A tilde mat(
+  delim: "(",
+  I_r, 0;
+  0, 0;
+)
+= mat(
+  delim: "(",
+  augment: #(hline: 4, vline: 4),
+  1, 0, dots.c, 0, 0, dots.c, 0;
+  0, 1, dots.c, 0, 0, dots.c, 0;
+  dots.v, dots.v, dots.down, dots.v, dots.v, dots.v, dots.v;
+  0, 0, dots.c, 1, 0, dots.c, 0;
+  0, 0, dots.c, 0, 0, dots.c, 0;
+  dots.v, dots.v, dots.v, dots.v, dots.v, dots.down, dots.v;
+  0, 0, dots.c, 0, 0, dots.c, 0;
+)
 
 $
 
-i.e, top right identity matrix, with zero at every other place.
+i.e, top right identity matrix, with zero at every other place. $r$ is the _rank_ of the matrix, i.e the number of rows (or columns) with pivots in the RREF. 
+
+First, we can do row operations to achieve $A ~ A_"RREF"$. The, if a row has a pivot we can use that to scale and kill of all other entries in the row. Otherwise, it is just a zero row. Finally, we can do swaps to move the zero columns further, achieve a top right identity matrix.
 
 #Q()
 
@@ -83,7 +149,8 @@ where the first equality is because $vb(0)'$ is an additive identity, and the se
   A way to make (a) and (b) parallel is to say pivot rows and pivot columns. (Note that nonzero columns are NOT independent, unless every column is a pivot column.)
 ]
 
-#b() 
+#b()
+Already done in Problem 2.
 #Q()
 
 #pagebreak()
@@ -93,6 +160,7 @@ where the first equality is because $vb(0)'$ is an additive identity, and the se
 ]
 
 #b() 
+We'll work with the transpose here instead. Note that the row space of the transpose is the column space of $A$, and thus, we can use the non-zero rows of the RREF of the transpose of $A$ to find a basis.
 #Q()
 
 #pagebreak()
@@ -102,6 +170,9 @@ where the first equality is because $vb(0)'$ is an additive identity, and the se
 ]
 
 #b() 
+
+
+
 #Q()
 
 #pagebreak()
