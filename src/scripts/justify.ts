@@ -16,29 +16,35 @@ import { createHyphenator, justifyContent, unjustifyContent } from 'tex-linebrea
 const hyphenate = createHyphenator(enUs)
 
 const setup = (text: HTMLElement) => {
+  let timer = 0
   const paras = [...text.querySelectorAll<HTMLElement>(':scope > p')].filter(
     (p, i) => i > 0 && !p.querySelector('math, img, code, svg'),
   )
   if (!paras.length) return () => {}
 
   let width = 0
+  // while printing, the layout is left alone: undoing changes the column's height,
+  // which the resize watcher would otherwise take as a reason to justify again
+  let paused = false
   const run = () => {
+    paused = false
     width = text.clientWidth
     paras.forEach((p) => unjustifyContent(p))
     justifyContent(paras, hyphenate)
     paras.forEach((p) => p.classList.add('is-tex'))
   }
   const undo = () => {
+    paused = true
+    clearTimeout(timer)
     paras.forEach((p) => {
       unjustifyContent(p)
       p.classList.remove('is-tex')
+      p.style.removeProperty('white-space') // the library leaves its nowrap behind
     })
-    width = 0
   }
 
-  let timer = 0
   const ro = new ResizeObserver(() => {
-    if (text.clientWidth === width) return
+    if (paused || text.clientWidth === width) return
     clearTimeout(timer)
     timer = window.setTimeout(run, 120)
   })
@@ -46,13 +52,22 @@ const setup = (text: HTMLElement) => {
     run()
     ro.observe(text)
   })
+  // printing: undo before the browser lays out the paper, whichever way printing
+  // starts (the PRINT buttons, Ctrl+P, or a print media change), redo after
+  const printing = matchMedia('print')
+  const onMedia = (e: MediaQueryListEvent) => (e.matches ? undo() : setTimeout(run, 300))
+  const later = () => setTimeout(run, 300)
+  printing.addEventListener('change', onMedia)
   addEventListener('beforeprint', undo)
-  addEventListener('afterprint', run)
+  addEventListener('afterprint', later)
+  document.addEventListener('lunalgia:print', undo)
   return () => {
     ro.disconnect()
     clearTimeout(timer)
+    printing.removeEventListener('change', onMedia)
     removeEventListener('beforeprint', undo)
-    removeEventListener('afterprint', run)
+    removeEventListener('afterprint', later)
+    document.removeEventListener('lunalgia:print', undo)
   }
 }
 

@@ -264,6 +264,11 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
+  @media print {
+    .rail {
+      display: none !important;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .rail__line,
     .rail__tip {

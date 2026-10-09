@@ -471,6 +471,26 @@
   .ax__text section.footnotes li + li {
     margin-top: 0.8em;
   }
+  /* the reset strips list numbers; the endnotes need theirs */
+  .ax__text section.footnotes ol {
+    list-style: decimal;
+    padding-left: 1.8em;
+  }
+  .ax__text section.footnotes li::marker {
+    font: 0.7rem var(--font-din);
+    color: var(--ultramarine);
+  }
+  /* a quotation in a note is a citation, not a pull quote */
+  .ax__text section.footnotes .quote {
+    margin: 0.6em 0;
+    padding-left: 0.8rem;
+    border-left: 1px solid rgb(2 8 135 / 0.3);
+    font: inherit;
+    color: inherit;
+  }
+  .ax__text section.footnotes .quote::before {
+    content: none;
+  }
   .ax__text a[data-footnote-backref] {
     text-decoration: none;
     margin-left: 0.3em;
@@ -945,6 +965,18 @@
   }
   .ax__text a[data-footnote-backref] {
     display: none;
+  }
+  /* Knuth-Plass lines are fixed to the screen's column: let paper re-flow them,
+     even if a browser prints before the script has undone them */
+  .ax__text > p.is-tex {
+    white-space: normal !important;
+    hyphens: auto;
+  }
+  .ax__text > p.is-tex br {
+    display: none;
+  }
+  .ax__text > p.is-tex span[style] {
+    word-spacing: normal !important;
   }
 
   .ax__src {

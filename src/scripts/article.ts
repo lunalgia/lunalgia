@@ -68,6 +68,7 @@ const setup = () => {
       // lazy images further down haven't loaded yet and would print blank
       await Promise.all(eager().map((img) => img.decode().catch(() => {})))
       document.documentElement.dataset.print = b.dataset.print
+      document.dispatchEvent(new Event('lunalgia:print'))
       print()
     }),
   )

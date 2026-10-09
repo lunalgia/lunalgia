@@ -250,16 +250,15 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     height: 100%;
     pointer-events: none;
   }
+  /* the name surfaces by fading only: moving it repainted the blended copy
+     every frame and stuttered. Its own layer, so the fade is the compositor's */
   .foot.is-armed .foot__mark {
     opacity: 0;
-    transform: translateY(22%);
+    will-change: opacity;
   }
   .foot.is-in .foot__mark {
     opacity: 1;
-    transform: none;
-    transition:
-      opacity 2.2s var(--ease-out),
-      transform 2.2s var(--ease-out);
+    transition: opacity 1.8s cubic-bezier(0.33, 0, 0.2, 1);
   }
   /* the water rises a little slower than the page, tied to scroll by the browser */
   @keyframes foot-rise {
