@@ -225,9 +225,9 @@
 
   /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
   .prose [data-parenthetical] {
-    /* a step down in hue as well as lightness: the palette's mauve pulled a quarter
-       of the way to the ink, ≈ #5d4863, 3:1 on lavender (main text is 6.2:1) */
-    color: color-mix(in oklab, var(--mauve) 75%, var(--ink));
+    /* the same ink, lighter: a quieter voice rather than a different one.
+       ≈ #444887, 3.1:1 on lavender (main text is 6.2:1) */
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
 
   /* footnotes */

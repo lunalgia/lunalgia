@@ -561,7 +561,7 @@
     max-width: 100%;
   }
   .lp__text [data-parenthetical] {
-    color: color-mix(in oklab, var(--mauve) 75%, var(--ink));
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
   @media (prefers-reduced-motion: reduce) {
     .lp {

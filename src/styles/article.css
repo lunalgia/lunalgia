@@ -55,13 +55,13 @@
 
   /* ---------- three columns ---------- */
   .ax {
-    --text: 34rem;
-    --side: 14.5rem;
+    --text: 37rem;
+    --side: 16.5rem;
     position: relative;
     display: grid;
     grid-template-columns: var(--side) minmax(0, var(--text)) var(--side);
     justify-content: center;
-    column-gap: 3rem;
+    column-gap: 3.5rem;
     padding: 5rem 2vw 4rem;
     color: #11135a;
   }
@@ -70,7 +70,7 @@
     grid-row: 1;
     min-width: 0;
     counter-reset: env part;
-    font: 1.15rem/1.62 var(--font-body);
+    font: 1.2rem/1.62 var(--font-body);
     hyphens: auto;
     -webkit-hyphens: auto;
   }
@@ -163,9 +163,9 @@
   }
   /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
   .ax__text [data-parenthetical] {
-    /* a step down in hue as well as lightness: the palette's mauve pulled a quarter
-       of the way to the ink, ≈ #5d4863, 3:1 on lavender (main text is 6.2:1) */
-    color: color-mix(in oklab, var(--mauve) 75%, var(--ink));
+    /* the same ink, lighter: a quieter voice rather than a different one.
+       ≈ #444887, 3.1:1 on lavender (main text is 6.2:1) */
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
 
   /* ---------- quotes ---------- */
