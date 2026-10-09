@@ -12,7 +12,9 @@ let lenis: Lenis | null = null
 
 const start = () => {
   if (lenis || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 0.9, anchors: true })
+  // lerp: the share of the remaining distance covered each frame. Higher is snappier;
+  // 0.11 felt sluggish, 1 would be native scrolling.
+  lenis = new Lenis({ lerp: 0.18, wheelMultiplier: 1, anchors: true })
   ;(window as any).__lenis = lenis
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((t) => lenis?.raf(t * 1000))
