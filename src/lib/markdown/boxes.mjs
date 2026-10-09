@@ -72,17 +72,26 @@ function convert(node) {
 /** "— Name" as the last line of a quote becomes its caption */
 function attribution(node) {
   const last = node.children.at(-1)
-  const lead = last?.type === 'paragraph' ? last.children[0] : null
-  if (!lead || lead.type !== 'text') return
-  // the dash may also start the last line of a longer paragraph
-  const lines = lead.value.split('\n')
-  if (last.children.length === 1 && lines.length > 1 && /^(—|--)\s/.test(lines.at(-1))) {
-    lead.value = lines.slice(0, -1).join('\n')
-    node.children.push({ type: 'paragraph', children: [text(lines.at(-1))] })
+  if (last?.type !== 'paragraph') return
+  // "— Name" may start the last line of a longer paragraph, and the name may
+  // carry emphasis: split the paragraph at the last line break before a dash
+  const kids = last.children
+  for (let i = kids.length - 1; i >= 0; i--) {
+    const k = kids[i]
+    if (k.type !== 'text') continue
+    const at = k.value.search(/\n(—|--)\s[^\n]*$/)
+    if (at < 0) continue
+    const before = k.value.slice(0, at)
+    const after = k.value.slice(at + 1)
+    last.children = [...kids.slice(0, i), ...(before ? [text(before)] : [])]
+    node.children.push({ type: 'paragraph', children: [text(after), ...kids.slice(i + 1)] })
     return attribution(node)
   }
-  if (!/^(—|--)\s/.test(lead.value)) return
+  const lead = kids[0]
+  if (lead?.type !== 'text' || !/^(—|--)\s/.test(lead.value)) return
   lead.value = lead.value.replace(/^(—|--)\s+/, '')
+  // one box for the whole caption, so a name and an italic title stay one line of text
+  last.children = [el('emphasis', 'span', [], kids)]
   last.data = { hName: 'p', hProperties: { className: ['quote__by'] } }
   node.data = { hProperties: { className: ['quote'] } }
 }

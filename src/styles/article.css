@@ -137,6 +137,9 @@
     color: var(--ultramarine);
   }
   .ax__text > hr {
+    display: block;
+    height: auto;
+    overflow: visible;
     margin: 3.5rem auto;
     border: 0;
     text-align: center;
@@ -149,6 +152,67 @@
   .ax__text ul,
   .ax__text ol {
     padding-left: 1.4rem;
+    list-style: disc;
+  }
+  .ax__text ol {
+    list-style: decimal;
+  }
+  .ax__text ul ul {
+    list-style: circle;
+  }
+  .ax__text ol ol {
+    list-style: lower-alpha;
+  }
+  .ax__text li > ul,
+  .ax__text li > ol {
+    margin-top: 0.35em;
+  }
+  /* task lists: no bullet, the box in the site's ink */
+  .ax__text li:has(> input[type='checkbox']) {
+    list-style: none;
+    margin-left: -1.4rem;
+  }
+  .ax__text input[type='checkbox'] {
+    accent-color: var(--ultramarine);
+    margin: 0 0.5em 0 0;
+    vertical-align: -0.1em;
+  }
+  /* long inline code may break rather than stretch a justified line */
+  .ax__text :not(pre) > code {
+    overflow-wrap: anywhere;
+  }
+  /* tables: hairlines, DIN heads, figures in tabular numerals */
+  .ax__text table {
+    width: 100%;
+    margin: 1.8rem 0 2.2rem;
+    border-collapse: collapse;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95em;
+    line-height: 1.45;
+  }
+  .ax__text th {
+    padding: 0.7rem 0.8rem 0.5rem;
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    font: 400 0.66rem/1.4 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ultramarine);
+    vertical-align: bottom;
+  }
+  .ax__text td {
+    padding: 0.5rem 0.8rem;
+    vertical-align: top;
+  }
+  .ax__text tr + tr td {
+    border-top: 1px solid rgb(2 8 135 / 0.12);
+  }
+  .ax__text :is(th, td):first-child {
+    padding-left: 0;
+  }
+  .ax__text :is(th, td):last-child {
+    padding-right: 0;
   }
   .ax__text li + li {
     margin-top: 0.35em;
@@ -218,9 +282,11 @@
     font-style: normal;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    line-height: 1.7;
   }
   .ax__text .quote__by::before {
     content: '';
+    flex: none;
     width: 1.6rem;
     height: 1px;
     background: currentColor;
