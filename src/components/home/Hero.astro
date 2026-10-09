@@ -619,7 +619,10 @@ const drawings = [
     margin: 0;
     padding: 0 0.6rem;
     background: var(--lavender);
+    /* the same size as the tag on the tall board behind it: 26px in a 760×1600
+       drawing, scaled to fit the screen as the drawing is */
     font: italic 0.85rem/1.2 var(--font-display);
+    font-size: min(calc(100vw * 26 / 760), calc(100dvh * 26 / 1600));
   }
   .hmenu__close {
     position: absolute;

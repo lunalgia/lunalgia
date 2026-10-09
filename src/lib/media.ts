@@ -88,8 +88,9 @@ export const spineOf = (e: MediaEntry, kind: MediaKind): Promise<string> => {
 /** spine thickness, stable per item */
 export const depthOf = (e: MediaEntry, kind: MediaKind) => {
   const h = hash(e.id + e.data.title)
-  if (kind === 'records') return 17 + (h % 7)
-  if (kind === 'films') return 22 + (h % 5)
+  // records and films are uniform cases; only books vary
+  if (kind === 'records') return 30
+  if (kind === 'films') return 32
   return 34 + (h % 30)
 }
 

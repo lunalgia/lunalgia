@@ -98,6 +98,21 @@ const setup = () => {
     bar.append(b)
     pre.replaceWith(box)
     box.append(bar, pre)
+    // fold anything longer than a few lines
+    if (pre.scrollHeight > 230) {
+      box.classList.add('is-folded')
+      const t = document.createElement('button')
+      t.type = 'button'
+      t.className = 'code-copy'
+      t.textContent = 'expand'
+      t.setAttribute('aria-expanded', 'false')
+      t.addEventListener('click', () => {
+        const folded = box.classList.toggle('is-folded')
+        t.textContent = folded ? 'expand' : 'fold'
+        t.setAttribute('aria-expanded', String(!folded))
+      })
+      bar.append(t)
+    }
   })
 }
 document.addEventListener('astro:page-load', setup)

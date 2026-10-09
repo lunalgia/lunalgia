@@ -214,7 +214,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     const shelf = root.querySelector<HTMLElement>('.cs__shelf')!
     const panel = root.querySelector<HTMLElement>('.cs__panel')!
     /** where each item's spine starts along the shelf (spine widths only) */
-    const starts = all.reduce<number[]>((a, b, j) => (a.push(j ? a[j - 1] + parseFloat(all[j - 1].style.getPropertyValue('--d')) + 2 : 0), a), [])
+    const starts = all.reduce<number[]>((a, b, j) => (a.push(j ? a[j - 1] + parseFloat(all[j - 1].style.getPropertyValue('--d')) : 0), a), [])
     let shelfX = 0
     let switching: ReturnType<typeof setTimeout> | undefined
     const set = (i: number) => {
@@ -447,7 +447,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   }
   .cs__shelf {
     position: absolute; left: var(--sx); bottom: 104px;
-    display: flex; align-items: flex-end; gap: 2px;
+    display: flex; align-items: flex-end; gap: 0;
     transform-style: preserve-3d;
     transition: transform 1s var(--ease-cs), left 1s var(--ease-cs);
   }
@@ -485,7 +485,9 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     transform: translateZ(calc(var(--W) / 2));
     display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px;
     padding: 24px 0 20px;
-    box-shadow: inset 4px 0 0 rgb(255 255 255 / 0.1), inset -5px 0 0 rgb(0 0 0 / 0.18);
+    /* the dark right edge doubles as the gap between spines (a real gap rounds to
+       0-3px under 3D transforms); the outer ring closes the seam with the cover */
+    box-shadow: inset 4px 0 0 rgb(255 255 255 / 0.1), inset -2px 0 0 rgb(0 0 0 / 0.45), 0 0 0 0.6px var(--c);
   }
   /* the title is sized to its spine (--sr of its width, at most --st) and sits centred in the space
      above the name; a long one shortens with an ellipsis rather than run into the name */
@@ -500,7 +502,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     top: 0; height: 100%; width: var(--W); left: calc((var(--d) - var(--W)) / 2);
     background: var(--c) center / cover no-repeat;
     transform: rotateY(-90deg) translateZ(calc(var(--d) / 2));
-    box-shadow: inset 8px 0 12px -4px rgb(0 0 0 / 0.35);
+    box-shadow: inset 8px 0 12px -4px rgb(0 0 0 / 0.35), 0 0 0 0.6px var(--c);
   }
   /* the back cover: without it you see the inside of the front cover between spines */
   .bk__back {
