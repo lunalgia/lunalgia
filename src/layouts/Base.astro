@@ -6,6 +6,7 @@ import type { ImageMetadata } from 'astro'
 import { SITE } from '@/consts'
 import Chrome from '@/components/Chrome.astro'
 import Footer from '@/components/Footer.astro'
+import Rail from '@/components/Rail.astro'
 
 interface Props {
   title?: string
@@ -64,6 +65,7 @@ const previewSrc = preview && (await getImage({ src: preview, width: 480, format
       <slot />
     </main>
     {footer && <Footer here={here} />}
+    <Rail />
     <script>
       import '@/scripts/smooth'
       import '@/scripts/previews'
