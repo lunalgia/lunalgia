@@ -139,6 +139,11 @@
   html:focus-within {
     scroll-behavior: smooth;
   }
+  /* Lenis does its own easing; the browser's on top of it doubles every jump */
+  html.lenis.lenis-smooth,
+  html.lenis.lenis-smooth:focus-within {
+    scroll-behavior: auto;
+  }
   @media (prefers-reduced-motion: reduce) {
     html:focus-within {
       scroll-behavior: auto;
