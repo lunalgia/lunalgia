@@ -71,15 +71,30 @@ def build(family, sources):
     out = f'{OUT}/{ps}.woff2'; fb.save(out)
     print(out, len(cmap), 'glyphs', os.path.getsize(out), 'bytes')
 
-# \mathcal: Boondox Calligraphic, deslanted as BOONDOX-calo (dvips SlantFont -.3), calscaled=.94
-build('Lunalgia Math Cal', [('.mf/zxxrw8a.pfb', SCRIPT, -0.3, 0.94)])
+# Scales: each alphabet's capitals are matched to the median capital height of
+# Garamond-Math's own alphabet of the same kind (lower case to its x-height,
+# digits to its digits), measured with fontTools' BoundsPen. This replaces mathalpha's
+# calscaled/frakscaled, which were tuned for a Times-like text face, not Garamond.
+LOWER = set(string.ascii_lowercase)
+DIG = set(DIGITS)
+def part(m, keep): return {k: v for k, v in m.items() if keep(k)}
+
+# \mathcal: Boondox Calligraphic, deslanted as BOONDOX-calo (dvips SlantFont -.3)
+build('Lunalgia Math Cal', [('.mf/zxxrw8a.pfb', SCRIPT, -0.3, 0.956)])
 # \mathscr: Dutch Calligraphic
-build('Lunalgia Math Scr', [('.mf/DutchCalReg.pfb', SCRIPT, 0, 1)])
-# \mathfrak: ESSTIX-Fifteen, frakscaled=.97
-build('Lunalgia Math Frak', [('.mf/ESSTIX15.pfb', FRAK, 0, 0.97)])
-# \mathbb: dsfont (doublestroke, dsrom10) as mathalpha's bb=dsfontserif; it has only A-Z, a, h, k, 1,
-# so the rest (other lower case, digits, the five Unicode double-struck Greek) comes from Sharpe's DSSerif
-# (dsrom's 'a' is a capital-like variant, not a lower-case a, so it is left out)
-build('Lunalgia Math BB', [('.mf/dsrom10.pfb', {k: v for k, v in DS.items() if k != 'a'}, 0, 1), ('.mf/DSSerif.pfb', DS, 0, 1)])
+build('Lunalgia Math Scr', [('.mf/DutchCalReg.pfb', SCRIPT, 0, 0.952)])
+# \mathfrak: ESSTIX-Fifteen
+build('Lunalgia Math Frak', [('.mf/ESSTIX15.pfb', FRAK, 0, 1.026)])
+# \mathbb: dsfont (doublestroke, dsrom10) as mathalpha's bb=dsfontserif; it has only A-Z, h, k, 1
+# (its 'a' is a capital-like variant, left out), so the rest comes from Sharpe's DSSerif
+build('Lunalgia Math BB', [
+    ('.mf/dsrom10.pfb', {k: v for k, v in DS.items() if k != 'a'}, 0, 0.961),
+    ('.mf/DSSerif.pfb', part(DS, lambda k: k in LOWER or k in ('gamma', 'pi')), 0, 0.900),
+    ('.mf/DSSerif.pfb', part(DS, lambda k: k in DIG), 0, 1.016),
+    ('.mf/DSSerif.pfb', DS, 0, 1.020),
+])
 # \mathbb{\Delta} and other Greek: DSSerif
-build('Lunalgia Math BB Greek', [('.mf/DSSerif.pfb', GREEK, 0, 1)])
+build('Lunalgia Math BB Greek', [
+    ('.mf/DSSerif.pfb', part(GREEK, lambda k: k[:1].islower()), 0, 0.900),
+    ('.mf/DSSerif.pfb', GREEK, 0, 1.020),
+])

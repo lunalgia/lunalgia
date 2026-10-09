@@ -6,7 +6,9 @@
  * frakscaled=.97,scr=dutchcal]{mathalpha}, with
  * bb=dsfontserif (doublestroke) falling back to DSSerif where dsfont has no letter. The alphabet fonts are rebuilt from
  * the CTAN Type 1 files (OFL) with their letters at the Unicode maths code
- * points, slant and scale baked in; scripts/math-fonts.py rebuilds them.
+ * points and Boondox's slant baked in. Each alphabet is scaled so its capitals stand
+ * as tall as Garamond-Math's own (instead of mathalpha's calscaled/frakscaled, which
+ * suited a Times text face); scripts/math-fonts.py rebuilds them.
  * Browsers fetch a face only when a page uses it, so pages without maths pay nothing.
  */
 @font-face {
