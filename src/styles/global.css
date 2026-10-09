@@ -226,10 +226,11 @@
 
 @layer components {
   /* hairline frame with labels sitting on the border, after henry.codes */
-  .frame {
+  /* not Expressive Code's own .frame on code blocks */
+  .frame:not(.expressive-code *) {
     position: relative;
   }
-  .frame::before {
+  .frame:not(.expressive-code *)::before {
     content: '';
     position: absolute;
     inset: var(--frame-inset);

@@ -2123,6 +2123,26 @@
     "h": 828,
     "taken": "2026-10-05"
   },
+  "https://en.wikipedia.org/w/index.php?title=Gustave_Flaubert&oldid=1377904952": {
+    "kind": "page",
+    "title": "Gustave Flaubert - Wikipedia",
+    "description": "",
+    "site": "en.wikipedia.org",
+    "image": "/previews/79eb2516ba5f.webp",
+    "w": 640,
+    "h": 400,
+    "taken": "2026-10-09"
+  },
+  "https://en.wikipedia.org/wiki/Knuth%E2%80%93Plass_line-breaking_algorithm": {
+    "kind": "page",
+    "title": "Knuth–Plass line-breaking algorithm - Wikipedia",
+    "description": "",
+    "site": "en.wikipedia.org",
+    "image": "/previews/178350397d7e.webp",
+    "w": 640,
+    "h": 400,
+    "taken": "2026-10-09"
+  },
   "https://writing.upenn.edu/~taransky/Barthes.pdf": {
     "kind": "pdf",
     "title": "Barthe_DeathofAuthor",

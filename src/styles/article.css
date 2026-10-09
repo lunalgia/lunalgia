@@ -16,8 +16,12 @@
     color: var(--ultramarine);
   }
   .ah__k {
-    font: 0.72rem var(--font-din);
+    font: 0.72rem/1.9 var(--font-din);
     letter-spacing: 0.18em;
+  }
+  /* each part of the meta line wraps whole, never mid-phrase */
+  .ah__k > span {
+    display: inline-block;
   }
   /* the post's own title is the one place for Louise (Luna Delabre and Camille Depalle's
      revival of Ange Degheest's lettering, Velvetyne; OFL, see src/assets/fonts/Louise-OFL.txt). A connected script: no tracking, and no
@@ -55,13 +59,13 @@
 
   /* ---------- three columns ---------- */
   .ax {
-    --text: 37rem;
+    --text: 40rem;
     --side: 16.5rem;
     position: relative;
     display: grid;
     grid-template-columns: var(--side) minmax(0, var(--text)) var(--side);
     justify-content: center;
-    column-gap: 3.5rem;
+    column-gap: clamp(3.5rem, 5vw, 5.5rem);
     padding: 5rem 2vw 4rem;
     color: #11135a;
   }
@@ -133,6 +137,9 @@
     color: var(--ultramarine);
   }
   .ax__text > hr {
+    display: block;
+    height: auto;
+    overflow: visible;
     margin: 3.5rem auto;
     border: 0;
     text-align: center;
@@ -145,6 +152,67 @@
   .ax__text ul,
   .ax__text ol {
     padding-left: 1.4rem;
+    list-style: disc;
+  }
+  .ax__text ol {
+    list-style: decimal;
+  }
+  .ax__text ul ul {
+    list-style: circle;
+  }
+  .ax__text ol ol {
+    list-style: lower-alpha;
+  }
+  .ax__text li > ul,
+  .ax__text li > ol {
+    margin-top: 0.35em;
+  }
+  /* task lists: no bullet, the box in the site's ink */
+  .ax__text li:has(> input[type='checkbox']) {
+    list-style: none;
+    margin-left: -1.4rem;
+  }
+  .ax__text input[type='checkbox'] {
+    accent-color: var(--ultramarine);
+    margin: 0 0.5em 0 0;
+    vertical-align: -0.1em;
+  }
+  /* long inline code may break rather than stretch a justified line */
+  .ax__text :not(pre) > code {
+    overflow-wrap: anywhere;
+  }
+  /* tables: hairlines, DIN heads, figures in tabular numerals */
+  .ax__text table {
+    width: 100%;
+    margin: 1.8rem 0 2.2rem;
+    border-collapse: collapse;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95em;
+    line-height: 1.45;
+  }
+  .ax__text th {
+    padding: 0.7rem 0.8rem 0.5rem;
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    font: 400 0.66rem/1.4 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ultramarine);
+    vertical-align: bottom;
+  }
+  .ax__text td {
+    padding: 0.5rem 0.8rem;
+    vertical-align: top;
+  }
+  .ax__text tr + tr td {
+    border-top: 1px solid rgb(2 8 135 / 0.12);
+  }
+  .ax__text :is(th, td):first-child {
+    padding-left: 0;
+  }
+  .ax__text :is(th, td):last-child {
+    padding-right: 0;
   }
   .ax__text li + li {
     margin-top: 0.35em;
@@ -214,9 +282,11 @@
     font-style: normal;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    line-height: 1.7;
   }
   .ax__text .quote__by::before {
     content: '';
+    flex: none;
     width: 1.6rem;
     height: 1px;
     background: currentColor;
@@ -306,7 +376,6 @@
   .ax__text .env--lemma,
   .ax__text .env--proposition,
   .ax__text .env--corollary {
-    background: rgb(210 211 221 / 0.42);
     border-left: 2px solid var(--ultramarine);
   }
   .env--theorem > p:not(.env__h),
@@ -348,9 +417,10 @@
   .env__ans[open] {
     padding-bottom: 0.2rem;
   }
+  /* a proof runs at the text's own measure, like the paragraphs around it */
   .ax__text .env--proof {
     margin-top: -1rem;
-    padding-block: 0.4rem 0;
+    padding: 0.4rem 0 0;
   }
   .env__proof {
     font-style: italic;
@@ -362,77 +432,12 @@
   }
 
   /* ---------- code: paper ---------- */
-  .ax__text code {
+  .ax__text code:not(.expressive-code *) {
     font: 0.84em var(--font-mono);
     font-variant-ligatures: none;
     padding: 0.08em 0.3em;
-    background: rgb(210 211 221 / 0.45);
+    background: rgb(2 8 135 / 0.08);
   }
-  /* a block is wrapped by the script in .codebox with a header; without JS it still reads */
-  .ax__text pre,
-  .codebox {
-    margin: 1.4rem 0 2rem;
-    background: rgb(210 211 221 / 0.45) !important;
-    border-top: 1.5px solid var(--ultramarine);
-    border-bottom: 1px solid rgb(2 8 135 / 0.35);
-  }
-  .ax__text pre {
-    padding: 1rem 1.1rem 1.1rem;
-    overflow-x: auto;
-    font: 0.86rem/1.65 var(--font-mono);
-    font-variant-ligatures: none;
-    hyphens: none;
-    text-align: left;
-    --astro-code-foreground: #11135a;
-    --astro-code-background: transparent;
-    --astro-code-token-keyword: #020887;
-    --astro-code-token-string: #795663;
-    --astro-code-token-comment: #5a5a9a;
-    --astro-code-token-function: #2233b8;
-    --astro-code-token-constant: #795663;
-    --astro-code-token-parameter: #11135a;
-    --astro-code-token-punctuation: #5a5a9a;
-    --astro-code-token-string-expression: #795663;
-    --astro-code-token-link: #020887;
-  }
-  .codebox pre {
-    margin: 0;
-    border: 0;
-    background: none !important;
-  }
-  .ax__text pre code {
-    padding: 0;
-    background: none;
-    font: inherit;
-  }
-  .codebox__bar {
-    display: flex;
-    align-items: baseline;
-    gap: 1.2rem;
-    padding: 0.55rem 1rem;
-    border-bottom: 1px solid rgb(2 8 135 / 0.2);
-    color: var(--ultramarine);
-  }
-  .codebox__lang {
-    font: 0.62rem var(--font-din);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .codebox__file {
-    font: 0.78rem var(--font-mono);
-  }
-  .code-copy {
-    all: unset;
-    cursor: pointer;
-    margin-left: auto;
-    font: 400 0.66rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
-    color: var(--ultramarine);
-    border-bottom: 1px solid transparent;
-  }
-  .code-copy:hover {
-    border-bottom-color: currentColor;
-  }
-
   /* ---------- footnote references ---------- */
   .ax__text a[data-footnote-ref] {
     font: 0.66rem var(--font-din);
@@ -653,7 +658,7 @@
   .aa {
     max-width: calc(37rem + 4vw);
     margin: 0 auto;
-    padding: 0 2vw 6rem;
+    padding: 0 max(1.25rem, 2vw) 6rem;
     color: var(--ultramarine);
   }
   .aa__tags {
@@ -703,6 +708,7 @@
     .ax {
       grid-template-columns: minmax(0, var(--text));
       padding-top: 3rem;
+      padding-inline: max(1.25rem, 2vw);
     }
     .ax__text {
       grid-column: 1;
@@ -834,7 +840,8 @@
   .sidenote-rail,
   .aa,
   .ah__print,
-  .code-copy {
+  .code-fold,
+  .expressive-code .copy {
     display: none !important;
   }
   main {
@@ -905,14 +912,13 @@
   /* tinted boxes and code keep their paper colour */
   .ax__text .env,
   .ax__text code,
-  .ax__text pre,
-  .codebox {
+  .ax__text pre {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .ax__text pre {
-    overflow: visible;
-    white-space: pre-wrap;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
     font-size: 8.5pt;
   }
   .ax__text .math-display {
@@ -966,6 +972,11 @@
   .ax__text a[data-footnote-backref] {
     display: none;
   }
+  .ax__text .expressive-code.is-folded .frame pre {
+    max-height: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
   /* Knuth-Plass lines are fixed to the screen's column: let paper re-flow them,
      even if a browser prints before the script has undone them */
   .ax__text > p.is-tex {
@@ -991,3 +1002,44 @@
     color: #020887;
   }
 }
+
+/* Expressive Code ships unlayered CSS (with all: revert inside its blocks),
+   so these overrides sit outside the layers to win */
+  /* blocks come framed by Expressive Code (ec.config.mjs); here only the
+     site's rules around them, and the fold for long ones */
+  .ax__text .expressive-code {
+    position: relative;
+    margin: 1.4rem 0 2rem;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    hyphens: none;
+    text-align: left;
+  }
+  .ax__text .expressive-code code {
+    font-variant-ligatures: none;
+  }
+  .ax__text .expressive-code .frame.has-title .header .title {
+    font: 0.78rem var(--font-mono);
+    color: var(--ultramarine);
+  }
+  .ax__text .expressive-code.is-folded .frame pre {
+    max-height: 11rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+    mask-image: linear-gradient(#000 60%, transparent);
+  }
+  .ax__text .expressive-code > .code-fold {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    margin: 0.5rem 1.1rem 0.6rem;
+    font: 400 0.66rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ultramarine);
+    border-bottom: 1px solid transparent;
+    width: fit-content;
+  }
+  .ax__text .expressive-code > .code-fold:hover,
+  .ax__text .expressive-code > .code-fold:focus-visible {
+    border-bottom-color: currentColor;
+  }
+

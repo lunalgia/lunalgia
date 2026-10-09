@@ -10,7 +10,10 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
 
 <section class="letter board" aria-labelledby="letter-label">
     <div class="panel"></div>
-    <div class="letter__frame" aria-hidden="true"></div>
+    <!-- the hero's frame, redrawn: a rectangle starting at the top centre, under the label -->
+    <svg class="letter__frame" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M50 0H100V100H0V0Z" pathLength="1000" vector-effect="non-scaling-stroke" />
+    </svg>
     <p id="letter-label" class="letter__label">
         {label}
     </p>
@@ -50,11 +53,15 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
 </section>
 
 <script>
-    import { gsap } from "gsap";
-    import { ScrollTrigger } from "gsap/ScrollTrigger";
-    import { SplitText } from "gsap/SplitText";
-    import { afterIntro, whenIdle } from "@/scripts/after-intro";
-    gsap.registerPlugin(ScrollTrigger, SplitText);
+    /**
+     * The reveal: the inner frame opens from the centre, the labels settle, then
+     * the letter's lines rise into place one after another. Only transform and
+     * opacity move, so it runs on the compositor (the old version split the text
+     * with SplitText and animated a clip-path, which stuttered). The lines are the
+     * hand-set ones (.ln) on wide screens and the paragraphs on narrow ones.
+     * Armed by JS only, so without it, or with reduced motion, all is in place.
+     */
+    import { afterIntro } from "@/scripts/after-intro";
 
     const init = () => {
         const root = document.querySelector<HTMLElement>(".letter");
@@ -62,61 +69,41 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
         root.dataset.ready = "1";
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-        const frame = root.querySelector(".letter__frame");
-        const labels = root.querySelectorAll(".letter__label");
-        gsap.set(frame, { clipPath: "inset(0 50% 0 50%)" });
-        gsap.set(labels, { opacity: 0 });
+        // the outline in real pixels, so its dashes measure true: the drawing grows
+        // from the top centre both ways, like the hero's frame
+        const svg = root.querySelector<SVGSVGElement>(".letter__frame");
+        const path = svg?.querySelector("path");
+        if (svg && path) {
+            path.removeAttribute("pathLength");
+            const fit = () => {
+                const { width: w, height: h } = svg.getBoundingClientRect();
+                if (!w || !h) return;
+                svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+                path.setAttribute("d", `M${w / 2} 0H${w}V${h}H0V0Z`);
+                svg.style.setProperty("--L", `${2 * (w + h)}px`);
+            };
+            fit();
+            const ro = new ResizeObserver(fit);
+            ro.observe(svg);
+            document.addEventListener("astro:before-swap", () => ro.disconnect(), { once: true });
+        }
 
-        // the frame and labels need no splitting, so they never wait for it
-        gsap.timeline({
-            scrollTrigger: { trigger: root, start: "top 62%", once: true },
-        })
-            .to(
-                frame,
-                {
-                    clipPath: "inset(0 0% 0 0%)",
-                    duration: 1.4,
-                    ease: "power3.inOut",
-                },
-                0,
-            )
-            .to(labels, { opacity: 1, duration: 0.9, ease: "power2.out" }, 0.6);
+        const wide = matchMedia("(min-width: 900px)").matches;
+        const units = [...root.querySelectorAll<HTMLElement>(wide ? ".ln" : ".letter__body p")];
+        units.forEach((el, i) => el.style.setProperty("--i", String(i)));
+        root.classList.add("is-armed", wide ? "by-line" : "by-para");
 
-        // splitting text into lines is slow: do it after the hero has drawn, one
-        // paragraph per idle moment, each paragraph's lines continuing the stagger
-        const paras = [
-            ...root.querySelectorAll<HTMLElement>(".letter__body p"),
-        ];
-        const counts = paras.map(() => 0);
-        const split = (i: number) => {
-            SplitText.create(paras[i], {
-                type: "lines",
-                mask: "lines",
-                autoSplit: true,
-                onSplit: (self) => {
-                    counts[i] = self.lines.length;
-                    const before = counts
-                        .slice(0, i)
-                        .reduce((a, n) => a + n, 0);
-                    return gsap.from(self.lines, {
-                        yPercent: 105,
-                        duration: 1.1,
-                        ease: "power3.out",
-                        stagger: 0.06,
-                        delay: 0.35 + before * 0.06,
-                        scrollTrigger: {
-                            trigger: root,
-                            start: "top 62%",
-                            once: true,
-                        },
-                    });
-                },
-            });
-            if (i + 1 < paras.length) whenIdle(() => split(i + 1));
-        };
-        Promise.all([document.fonts.ready, afterIntro()]).then(() =>
-            whenIdle(() => split(0)),
+        const io = new IntersectionObserver(
+            (entries) => {
+                if (!entries.some((e) => e.isIntersecting)) return;
+                io.disconnect();
+                // never while the hero is still drawing
+                afterIntro().then(() => root.classList.add("is-in"));
+            },
+            { rootMargin: "0px 0px -38% 0px" },
         );
+        io.observe(root);
+        document.addEventListener("astro:before-swap", () => io.disconnect(), { once: true });
     };
 
     document.addEventListener("astro:page-load", init);
@@ -124,24 +111,77 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
 
 <style>
     .letter {
+        /* the hero's drawing units: 1920 wide on wide screens, 760 on tall ones */
+        --hu: calc(100vw / 760);
+        --fx: calc(24 * var(--hu));
+        --fy: calc(44 * var(--hu));
+        --fw: calc(2.6 * var(--hu));
         color: var(--mist);
         text-align: center;
-        padding: 6rem 1.5rem 6rem;
+        padding: calc(var(--fy) + 4rem) calc(var(--fx) + 1.5rem);
     }
+    /* the base colour spans the whole board */
     .letter .panel {
-        inset: 1.25rem 0;
+        inset: 0;
         height: auto;
     }
+    /* only the outline takes the hero frame's place and weight */
     .letter__frame {
         position: absolute;
-        inset: 2.25rem 1rem;
-        border: 1px solid rgb(210 211 221 / 0.45);
+        inset: var(--fy) var(--fx);
+        width: calc(100% - 2 * var(--fx));
+        height: calc(100% - 2 * var(--fy));
+        overflow: visible;
         pointer-events: none;
+    }
+    .letter__frame path {
+        fill: none;
+        stroke: rgb(210 211 221 / 0.55);
+        stroke-width: var(--fw);
+        stroke-linejoin: miter;
+    }
+
+    /* the reveal (see the script): the outline grows both ways from the label,
+       as the hero's does, then the label, then the lines one after another */
+    .letter.is-armed .letter__frame path {
+        stroke-dasharray: 0 var(--L) 0 0;
+    }
+    .letter.is-armed .letter__label {
+        opacity: 0;
+    }
+    .letter.by-line .ln,
+    .letter.by-para .letter__body p {
+        display: block;
+    }
+    .letter.is-armed.by-line .ln,
+    .letter.is-armed.by-para .letter__body p {
+        opacity: 0;
+        transform: translateY(0.5em);
+        filter: blur(3px);
+    }
+    .letter.is-in .letter__frame path {
+        stroke-dasharray: calc(var(--L) / 2) 0 calc(var(--L) / 2) 0;
+        transition: stroke-dasharray 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .letter.is-in .letter__label {
+        opacity: 1;
+        transition: opacity 0.8s var(--ease-out) 0.15s;
+    }
+    .letter.is-in.by-line .ln,
+    .letter.is-in.by-para .letter__body p {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition:
+            opacity 0.9s var(--ease-out),
+            transform 1.1s var(--ease-out),
+            filter 0.9s var(--ease-out);
+        transition-delay: calc(0.6s + var(--i) * 90ms);
     }
     .letter__label {
         position: absolute;
         left: 50%;
-        top: 2.25rem;
+        top: var(--fy);
         translate: -50% -50%;
         margin: 0;
         padding: 0 1rem;
@@ -154,7 +194,7 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
     }
     .letter__label--flip {
         top: auto;
-        bottom: 2.25rem;
+        bottom: var(--fy);
         translate: -50% 50%;
         rotate: 180deg;
     }
@@ -186,21 +226,24 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
             aspect-ratio: 16 / 9;
             padding: 0;
         }
-        .letter .panel {
-            inset: calc(48.1 * var(--u)) 0 auto 0;
+        /* exactly the hero's frame: x 44.546, y 51.983, 1830.143 × 983.8 of
+           1920 × 1080, drawn 1.93 units thick */
+        .letter__frame {
+            inset: calc(51.983 * var(--u)) auto auto calc(44.546 * var(--u));
+            width: calc(1830.143 * var(--u));
             height: calc(983.8 * var(--u));
         }
-        .letter__frame {
-            inset: calc(70 * var(--u)) calc(22 * var(--u)) calc(70 * var(--u))
-                calc(22 * var(--u));
+        .letter__frame path {
+            stroke-width: calc(1.93 * var(--u));
         }
         .letter__label {
-            top: calc(70 * var(--u));
+            top: calc(51.983 * var(--u));
             font-size: max(0.62rem, calc(15 * var(--u)));
         }
         .letter__label--flip {
-            top: auto;
-            bottom: calc(70 * var(--u));
+            top: calc((51.983 + 983.8) * var(--u));
+            bottom: auto;
+            translate: -50% -50%;
         }
         .letter__body {
             position: absolute;

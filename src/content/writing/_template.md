@@ -41,9 +41,22 @@ A box is a quote that starts with its kind; the rest of that line is an optional
 > [!pull]
 > A pull quote, large and centred.
 
-```haskell title="file.hs"
--- the language and title="…" go in the code block's header
+```haskell title="file.hs" {2} ins={3}
+-- title="…" names the file; {2} marks line 2, ins={3} / del={…} mark a diff
 main = putStrLn "hello"
+greet = putStrLn "again"
+```
+
+```python showLineNumbers collapse={1-3}
+# showLineNumbers numbers the lines; collapse={1-3} hides lines 1–3 behind a toggle
+import math
+import itertools
+print(math.pi)
+```
+
+```sh
+# shell blocks get a terminal frame; blocks over ~8 lines start folded
+npm run build
 ```
 
 [^1]: Like this.

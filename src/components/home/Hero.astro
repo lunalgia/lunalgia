@@ -27,6 +27,10 @@ type Road = {
   lx: number
   ly: number
   rot: number
+  /** where the label starts along the road (board units; measured from the
+      board's label origin), and whether it reads against the path's direction */
+  at: number
+  rev?: boolean
 }
 
 const roads: Road[] = [
@@ -39,6 +43,7 @@ const roads: Road[] = [
     lx: 366.1,
     ly: 273.6,
     rot: 6.14,
+    at: 458,
   },
   {
     href: '/media',
@@ -49,6 +54,7 @@ const roads: Road[] = [
     lx: 1379.6,
     ly: 393.0,
     rot: -61.18,
+    at: 210,
   },
   {
     href: '/academics',
@@ -59,6 +65,7 @@ const roads: Road[] = [
     lx: 1423.2,
     ly: 819.6,
     rot: 15.69,
+    at: 323,
   },
   {
     // continues 263px down into the Writings board, as in the artwork
@@ -70,6 +77,8 @@ const roads: Road[] = [
     lx: 379.9,
     ly: 828.9,
     rot: -52.41,
+    at: 742,
+    rev: true,
   },
 ]
 
@@ -84,7 +93,18 @@ const TALL = { w: 760, h: 1600 }
 const NAME = { cx: 967, cy: 543, w: 478 } // the name's box in board1
 const TALL_NAME_SCALE = (TALL.w * 0.8) / NAME.w
 
-const wideRoads = roads.map((r) => ({ ...r, path: mapPath(r.d, r.t), x: r.lx, y: r.ly, a: r.rot, k: 1 }))
+/** the same cubic path run backwards, so a label can read the other way along it */
+const reversePath = (d: string) => {
+  const pts = [...d.matchAll(/(-?[\d.]+),(-?[\d.]+)/g)].map((m) => `${m[1]},${m[2]}`).reverse()
+  let out = `M${pts[0]}`
+  for (let i = 1; i < pts.length; i += 3) out += `C${pts[i]} ${pts[i + 1]} ${pts[i + 2]}`
+  return out
+}
+
+const wideRoads = roads.map((r) => {
+  const path = mapPath(r.d, r.t)
+  return { ...r, path, text: r.rev ? reversePath(path) : path }
+})
 
 const drawings = [
   {
@@ -131,9 +151,11 @@ const drawings = [
           <a class="road" href={r.href} data-edge={r.edge}>
             <path class="road__hit" d={r.path} />
             <path class="road__line" d={r.path} />
-            <g transform={`translate(${r.x.toFixed(1)} ${r.y.toFixed(1)}) rotate(${r.a.toFixed(2)}) scale(${r.k})`}>
-              <text class="road__label">{r.label}</text>
-            </g>
+            {/* the label rides the road, a little above it, bending with it */}
+            <path id={`road-${r.label}`} class="road__guide" d={r.text} />
+            <text class="road__label" dy="-13">
+              <textPath href={`#road-${r.label}`} startOffset={r.at}>{r.label}</textPath>
+            </text>
           </a>
         ))}
 
@@ -509,6 +531,10 @@ const drawings = [
   .hero__art--tall .road__line {
     stroke-width: 2.2px;
   }
+  .road__guide {
+    fill: none;
+    stroke: none;
+  }
   .road__label {
     font-family: var(--font-display);
     font-style: italic;
@@ -619,7 +645,10 @@ const drawings = [
     margin: 0;
     padding: 0 0.6rem;
     background: var(--lavender);
+    /* the same size as the tag on the tall board behind it: 26px in a 760×1600
+       drawing, scaled to fit the screen as the drawing is */
     font: italic 0.85rem/1.2 var(--font-display);
+    font-size: min(calc(100vw * 26 / 760), calc(100dvh * 26 / 1600));
   }
   .hmenu__close {
     position: absolute;

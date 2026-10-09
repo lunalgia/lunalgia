@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
+import expressiveCode from 'astro-expressive-code'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import { satteri } from '@astrojs/markdown-satteri'
@@ -9,7 +10,8 @@ import { parentheticals } from './src/lib/markdown/parentheticals.mjs'
 
 export default defineConfig({
   site: 'https://lunalgia.pages.dev',
-  integrations: [mdx(), sitemap()],
+  // Expressive Code must come before MDX
+  integrations: [expressiveCode(), mdx(), sitemap()],
   prefetch: { prefetchAll: true },
   redirects: {
     '/blog': '/writing',
@@ -25,19 +27,6 @@ export default defineConfig({
       mdastPlugins: [math, boxes],
       hastPlugins: [parentheticals],
     }),
-    // code takes its colours from CSS variables (see article.css), so it matches the site
-    shikiConfig: {
-      theme: 'css-variables',
-      transformers: [
-        {
-          // ```haskell title="primes.hs"  →  a file name in the code block's header
-          pre(node) {
-            const title = this.options.meta?.__raw?.match(/title="([^"]+)"/)?.[1]
-            if (title) node.properties['data-title'] = title
-          },
-        },
-      ],
-    },
   },
   devToolbar: { enabled: false },
 })
