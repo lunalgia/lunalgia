@@ -4,7 +4,6 @@
 @import '@fontsource-variable/eb-garamond/wght.css';
 @import '@fontsource-variable/eb-garamond/wght-italic.css';
 @import '@fontsource/jetbrains-mono/400.css';
-@import '@fontsource-variable/fraunces/full-italic.css';
 @import './reset.css';
 
 @font-face {
@@ -17,6 +16,12 @@
   font-family: 'PP Mori';
   src: url('../assets/fonts/PPMori-Semibold.woff2') format('woff2');
   font-weight: 600;
+  font-display: swap;
+}
+/* Louise (Velvetyne, OFL: src/assets/fonts/Louise-OFL.txt): the name, post titles, the footer */
+@font-face {
+  font-family: 'Louise';
+  src: url('../assets/fonts/Louise-Regular.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
@@ -56,7 +61,6 @@
 
     --font-display: 'Instrument Serif', 'Times New Roman', serif;
     --font-louise: 'Louise', var(--font-display);
-    --font-fraunces: 'Fraunces Variable', 'Fraunces', serif;
     --font-din: 'DINdong', var(--font-display);
     --font-mori: 'PP Mori', system-ui, sans-serif;
     --font-body: 'EB Garamond Variable', 'EB Garamond', Garamond, serif;

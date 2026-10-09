@@ -20,7 +20,7 @@ const letters = [...line]
   <p class="hello__line hello__line--ink" aria-hidden="true">{letters.map((c, i) => <span style={`--i:${i}`}>{c}</span>)}</p>
   <div class="hello__frame">
     <div class="hello__pic">
-      <Image src={cobweb} alt="" width={608} densities={[1, 2]} loading="lazy" />
+      <Image src={cobweb} alt="" width={520} densities={[1, 2]} loading="lazy" />
     </div>
     <p class="hello__line hello__line--light" aria-hidden="true">{letters.map((c, i) => <span style={`--i:${i}`}>{c}</span>)}</p>
   </div>
@@ -57,24 +57,25 @@ const letters = [...line]
   .hello {
     /* phones: a 1000-unit board; wide screens: the 1920 board */
     --bw: 1000;
-    --img-x: 195;
-    --img-y: 70;
-    --img-w: 610;
-    --img-h: 912;
-    --fs: 104;
-    --line-y: 560;
+    /* the board's picture and line at 85% of the drawing, about the picture's centre */
+    --img-x: 240.75;
+    --img-y: 138.4;
+    --img-w: 518.5;
+    --img-h: 775.2;
+    --fs: 88.4;
+    --line-y: 554.9;
     --u: calc(100cqi / var(--bw));
     aspect-ratio: 1000 / 1060;
   }
   @media (min-aspect-ratio: 4/3) {
     .hello {
       --bw: 1920;
-      --img-x: 656;
-      --img-y: 96.08;
-      --img-w: 608;
-      --img-h: 908;
-      --fs: 146.5;
-      --line-y: 581.43;
+      --img-x: 701.6;
+      --img-y: 164.18;
+      --img-w: 516.8;
+      --img-h: 771.8;
+      --fs: 124.5;
+      --line-y: 576.73;
       aspect-ratio: 16 / 9;
     }
   }
