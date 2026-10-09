@@ -221,6 +221,24 @@
     height: 1px;
     background: currentColor;
   }
+  /* inside notes a caption is a citation, often long: Garamond, after a dash */
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by {
+    display: block;
+    margin-top: 0.35em !important;
+    font: italic 0.92em/1.4 var(--font-body);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by::before {
+    content: '— ';
+    display: inline;
+    width: auto;
+    height: auto;
+    background: none;
+  }
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by em {
+    font-style: normal;
+  }
   .ax__text .env--pull {
     margin: 3rem -4rem;
     padding: 1.4rem 0;
