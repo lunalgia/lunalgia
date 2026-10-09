@@ -2,8 +2,9 @@
  * Maths (MathML from Temml, see src/lib/markdown/math.mjs).
  *
  * Garamond-Math, to sit with EB Garamond, plus the alphabets from the LaTeX
- * preamble \usepackage[cal=boondoxo,calscaled=.94,bb=dsserif,frak=esstix,
- * frakscaled=.97,scr=dutchcal]{mathalpha}. The alphabet fonts are rebuilt from
+ * preamble \usepackage[cal=boondoxo,calscaled=.94,bb=dsfontserif,frak=esstix,
+ * frakscaled=.97,scr=dutchcal]{mathalpha}, with
+ * bb=dsfontserif (doublestroke) falling back to DSSerif where dsfont has no letter. The alphabet fonts are rebuilt from
  * the CTAN Type 1 files (OFL) with their letters at the Unicode maths code
  * points, slant and scale baked in; scripts/math-fonts.py rebuilds them.
  * Browsers fetch a face only when a page uses it, so pages without maths pay nothing.
@@ -41,7 +42,7 @@
   src: url('../assets/fonts/math/LunalgiaMathScr.woff2') format('woff2');
   unicode-range: U+210A-210B, U+2110, U+2112, U+211B, U+212C, U+212F-2131, U+2133-2134, U+1D49C-1D4CF;
 }
-/* \mathbb{\Delta}: Greek in DSSerif, which Unicode has no double-struck letters for */
+/* \mathbb{\Delta}: dsfont has no Greek, so DSSerif's; Unicode has no double-struck code points for these */
 @font-face {
   font-family: 'Lunalgia Math BB Greek';
   src: url('../assets/fonts/math/LunalgiaMathBBGreek.woff2') format('woff2');
