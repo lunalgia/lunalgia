@@ -7,7 +7,7 @@ label: 'lilian'
 # the big italic word above the paragraph
 word: 'lunalgia'
 # the small line under the paragraph; {year} becomes the current year
-credit: '© {year} lilian · set in instrument serif, eb garamond, fraunces & dindong'
+credit: '© {year} lilian · set in instrument serif, eb garamond, louise, fraunces & dindong'
 # the large misty word at the very bottom
 mark: 'jardin de lys'
 

@@ -1,9 +1,8 @@
 ---
 /**
- * The top bar on every page but home: the way back on the left, the menu on the
- * right. Same parts as the page headers (Instrument Serif italic, the hairline
- * arrow, an ultramarine rule) and the same three bars as the home page's menu.
- * The menu is a small card under the button on wide screens and fills the
+ * The top bar on every page but home: the way back on the left, the sections on
+ * the right. Wide screens list the sections as DIN labels; below 900px they fold
+ * into the three-bar button, whose menu is a small card on tablets and fills the
  * screen on phones, like the home menu.
  */
 import { NAV } from '@/consts'
@@ -24,6 +23,13 @@ const section = '/' + (Astro.url.pathname.split('/').filter(Boolean)[0] ?? '')
         </svg>
         <em>lunalgia</em>
       </a>
+      <ul class="chrome__links" role="list">
+        {NAV.map((l) => (
+          <li>
+            <a href={l.href} aria-current={l.href === section ? 'page' : undefined}>{l.label}</a>
+          </li>
+        ))}
+      </ul>
       <button class="chrome__btn" type="button" aria-expanded="false" aria-controls="cmenu">
         <span class="chrome__bars" aria-hidden="true">
           <i />
@@ -138,19 +144,53 @@ const section = '/' + (Astro.url.pathname.split('/').filter(Boolean)[0] ?? '')
     pointer-events: auto;
   }
 
+  /* wide screens: the sections themselves, as labels */
+  .chrome__links {
+    display: none;
+    gap: 2.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .chrome__links a {
+    font: 400 0.72rem/1 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: inherit;
+    text-decoration: none;
+    text-underline-offset: 0.5em;
+    text-decoration-thickness: 1px;
+  }
+  .chrome__links a:hover,
+  .chrome__links a[aria-current='page'] {
+    text-decoration-line: underline;
+  }
+  @media (min-width: 900px) {
+    .chrome__links {
+      display: flex;
+    }
+    .chrome__btn,
+    .cmenu {
+      display: none !important;
+    }
+  }
+
   .chrome__home {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
     color: inherit;
     text-decoration: none;
-    font: italic 1.2rem/1 var(--font-display);
+    font: 400 0.72rem/1 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
   }
   .chrome__home svg {
     transition: translate 0.3s var(--ease-out);
   }
   .chrome__home:hover svg {
     translate: -4px 0;
+  }
+  .chrome__home em {
+    font-style: normal;
   }
   .chrome__home:hover em {
     text-decoration: underline;

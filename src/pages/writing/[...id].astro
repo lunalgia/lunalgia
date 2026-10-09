@@ -42,7 +42,6 @@ const R = '<svg viewBox="0 0 34 14" width="34" height="14" fill="none" stroke="c
   <header class="ah" id="top">
     <p class="ah__k">{kind} · {date}</p>
     <h1 class="ah__t" set:html={emphasize(d.title)} />
-    {d.description && <p class="ah__d">{d.description}</p>}
     <p class="ah__k">
       {words.toLocaleString('en-GB')} WORDS · {minutes} MIN{d.tags.length > 0 && ` · FILED UNDER ${d.tags.join(', ').toUpperCase()}`}
     </p>

@@ -101,19 +101,14 @@ const letters = [...line]
     position: absolute;
     margin: 0;
     white-space: nowrap;
-    font-family: var(--font-fraunces);
+    /* Instrument Serif italic, as the site's other display lines. It is narrower
+       than the Fraunces it replaces, so it is set 25% larger to span the board */
+    font-family: var(--font-display);
     font-style: italic;
-    font-size: calc(var(--fs) * var(--u));
+    font-size: calc(var(--fs) * var(--u) * 1.25);
     line-height: 1;
-    /* a lower optical size thickens Fraunces' hairlines; at its display size
-       the bar of the H is thinner than a pixel and vanishes on smaller screens */
-    font-variation-settings:
-      'opsz' 60,
-      'wght' 190,
-      'SOFT' 0,
-      'WONK' 1;
-    /* place the baseline (≈ 0.98em below the top of the line box) on --line-y */
-    top: calc(var(--line-y) * var(--u) - 0.93em);
+    /* place the baseline on --line-y (Instrument's sits 0.84em below the top of its line box) */
+    top: calc(var(--line-y) * var(--u) - 0.9085em);
     /* each copy spans the whole board and centres the text in it, so the line
        sits in the middle (as the picture does) whatever its rendered width */
     width: calc(var(--bw) * var(--u));
@@ -147,7 +142,7 @@ const letters = [...line]
   }
   .hello__line--light {
     left: calc(var(--img-x) * var(--u) * -1);
-    top: calc((var(--line-y) - var(--img-y)) * var(--u) - 0.93em);
+    top: calc((var(--line-y) - var(--img-y)) * var(--u) - 0.9085em);
     color: #fff;
   }
 </style>

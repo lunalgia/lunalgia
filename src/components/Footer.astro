@@ -153,9 +153,7 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     translate: -50% -55%;
     padding-inline: 0.9rem;
     background: var(--lavender);
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: max(1rem, calc(24 * var(--u)));
+    font: 400 max(0.66rem, calc(15 * var(--u)))/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
   }
 
   .foot__note {
@@ -163,11 +161,12 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     left: calc(108 * var(--u));
     top: calc(110 * var(--u));
     width: max(19rem, calc(640 * var(--u)));
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: max(1.05rem, calc(24 * var(--u)));
     line-height: 1.35;
   }
   .foot__word {
+    font-family: var(--font-display);
     font-style: italic;
     font-size: 1.85em;
     line-height: 1.05;
@@ -207,9 +206,11 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
   .foot__cols ul {
     display: grid;
     gap: 0.25em;
-    font-family: var(--font-display);
-    font-size: max(1.05rem, calc(27 * var(--u)));
-    line-height: 1.1;
+    font: 400 max(0.7rem, calc(16 * var(--u)))/1.7 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
+  }
+  /* DIN has no italic; the browser would only slant it */
+  .foot__cols :is(em, i) {
+    font-style: normal;
   }
   .foot__cols a {
     position: relative;

@@ -225,7 +225,9 @@
 
   /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
   .prose [data-parenthetical] {
-    color: color-mix(in oklab, currentColor 80%, var(--bg)); /* ~4.5:1 on lavender; 60% would be 3.2:1 */
+    /* a step down in hue as well as lightness: the palette's mauve pulled a quarter
+       of the way to the ink, ≈ #5d4863, 3:1 on lavender (main text is 6.2:1) */
+    color: color-mix(in oklab, var(--mauve) 75%, var(--ink));
   }
 
   /* footnotes */

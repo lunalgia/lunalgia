@@ -1,6 +1,6 @@
 """
-Generate the hero wordmark: exact glyph outlines of "Lunalgia" (Instrument Serif
-Italic, positioned as in board1.svg) plus a set of centre-line "pen strokes"
+Generate the hero wordmark: exact glyph outlines of "Lunalgia" (Louise, fitted
+into the name's box in board1.svg: NAME in Hero.astro) plus a set of centre-line "pen strokes"
 used as an animated mask, so the word appears to be written by hand.
 
     python3 scripts/gen-name.py   ->  src/components/home/lunalgia.json
@@ -21,19 +21,17 @@ from skimage.morphology import skeletonize
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
-FONT = ROOT / "src/assets/fonts/InstrumentSerif-Italic.otf"
+FONT = ROOT / "src/assets/fonts/Louise-Regular.otf"
 OUT = ROOT / "src/components/home/lunalgia.json"
 
 TEXT = "Lunalgia"
-SIZE = 144.0
-# from board1.svg: <text x=768.349 y=561.265> inside translate(-35.332, 19.990),
-# with the "g" pinned at x=1076.941 by a tspan
-X0, Y0 = 768.349 - 35.332326, 561.265 + 19.990309
-G_X = 1076.941 - 35.332326
+# The name's box in board1, as NAME in Hero.astro: the word's ink is scaled to
+# this width and centred on this point. (The Instrument Serif version was placed
+# at a fixed size from the board file instead, with its "g" pinned by hand.)
+BOX_CX, BOX_CY, BOX_W = 967.0, 543.0, 478.0
 
 font = TTFont(FONT)
 upm = font["head"].unitsPerEm
-scale = SIZE / upm
 glyphset = font.getGlyphSet()
 
 blob = hb.Blob.from_file_path(str(FONT))
@@ -41,18 +39,30 @@ hbfont = hb.Font(hb.Face(blob))
 buf = hb.Buffer()
 buf.add_str(TEXT)
 buf.guess_segment_properties()
-hb.shape(hbfont, buf, {"kern": True, "liga": True})
+hb.shape(hbfont, buf, {"kern": True, "liga": True, "calt": True})
 order = font.getGlyphOrder()
 
-glyphs = []
-x = X0
+from fontTools.pens.boundsPen import BoundsPen
+
+# lay the word out at 1 unit = 1 font unit, then measure its ink
+raw, x = [], 0
 for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
-    name = order[info.codepoint]
-    ch = TEXT[info.cluster]
-    if ch == "g":
-        x = G_X  # Affinity pinned the g
-    glyphs.append((ch, name, x + pos.x_offset * scale, Y0 - pos.y_offset * scale))
-    x += pos.x_advance * scale
+    raw.append((TEXT[info.cluster], order[info.codepoint], x + pos.x_offset, pos.y_offset))
+    x += pos.x_advance
+bx0 = by0 = float("inf")
+bx1 = by1 = float("-inf")
+for _, name, gx, gy in raw:
+    bp = BoundsPen(glyphset)
+    glyphset[name].draw(bp)
+    if bp.bounds:
+        a, b, c, d = bp.bounds
+        bx0, by0, bx1, by1 = min(bx0, a + gx), min(by0, b + gy), max(bx1, c + gx), max(by1, d + gy)
+scale = BOX_W / (bx1 - bx0)
+SIZE = upm * scale
+X0 = BOX_CX - (bx0 + bx1) / 2 * scale
+Y0 = BOX_CY + (by0 + by1) / 2 * scale  # y flips: font units go up, the board goes down
+glyphs = [(ch, name, X0 + gx * scale, Y0 - gy * scale) for ch, name, gx, gy in raw]
+x = X0 + x * scale
 
 
 def outline(name, gx, gy):
