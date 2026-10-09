@@ -309,10 +309,31 @@ const letters = [
     paint()
   }
 
+  /**
+   * ScrollTrigger housekeeping for the home page, its only user: follow Lenis
+   * frame by frame, re-measure once fonts and images are in, clean up on leaving.
+   */
+  const syncScrollTrigger = () => {
+    const hook = () => (window as any).__lenis?.on('scroll', ScrollTrigger.update)
+    ;(window as any).__lenis ? hook() : document.addEventListener('lunalgia:lenis', hook, { once: true })
+    gsap.ticker.lagSmoothing(0)
+    document.fonts?.ready.then(() => ScrollTrigger.refresh())
+    if (document.readyState !== 'complete') addEventListener('load', () => ScrollTrigger.refresh(), { once: true })
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        ;(window as any).__lenis?.off?.('scroll', ScrollTrigger.update)
+        ScrollTrigger.getAll().forEach((t) => t.kill())
+      },
+      { once: true },
+    )
+  }
+
   const init = () => {
     const root = document.querySelector<HTMLElement>('.writings')
     if (!root || root.dataset.ready) return
     root.dataset.ready = '1'
+    syncScrollTrigger()
 
     // hovering a kind opens it; leaving the garden keeps the last one open
     const rows = [...root.querySelectorAll<HTMLElement>('.garden__row')]
@@ -556,9 +577,7 @@ const letters = [
   }
 
   .writings__all {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 1.5rem;
+    font: 400 0.72rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
     color: var(--lavender);
     text-decoration: none;
   }

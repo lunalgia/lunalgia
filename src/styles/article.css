@@ -1,9 +1,10 @@
 /*
  * Writing pages: contents | text | notes, centred. Content boxes, quotes and
- * code come from Markdown (see src/lib/remark-boxes.mjs and the shiki config).
+ * code come from Markdown (see src/lib/markdown/ and the shiki config).
  */
 @layer theme, base, components, utilities;
-@import 'katex/dist/katex.min.css';
+@import './math.css';
+
 
 @layer components {
   /* ---------- header ---------- */
@@ -18,14 +19,18 @@
     font: 0.72rem var(--font-din);
     letter-spacing: 0.18em;
   }
+  /* the post's own title is the one place for Louise (Luna Delabre and Camille Depalle's
+     revival of Ange Degheest's lettering, Velvetyne; OFL, see src/assets/fonts/Louise-OFL.txt). A connected script: no tracking, and no
+     synthetic italic for *emphasis*, which would only slant the joins. */
   .ah__t {
-    margin: 1.4rem 0 1rem;
-    font: 400 clamp(3.2rem, 8vw, 7.5rem) / 0.92 var(--font-display);
-    letter-spacing: -0.03em;
+    /* Louise's ascenders and swashes stand well above its em box: room above, looser lines */
+    margin: 0.3em 0 1rem;
+    font: 400 clamp(3.4rem, 8.6vw, 8rem) / 1.18 var(--font-louise);
+    letter-spacing: 0;
     text-wrap: balance;
   }
   .ah__t em {
-    font-style: italic;
+    font-style: normal;
   }
   .ah__d {
     margin: 0 auto 1.6rem;
@@ -74,6 +79,11 @@
   }
   .ax__text > p {
     text-align: justify;
+  }
+  /* broken by Knuth–Plass (src/scripts/justify.ts): its hyphens only */
+  .ax__text > p.is-tex {
+    hyphens: manual;
+    -webkit-hyphens: manual;
   }
   .ax__text > p:first-of-type::first-letter {
     float: left;
@@ -153,13 +163,14 @@
     margin-top: 0.6rem;
     font: italic 0.95rem var(--font-body);
   }
-  .ax__text .katex {
-    font-size: 1.04em;
-  }
-  .ax__text .katex-display {
+  .ax__text .math-display {
     margin: 1.2rem 0;
-    overflow-x: auto;
-    overflow-y: hidden;
+  }
+  /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
+  .ax__text [data-parenthetical] {
+    /* the same ink, lighter: a quieter voice rather than a different one.
+       ≈ #444887, 3.1:1 on lavender (main text is 6.2:1) */
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
 
   /* ---------- quotes ---------- */
@@ -210,6 +221,24 @@
     height: 1px;
     background: currentColor;
   }
+  /* inside notes a caption is a citation, often long: Garamond, after a dash */
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by {
+    display: block;
+    margin-top: 0.35em !important;
+    font: italic 0.92em/1.4 var(--font-body);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by::before {
+    content: '— ';
+    display: inline;
+    width: auto;
+    height: auto;
+    background: none;
+  }
+  :is(.sidenote__body, .fn-pop, .ax__text .footnotes) .quote__by em {
+    font-style: normal;
+  }
   .ax__text .env--pull {
     margin: 3rem -4rem;
     padding: 1.4rem 0;
@@ -250,7 +279,7 @@
     text-transform: uppercase;
   }
   .env__name {
-    font: italic 1.15rem var(--font-display);
+    font: italic 1.1rem var(--font-body);
   }
   /* theorem-like boxes and definitions/examples/questions share one count */
   .env--theorem,
@@ -305,7 +334,7 @@
     cursor: pointer;
     list-style: none;
     width: fit-content;
-    font: italic 1.05rem var(--font-display);
+    font: 400 0.68rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
     color: var(--ultramarine);
     border-bottom: 1px solid currentColor;
   }
@@ -396,7 +425,7 @@
     all: unset;
     cursor: pointer;
     margin-left: auto;
-    font: italic 1rem var(--font-display);
+    font: 400 0.66rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
     color: var(--ultramarine);
     border-bottom: 1px solid transparent;
   }
@@ -441,6 +470,26 @@
   }
   .ax__text section.footnotes li + li {
     margin-top: 0.8em;
+  }
+  /* the reset strips list numbers; the endnotes need theirs */
+  .ax__text section.footnotes ol {
+    list-style: decimal;
+    padding-left: 1.8em;
+  }
+  .ax__text section.footnotes li::marker {
+    font: 0.7rem var(--font-din);
+    color: var(--ultramarine);
+  }
+  /* a quotation in a note is a citation, not a pull quote */
+  .ax__text section.footnotes .quote {
+    margin: 0.6em 0;
+    padding-left: 0.8rem;
+    border-left: 1px solid rgb(2 8 135 / 0.3);
+    font: inherit;
+    color: inherit;
+  }
+  .ax__text section.footnotes .quote::before {
+    content: none;
   }
   .ax__text a[data-footnote-backref] {
     text-decoration: none;
@@ -842,7 +891,7 @@
   .ax__text figure,
   .ax__text img,
   .ax__text p:has(> img),
-  .ax__text .katex-display {
+  .ax__text .math-display {
     break-inside: avoid;
   }
   .ax__text img {
@@ -866,7 +915,7 @@
     white-space: pre-wrap;
     font-size: 8.5pt;
   }
-  .ax__text .katex-display {
+  .ax__text .math-display {
     overflow: visible;
   }
   /* "show answer" means nothing on paper */
@@ -916,6 +965,18 @@
   }
   .ax__text a[data-footnote-backref] {
     display: none;
+  }
+  /* Knuth-Plass lines are fixed to the screen's column: let paper re-flow them,
+     even if a browser prints before the script has undone them */
+  .ax__text > p.is-tex {
+    white-space: normal !important;
+    hyphens: auto;
+  }
+  .ax__text > p.is-tex br {
+    display: none;
+  }
+  .ax__text > p.is-tex span[style] {
+    word-spacing: normal !important;
   }
 
   .ax__src {

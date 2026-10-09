@@ -6,6 +6,11 @@ import type { ImageMetadata } from 'astro'
 import { SITE } from '@/consts'
 import Chrome from '@/components/Chrome.astro'
 import Footer from '@/components/Footer.astro'
+import Rail from '@/components/Rail.astro'
+// the faces every page draws in its first screen: the nav (DIN, Louise) and titles
+import dinUrl from '@/assets/fonts/DINdong.woff2?url'
+import louiseUrl from '@/assets/fonts/Louise-Regular.woff2?url'
+import instrumentUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url'
 
 interface Props {
   title?: string
@@ -52,6 +57,7 @@ const previewSrc = preview && (await getImage({ src: preview, width: 480, format
     {title && <meta name="preview:title" content={title} />}
     {previewSrc && <meta name="preview:image" content={previewSrc} />}
 
+    {[dinUrl, louiseUrl, instrumentUrl].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
     <script is:inline>
       document.documentElement.classList.add('js')
     </script>
@@ -64,6 +70,7 @@ const previewSrc = preview && (await getImage({ src: preview, width: 480, format
       <slot />
     </main>
     {footer && <Footer here={here} />}
+    <Rail />
     <script>
       import '@/scripts/smooth'
       import '@/scripts/previews'

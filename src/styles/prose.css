@@ -1,7 +1,7 @@
 /* Long-form typesetting for MDX bodies. Everything snaps to the 16-col grid. */
 /* repeat the global layer order: whichever stylesheet loads first defines it */
 @layer theme, base, components, utilities;
-@import 'katex/dist/katex.min.css';
+@import './math.css';
 
 @layer components {
   .prose {
@@ -223,15 +223,11 @@
   }
   
 
-  /* maths */
-  .prose .katex {
-    font-size: 1.05em;
-  }
-  .prose > .katex-display,
-  .prose .katex-display {
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-block: 0.25rem;
+  /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
+  .prose [data-parenthetical] {
+    /* the same ink, lighter: a quieter voice rather than a different one.
+       ≈ #444887, 3.1:1 on lavender (main text is 6.2:1) */
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
 
   /* footnotes */

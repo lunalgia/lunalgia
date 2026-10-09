@@ -1,10 +1,10 @@
+@layer theme, base, components, utilities;
 @import '@fontsource/instrument-serif/400.css';
 @import '@fontsource/instrument-serif/400-italic.css';
 @import '@fontsource-variable/eb-garamond/wght.css';
 @import '@fontsource-variable/eb-garamond/wght-italic.css';
 @import '@fontsource/jetbrains-mono/400.css';
-@import '@fontsource-variable/fraunces/full-italic.css';
-@import 'tailwindcss';
+@import './reset.css';
 
 @font-face {
   font-family: 'PP Mori';
@@ -16,6 +16,12 @@
   font-family: 'PP Mori';
   src: url('../assets/fonts/PPMori-Semibold.woff2') format('woff2');
   font-weight: 600;
+  font-display: swap;
+}
+/* Louise (Velvetyne, OFL: src/assets/fonts/Louise-OFL.txt): the name, post titles, the footer */
+@font-face {
+  font-family: 'Louise';
+  src: url('../assets/fonts/Louise-Regular.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
@@ -54,7 +60,7 @@
     --code-bg: color-mix(in oklab, var(--mist) 35%, var(--bg));
 
     --font-display: 'Instrument Serif', 'Times New Roman', serif;
-    --font-fraunces: 'Fraunces Variable', 'Fraunces', serif;
+    --font-louise: 'Louise', var(--font-display);
     --font-din: 'DINdong', var(--font-display);
     --font-mori: 'PP Mori', system-ui, sans-serif;
     --font-body: 'EB Garamond Variable', 'EB Garamond', Garamond, serif;
@@ -137,6 +143,11 @@
   }
   html:focus-within {
     scroll-behavior: smooth;
+  }
+  /* Lenis does its own easing; the browser's on top of it doubles every jump */
+  html.lenis.lenis-smooth,
+  html.lenis.lenis-smooth:focus-within {
+    scroll-behavior: auto;
   }
   @media (prefers-reduced-motion: reduce) {
     html:focus-within {
@@ -327,10 +338,7 @@
 
   /* section labels in parentheses, after decentparadox.me */
   .paren {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 1.35rem;
-    line-height: 1.2;
+    font: 400 0.72rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
     color: var(--accent);
   }
   .paren::before {
@@ -493,6 +501,67 @@
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  /* a page of this site, live: scroll it in place */
+  .lp--live {
+    width: min(27rem, calc(100vw - 1.5rem));
+    display: flex;
+    flex-direction: column;
+    max-height: min(32rem, calc(100vh - 3rem));
+  }
+  .lp__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.55rem 0.9rem 0.45rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .lp__open {
+    font: 0.62rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .lp__scroll {
+    /* a flex item only scrolls if it may shrink below its content */
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.8rem 1rem 1.1rem;
+    scrollbar-width: thin;
+  }
+  .lp__scroll:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: -3px;
+  }
+  .lp--live .lp__t {
+    margin: 0 0 0.7rem;
+    font-size: 1.7rem;
+  }
+  .lp__text {
+    font: 0.95rem/1.5 var(--font-body);
+    color: var(--ink);
+    hyphens: auto;
+  }
+  .lp__text > * + * {
+    margin-top: 0.7em;
+  }
+  .lp__text :is(h2, h3) {
+    margin-top: 1.1em;
+    font: italic 1.2rem/1.15 var(--font-display);
+    color: var(--accent);
+  }
+  .lp__text img {
+    max-width: 100%;
+    height: auto;
+  }
+  .lp__text :is(pre, .math-display, table) {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .lp__text [data-parenthetical] {
+    color: color-mix(in oklab, var(--ink) 60%, var(--bg));
   }
   @media (prefers-reduced-motion: reduce) {
     .lp {

@@ -1,7 +1,7 @@
 ---
 /**
  * Board 5, compressed: the fog band carries the footer text, Monet's water
- * rises out of it, and "jardin de lys" (Fraunces) sinks into the water as a
+ * rises out of it, and "jardin de lys" (Louise) sinks into the water as a
  * pale mist: one copy in soft-light so the water shows through the letters,
  * one faint copy on top so they stay legible, both fading out downwards.
  */
@@ -14,7 +14,9 @@ interface Props {
   here?: string
 }
 const { here = 'home' } = Astro.props
-const water = await getImage({ src: monet, width: 2000, format: 'webp', quality: 82 })
+// the painting sits behind fog and grain, so it survives strong compression
+const water = await getImage({ src: monet, width: 1800, format: 'webp', quality: 68 })
+const waterAvif = await getImage({ src: monet, width: 1800, format: 'avif', quality: 50 })
 // all the wording lives in src/data/footer.md
 const credit = String(text.credit ?? '').replaceAll('{year}', String(new Date().getFullYear()))
 const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
@@ -22,7 +24,10 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
 
 <footer class="foot board">
   <div class="foot__water" aria-hidden="true">
-    <img src={water.src} alt="" loading="lazy" decoding="async" />
+    <picture>
+      <source type="image/avif" srcset={waterAvif.src} />
+      <img src={water.src} alt="" loading="lazy" decoding="async" />
+    </picture>
   </div>
   <div class="foot__fog" aria-hidden="true"></div>
 
@@ -64,28 +69,27 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
 </footer>
 
 <script>
-  import { gsap } from 'gsap'
-  import { ScrollTrigger } from 'gsap/ScrollTrigger'
-  gsap.registerPlugin(ScrollTrigger)
-
+  /**
+   * The name surfaces once, when the footer is a little way into view. The water
+   * rising slower than the page is pure CSS (a scroll-driven animation), so the
+   * footer needs no animation library. Without JS, or with reduced motion,
+   * everything is simply in place.
+   */
   const init = () => {
     const root = document.querySelector<HTMLElement>('.foot')
     if (!root || root.dataset.ready || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     root.dataset.ready = '1'
-    // the water rises a little slower than the page
-    gsap.fromTo(
-      root.querySelector('.foot__water img'),
-      { yPercent: 7 },
-      { yPercent: 0, ease: 'none', scrollTrigger: { trigger: root, start: 'top bottom', end: 'bottom bottom', scrub: true } },
+    root.classList.add('is-armed')
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return
+        root.classList.add('is-in')
+        io.disconnect()
+      },
+      { rootMargin: '0px 0px -45% 0px' },
     )
-    // and the name surfaces once
-    gsap.from(root.querySelector('.foot__mark'), {
-      yPercent: 22,
-      opacity: 0,
-      duration: 2.2,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: root, start: 'top 55%', once: true },
-    })
+    io.observe(root)
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true })
   }
   document.addEventListener('astro:page-load', init)
 </script>
@@ -108,6 +112,10 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     overflow: hidden;
   }
   /* exactly the footer's width: any wider only zooms further into the painting */
+  /* the <picture> only chooses a file; layout is the <img>'s, as before */
+  .foot__water picture {
+    display: contents;
+  }
   .foot__water img {
     position: absolute;
     left: 0;
@@ -153,9 +161,7 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     translate: -50% -55%;
     padding-inline: 0.9rem;
     background: var(--lavender);
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: max(1rem, calc(24 * var(--u)));
+    font: 400 max(0.66rem, calc(15 * var(--u)))/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
   }
 
   .foot__note {
@@ -163,12 +169,13 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     left: calc(108 * var(--u));
     top: calc(110 * var(--u));
     width: max(19rem, calc(640 * var(--u)));
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: max(1.05rem, calc(24 * var(--u)));
     line-height: 1.35;
   }
   .foot__word {
-    font-style: italic;
+    font-family: var(--font-louise);
+    font-style: normal;
     font-size: 1.85em;
     line-height: 1.05;
     margin-bottom: 0.4em;
@@ -207,9 +214,11 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
   .foot__cols ul {
     display: grid;
     gap: 0.25em;
-    font-family: var(--font-display);
-    font-size: max(1.05rem, calc(27 * var(--u)));
-    line-height: 1.1;
+    font: 400 max(0.7rem, calc(16 * var(--u)))/1.7 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
+  }
+  /* DIN has no italic; the browser would only slant it */
+  .foot__cols :is(em, i) {
+    font-style: normal;
   }
   .foot__cols a {
     position: relative;
@@ -250,6 +259,31 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     height: 100%;
     pointer-events: none;
   }
+  /* the name surfaces by fading only: moving it repainted the blended copy
+     every frame and stuttered. Its own layer, so the fade is the compositor's */
+  .foot.is-armed .foot__mark {
+    opacity: 0;
+    will-change: opacity;
+  }
+  .foot.is-in .foot__mark {
+    opacity: 1;
+    transition: opacity 1.8s cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  /* the water rises a little slower than the page, tied to scroll by the browser */
+  @keyframes foot-rise {
+    from {
+      transform: translateY(7%);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .foot__water img {
+        animation: foot-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+      }
+    }
+  }
   .foot__mist {
     position: absolute;
     left: 0;
@@ -257,15 +291,11 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     bottom: -0.17em;
     text-align: center;
     white-space: nowrap;
-    font-family: var(--font-fraunces);
-    font-style: italic;
-    font-size: calc(370 * var(--u));
+    /* Louise's swashes run wide: sized so the phrase spans the board like the
+       Fraunces it replaces */
+    font-family: var(--font-louise);
+    font-size: calc(290 * var(--u));
     line-height: 1;
-    font-variation-settings:
-      'opsz' 144,
-      'wght' 200,
-      'SOFT' 0,
-      'WONK' 1;
     color: #efeaff;
   }
   /* the water seen through the letters */

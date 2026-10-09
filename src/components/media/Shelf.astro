@@ -66,6 +66,16 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     </span>
   </header>
 
+  <noscript>
+    <ol class="cs__plain">
+      {items.map((b) => (
+        <li>
+          <a href={b.href ?? '#'}>{b.title}</a> <span>{b.by}</span>
+        </li>
+      ))}
+    </ol>
+  </noscript>
+
   <div class="cs__stage">
     <div class="cs__shelf">
       {
@@ -134,7 +144,7 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     }
   </div>
 
-  <aside class="cs__panel" aria-live="polite">
+  <aside class="cs__panel" aria-live="polite" data-lenis-prevent>
     <button class="cs__back" type="button">← back to the shelf</button>
     {
       items.map((b, i) => (
@@ -397,6 +407,13 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     font: 0.75rem var(--font-din); letter-spacing: 0.18em;
   }
   .cs__count b { font-weight: 400; }
+  /* without JS the shelf cannot be browsed: its arrows go, and a plain list of
+     links to every review stands in for it */
+  :global(html:not(.js)) .cs__nav { display: none; }
+  .cs__plain { list-style: none; margin: 0 var(--gutter) 2rem; padding: 0; columns: 16rem; column-gap: 2rem; }
+  .cs__plain li { break-inside: avoid; padding-block: 0.3rem; border-bottom: 1px solid var(--rule); }
+  .cs__plain a { font: italic 1.25rem var(--font-display); color: var(--ultramarine); }
+  .cs__plain span { font: italic 0.95rem var(--font-body); color: var(--ink-soft); }
   .cs__top { align-items: center; }
   /* previous · count · next, as one object */
   .cs__nav { display: inline-flex; align-items: center; gap: 1.3rem; }
@@ -577,8 +594,8 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   .lab.is-on { opacity: 1; translate: 0 0; pointer-events: auto; }
   .lab__n { font: 0.75rem var(--font-din); letter-spacing: 0.18em; }
   .lab__t { font: 400 clamp(2.2rem, 3.4vw, 3.4rem)/1 var(--font-display); margin: 0; }
-  .lab__a { font: italic 1.3rem var(--font-display); }
-  .lab__s { font: italic 1.3rem var(--font-display); }
+  .lab__a { font: italic 1.2rem var(--font-body); }
+  .lab__s { font: italic 1.2rem var(--font-body); }
   .lab__s small { font: 0.62rem var(--font-din); letter-spacing: 0.14em; margin-left: 0.15em; }
   .lab__go { all: unset; cursor: pointer; display: inline-block; font: 0.72rem var(--font-din); letter-spacing: 0.18em; text-transform: uppercase; border-bottom: 1px solid currentColor; padding-bottom: 0.3rem; }
 
@@ -602,24 +619,24 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
   .pn__body.is-clipped { -webkit-mask-image: linear-gradient(#000 calc(100% - 7rem), transparent); mask-image: linear-gradient(#000 calc(100% - 7rem), transparent); }
   .pn__k { font: 0.72rem var(--font-din); letter-spacing: 0.18em; color: var(--lavender); }
   .pn__t { font: italic 400 3.4rem/1 var(--font-display); color: #fff; margin: 0.8rem 0 0.6rem; overflow-wrap: anywhere; }
-  .pn__a { font: 1.25rem var(--font-display); margin-bottom: 0.9rem; }
+  .pn__a { font: 1.2rem var(--font-body); margin-bottom: 0.9rem; }
   .pn__score { font-size: 1.15rem; color: #fff; margin-bottom: 1.4rem; }
   .pn__facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 0.8rem 1.4rem; margin: 0 0 1.4rem; }
   .pn__facts dt { font: 0.6rem var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; color: var(--lavender); }
-  .pn__facts dd { margin: 0.2rem 0 0; font: 1.05rem/1.3 var(--font-display); }
+  .pn__facts dd { margin: 0.2rem 0 0; font: 1.05rem/1.3 var(--font-body); }
   .pn__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.6rem; }
   .pn__tags span { font: 0.65rem var(--font-din); letter-spacing: 0.14em; text-transform: uppercase; padding: 0.3rem 0.6rem; border: 1px solid rgb(210 211 221 / 0.4); }
-  .pn__links { display: flex; flex-wrap: wrap; gap: 0.3rem 1.3rem; margin: -0.4rem 0 1.6rem; font: italic 1.15rem var(--font-display); }
+  .pn__links { display: flex; flex-wrap: wrap; gap: 0.3rem 1.3rem; margin: -0.4rem 0 1.6rem; font: 400 0.72rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal; }
   .pn__links a { color: #fff; text-decoration: none; }
   .pn__links a:first-child { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
   .pn__links a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
   .pn__warn { font: italic 1rem var(--font-body); color: var(--lavender); margin-bottom: 1rem; }
-  .pn__none { font: italic 1.2rem var(--font-display); color: var(--lavender); }
+  .pn__none { font: italic 1.15rem var(--font-body); color: var(--lavender); }
   .bk__cover--type { display: flex; flex-direction: column; justify-content: space-between; padding: 8% 7%; box-sizing: border-box; color: var(--f); }
   .bk__ct { font: italic calc(var(--W) * 0.12)/1 var(--font-display); overflow-wrap: anywhere; }
   .bk__ca { font: calc(var(--W) * 0.032) var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; }
   .pn__p { font: 1.2rem/1.6 var(--font-body); margin-bottom: 0.8em; max-width: 34rem; }
-  .pn__more { align-self: flex-start; margin-top: 1.2rem; font: italic 1.3rem var(--font-display); color: #fff; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .pn__more { align-self: flex-start; margin-top: 1.2rem; font: 400 0.72rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal; color: #fff; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
 
   .cs.is-inspecting .cs__label { opacity: 0; pointer-events: none; }
   .cs.is-inspecting .bk:not(.is-active) { opacity: 0.25; }

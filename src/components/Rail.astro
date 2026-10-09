@@ -1,0 +1,278 @@
+---
+/**
+ * The scrollbar: a hairline down the right edge with the moon as its thumb, in
+ * tonight's phase. On posts the line also carries a tick for each part and each
+ * note; hover one for its name, click to go there. Desktop pointers only, and
+ * only with JS: touch screens and no-JS visitors keep the native scrollbar.
+ * The rail is decoration over native scrolling, so the keyboard, the wheel and
+ * assistive tech are unaffected; it is hidden from the accessibility tree.
+ */
+---
+
+<div class="rail" aria-hidden="true">
+  <div class="rail__line"></div>
+  <div class="rail__ticks"></div>
+  <div class="rail__moon">
+    <svg viewBox="-8 -8 16 16" width="15" height="15">
+      <circle class="rail__disc" r="6.6"></circle>
+      <path class="rail__lit"></path>
+    </svg>
+  </div>
+  <p class="rail__tip"></p>
+</div>
+
+<script>
+  const SYN = 29.530588853
+  const NEW_MOON = Date.UTC(2000, 0, 6, 18, 14)
+
+  /** the lit part of a moon of radius r, as an SVG path, for tonight */
+  const moonPath = (r: number) => {
+    const age = ((((Date.now() - NEW_MOON) / 86400000) % SYN) + SYN) % SYN
+    const f = age / SYN // 0 new, 0.5 full
+    const rx = Math.abs(Math.cos(2 * Math.PI * f)) * r
+    const crescent = f < 0.25 || f > 0.75
+    if (f < 0.5) {
+      // waxing: lit on the right; the terminator bulges right for a crescent, left when gibbous
+      return `M0 ${-r}A${r} ${r} 0 0 1 0 ${r}A${rx} ${r} 0 0 ${crescent ? 0 : 1} 0 ${-r}Z`
+    }
+    // waning: lit on the left
+    return `M0 ${-r}A${r} ${r} 0 0 0 0 ${r}A${rx} ${r} 0 0 ${crescent ? 1 : 0} 0 ${-r}Z`
+  }
+
+  type Mark = { el: Element; label: string; kind: 'part' | 'note' }
+
+  const init = () => {
+    const rail = document.querySelector<HTMLElement>('.rail')
+    if (!rail || rail.dataset.ready) return
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    rail.dataset.ready = '1'
+    document.documentElement.classList.add('has-rail')
+
+    const moon = rail.querySelector<HTMLElement>('.rail__moon')!
+    const ticks = rail.querySelector<HTMLElement>('.rail__ticks')!
+    const tip = rail.querySelector<HTMLElement>('.rail__tip')!
+    rail.querySelector('.rail__lit')!.setAttribute('d', moonPath(6.6))
+
+    const lenis = () => (window as any).__lenis as { scrollTo(t: number | Element, o?: object): void } | undefined
+    const max = () => Math.max(1, document.documentElement.scrollHeight - innerHeight)
+    const go = (y: number, immediate = false) => {
+      const l = lenis()
+      l ? l.scrollTo(y, { immediate }) : scrollTo({ top: y, behavior: immediate ? 'instant' : 'smooth' })
+    }
+
+    // the moon follows the page
+    let frame = 0
+    const draw = () => {
+      frame = 0
+      const scrollable = document.documentElement.scrollHeight > innerHeight + 4
+      rail.classList.toggle('is-idle', !scrollable)
+      const track = rail.clientHeight - moon.offsetHeight
+      moon.style.transform = `translateY(${(scrollY / max()) * track}px)`
+    }
+    const queue = () => (frame ||= requestAnimationFrame(draw))
+    addEventListener('scroll', queue, { passive: true })
+    addEventListener('resize', queue)
+
+    // ticks: the parts and notes of a post, wherever they fall on the page
+    const marks: Mark[] = [
+      ...[...document.querySelectorAll('.ax__text > h2:not(#footnote-label)')].map((el) => ({
+        el,
+        label: el.textContent?.trim() ?? '',
+        kind: 'part' as const,
+      })),
+      ...[...document.querySelectorAll('.ax__text a[data-footnote-ref]')].map((el) => ({
+        el,
+        label: `note ${el.textContent?.trim()}`,
+        kind: 'note' as const,
+      })),
+    ]
+    const placeTicks = () => {
+      const h = document.documentElement.scrollHeight
+      const track = rail.clientHeight
+      ticks.replaceChildren(
+        ...marks.map((m) => {
+          const t = document.createElement('button')
+          t.className = `rail__tick rail__tick--${m.kind}`
+          t.tabIndex = -1
+          const top = m.el.getBoundingClientRect().top + scrollY
+          t.style.top = `${(top / h) * track}px`
+          t.addEventListener('mouseenter', () => {
+            tip.textContent = m.label
+            tip.className = `rail__tip is-on rail__tip--${m.kind}`
+            tip.style.top = t.style.top
+          })
+          t.addEventListener('mouseleave', () => tip.classList.remove('is-on'))
+          t.addEventListener('click', (e) => {
+            e.stopPropagation()
+            go(Math.max(0, top - 96))
+          })
+          return t
+        }),
+      )
+    }
+    const ro = new ResizeObserver(() => {
+      placeTicks()
+      queue()
+    })
+    ro.observe(document.body)
+    document.fonts?.ready.then(placeTicks)
+
+    // click the line to jump there; drag the moon (or the line) to scrub
+    let dragging = false
+    const yFor = (clientY: number) => {
+      const r = rail.getBoundingClientRect()
+      const k = Math.min(1, Math.max(0, (clientY - r.top - moon.offsetHeight / 2) / (r.height - moon.offsetHeight)))
+      return k * max()
+    }
+    rail.addEventListener('pointerdown', (e) => {
+      if ((e.target as Element).closest('.rail__tick')) return
+      dragging = true
+      rail.setPointerCapture(e.pointerId)
+      rail.classList.add('is-dragging')
+      go(yFor(e.clientY), e.target === moon || moon.contains(e.target as Node))
+    })
+    rail.addEventListener('pointermove', (e) => dragging && go(yFor(e.clientY), true))
+    const stop = () => {
+      dragging = false
+      rail.classList.remove('is-dragging')
+    }
+    rail.addEventListener('pointerup', stop)
+    rail.addEventListener('pointercancel', stop)
+
+    draw()
+    placeTicks()
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        ro.disconnect()
+        removeEventListener('scroll', queue)
+        removeEventListener('resize', queue)
+        document.documentElement.classList.remove('has-rail')
+      },
+      { once: true },
+    )
+  }
+  document.addEventListener('astro:page-load', init)
+</script>
+
+<style>
+  .rail {
+    display: none;
+  }
+  /* the native bar goes only once the rail is actually running */
+  :global(html.has-rail) {
+    scrollbar-width: none;
+  }
+  :global(html.has-rail::-webkit-scrollbar) {
+    display: none;
+  }
+  :global(html.has-rail) .rail {
+    display: block;
+    position: fixed;
+    z-index: 60;
+    top: 4.25rem;
+    bottom: 1.25rem;
+    right: 6px;
+    width: 17px;
+    cursor: pointer;
+    touch-action: none;
+  }
+  .rail.is-idle {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .rail__line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: color-mix(in oklab, var(--ultramarine) 45%, transparent);
+    transition: width 0.25s var(--ease-out), background 0.25s;
+    translate: -50% 0;
+  }
+  .rail:hover .rail__line,
+  .rail.is-dragging .rail__line {
+    width: 2px;
+    background: var(--ultramarine);
+  }
+  .rail__moon {
+    position: absolute;
+    left: 1px;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    will-change: transform;
+    cursor: grab;
+  }
+  .rail.is-dragging .rail__moon {
+    cursor: grabbing;
+  }
+  .rail__disc {
+    fill: var(--ultramarine);
+    stroke: var(--ultramarine);
+    stroke-width: 1.2;
+  }
+  .rail__lit {
+    fill: #f4f1ff;
+  }
+  /* ticks are made by the script, so they carry no scoping attribute */
+  .rail :global(.rail__tick) {
+    position: absolute;
+    left: 50%;
+    translate: -50% -50%;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    background: var(--ultramarine);
+  }
+  .rail :global(.rail__tick--part) {
+    width: 11px;
+    height: 1.5px;
+  }
+  .rail :global(.rail__tick--note) {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--ultramarine) 60%, transparent);
+  }
+  .rail :global(.rail__tick:hover) {
+    scale: 1.6;
+  }
+  .rail__tip {
+    position: absolute;
+    right: 22px;
+    margin: 0;
+    translate: 0 -50%;
+    padding: 0.25rem 0.55rem;
+    white-space: nowrap;
+    background: var(--bg);
+    border: 1px solid var(--ultramarine);
+    color: var(--ultramarine);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .rail__tip.is-on {
+    opacity: 1;
+  }
+  .rail__tip--part {
+    font: italic 1rem/1.2 var(--font-display);
+  }
+  .rail__tip--note {
+    font: 0.66rem/1.4 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  @media print {
+    .rail {
+      display: none !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail__line,
+    .rail__tip {
+      transition: none;
+    }
+  }
+</style>
