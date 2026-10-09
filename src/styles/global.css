@@ -55,6 +55,7 @@
     --code-bg: color-mix(in oklab, var(--mist) 35%, var(--bg));
 
     --font-display: 'Instrument Serif', 'Times New Roman', serif;
+    --font-louise: 'Louise', var(--font-display);
     --font-fraunces: 'Fraunces Variable', 'Fraunces', serif;
     --font-din: 'DINdong', var(--font-display);
     --font-mori: 'PP Mori', system-ui, sans-serif;

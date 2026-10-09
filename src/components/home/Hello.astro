@@ -4,37 +4,39 @@
  * of the line that crosses the picture is white: a second copy of the line sits
  * inside the picture's clip, at the same place, so the split is exact at any
  * size and survives the reveal animation.
+ *
+ * Reveal ("phase in"): the painting is simply there; each letter of the line
+ * arrives from a soft blur, 28 ms after the one before. Both copies carry the
+ * same letters with the same delays, so the white part stays exact throughout.
  */
 import { Image } from 'astro:assets'
 import cobweb from '@/assets/home/cobweb.png'
 
 const line = 'Hello, I go by Lilian'
+const letters = [...line]
 ---
 
 <section id="hello" class="hello board" aria-label={line}>
-  <p class="hello__line hello__line--ink" aria-hidden="true">{line}</p>
+  <p class="hello__line hello__line--ink" aria-hidden="true">{letters.map((c, i) => <span style={`--i:${i}`}>{c}</span>)}</p>
   <div class="hello__frame">
     <div class="hello__pic">
       <Image src={cobweb} alt="" width={608} densities={[1, 2]} loading="lazy" />
     </div>
-    <p class="hello__line hello__line--light" aria-hidden="true">{line}</p>
+    <p class="hello__line hello__line--light" aria-hidden="true">{letters.map((c, i) => <span style={`--i:${i}`}>{c}</span>)}</p>
   </div>
   <h2 class="visually-hidden">{line}</h2>
 </section>
 
 <script>
   /**
-   * One quiet reveal when the board comes into view: the painting fades up from
-   * a hair larger, then the line rises into place. Only opacity and transform
-   * move, so it runs on the compositor (the old clip-path + scrubbed parallax
-   * repainted the image every frame and stuttered under smooth scrolling).
-   * Without JS, or with reduced motion, everything is simply there.
+   * Arm the reveal when JS runs (so nothing is hidden without it), play it once
+   * when a third of the board is in view. Reduced motion: no reveal at all.
    */
   const init = () => {
     const root = document.querySelector<HTMLElement>('.hello')
     if (!root || root.dataset.ready) return
     root.dataset.ready = '1'
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return root.classList.add('is-in')
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     root.classList.add('is-armed')
     const io = new IntersectionObserver(
       (entries) => {
@@ -122,30 +124,26 @@ const line = 'Hello, I go by Lilian'
     left: 0;
     color: var(--ultramarine);
   }
-  /* the reveal: armed by JS only, so nothing is hidden without it */
-  .hello.is-armed .hello__pic {
-    opacity: 0;
-    transform: scale(1.035);
+  /* the reveal: armed by JS only, so nothing is hidden without it. Letters are
+     inline blocks so they can blur and move; spaces keep their width. */
+  .hello__line span {
+    display: inline-block;
+    white-space: pre;
   }
-  .hello.is-armed .hello__line {
+  .hello.is-armed .hello__line span {
     opacity: 0;
-    transform: translateY(0.12em);
+    filter: blur(0.12em);
+    transform: translateY(0.05em);
   }
-  .hello.is-in .hello__pic,
-  .hello.is-in .hello__line {
+  .hello.is-in .hello__line span {
     opacity: 1;
+    filter: none;
     transform: none;
-  }
-  .hello__pic {
     transition:
-      opacity 1.4s var(--ease-out),
-      transform 2.4s var(--ease-out);
-  }
-  /* both copies move as one, so the white part stays on the picture */
-  .hello__line {
-    transition:
-      opacity 1.2s var(--ease-out) 0.35s,
-      transform 1.6s var(--ease-out) 0.35s;
+      opacity 0.9s var(--ease-out),
+      filter 0.9s var(--ease-out),
+      transform 0.9s var(--ease-out);
+    transition-delay: calc(0.3s + var(--i) * 28ms);
   }
   .hello__line--light {
     left: calc(var(--img-x) * var(--u) * -1);

@@ -1,9 +1,15 @@
 /*
  * Writing pages: contents | text | notes, centred. Content boxes, quotes and
- * code come from Markdown (see src/lib/remark-boxes.mjs and the shiki config).
+ * code come from Markdown (see src/lib/markdown/ and the shiki config).
  */
 @layer theme, base, components, utilities;
 @import './math.css';
+
+@font-face {
+  font-family: 'Louise';
+  src: url('../assets/fonts/Louise-Regular.woff2') format('woff2');
+  font-display: swap;
+}
 
 @layer components {
   /* ---------- header ---------- */
@@ -18,14 +24,17 @@
     font: 0.72rem var(--font-din);
     letter-spacing: 0.18em;
   }
+  /* the post's own title is the one place for Louise (Luna Delabre and Camille Depalle's
+     revival of Ange Degheest's lettering, Velvetyne; OFL, see src/assets/fonts/Louise-OFL.txt). A connected script: no tracking, and no
+     synthetic italic for *emphasis*, which would only slant the joins. */
   .ah__t {
     margin: 1.4rem 0 1rem;
-    font: 400 clamp(3.2rem, 8vw, 7.5rem) / 0.92 var(--font-display);
-    letter-spacing: -0.03em;
+    font: 400 clamp(3.4rem, 8.6vw, 8rem) / 1 var(--font-louise);
+    letter-spacing: 0;
     text-wrap: balance;
   }
   .ah__t em {
-    font-style: italic;
+    font-style: normal;
   }
   .ah__d {
     margin: 0 auto 1.6rem;
