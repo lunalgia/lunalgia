@@ -161,13 +161,6 @@ const drawings = [
 
         <a class="hero__name" href="#hello" aria-label="Lunalgia: about me">
           <g transform={g.nameAt || undefined} data-tall-name={g.id === 'tall' ? `${TALL_NAME_SCALE} ${NAME.cx} ${NAME.cy}` : undefined}>
-            {/* the pen: centre lines of the letters (scripts/gen-name.py), drawn as a mask
-                so the ink appears where the pen has been. Only applied while drawing. */}
-            <mask id={`name-pen-${g.id}`} maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000">
-              {name.strokes.map((st) => (
-                <path class="hero__pen" d={st.d} stroke-width={st.w} />
-              ))}
-            </mask>
             <g class="hero__ink">
               {name.letters.map((l) => (
                 <path class="hero__letter" d={l.d} />
@@ -373,16 +366,13 @@ const drawings = [
       return { road, line, len, cut, fromEnd: road.dataset.edge === 'end' }
     })
     roads.forEach(({ line, len }) => range(line, len, 0, 0))
-    // the name is uncovered by the pen strokes, stroke after stroke, at an even pace
-    const ink = svg.querySelector<SVGGElement>('.hero__ink')!
-    const mask = svg.querySelector<SVGMaskElement>('mask')
-    const pens = [...svg.querySelectorAll<SVGPathElement>('.hero__pen')].map((el) => {
-      const len = el.getTotalLength()
-      el.style.strokeDasharray = `${len} ${len}`
-      el.style.strokeDashoffset = String(len)
-      return { el, len }
+    letters.forEach((l) => {
+      const n = l.getTotalLength()
+      l.style.strokeDasharray = `${n} ${n}`
+      l.style.strokeDashoffset = String(n)
+      l.style.fillOpacity = '0'
+      l.style.strokeOpacity = '1'
     })
-    if (mask && pens.length) ink.setAttribute('mask', `url(#${mask.id})`)
     gsap.set(labels, { opacity: 0, y: 6 })
     frame.style.strokeDasharray = `0 ${frameLen}`
     frame.style.opacity = '0' // a zero-length dash still leaves a speck at the corner
@@ -430,19 +420,17 @@ const drawings = [
       0.1,
     )
 
-    // 3. the name, written: one pen moving at a steady speed through the strokes in
-    // order, a breath between letters (with no roads to draw first, on phones, it starts sooner)
-    const START = roads.length ? 1.6 : 0.6
-    const WRITE = 2.4 // seconds for the whole word
-    const total = pens.reduce((a, p) => a + p.len, 0) || 1
-    let at = START
-    pens.forEach(({ el, len }) => {
-      const d = Math.max(0.12, (WRITE * len) / total)
-      tl.to(el, { strokeDashoffset: 0, duration: d, ease: 'none' }, at)
-      at += d * 0.92
+    // 3. the name: each letter's outline is traced, the ink follows the pen
+    // with no roads to draw first (phones), the pen starts sooner
+    const START = roads.length ? 1.75 : 0.7
+    const STAGGER = 0.16
+    letters.forEach((l, i) => {
+      const at = START + i * STAGGER
+      tl.to(l, { strokeDashoffset: 0, duration: 1.15, ease: 'power2.inOut' }, at)
+      tl.to(l, { fillOpacity: 1, duration: 0.9, ease: 'power1.inOut' }, at + 0.55)
+      tl.to(l, { strokeOpacity: 0, duration: 0.6, ease: 'power1.out' }, at + 1.1)
     })
-    tl.call(() => ink.removeAttribute('mask'), [], at + 0.1)
-    const done = at + 0.3
+    const done = START + letters.length * STAGGER + 1.1
 
     // 4. labels and the tag settle
     tl.to(labels, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.1 }, done - 1.2)
@@ -567,10 +555,10 @@ const drawings = [
   .hero__ink {
     fill: var(--ultramarine);
   }
-  .hero__pen {
-    fill: none;
-    stroke: #fff;
-    stroke-linecap: round;
+  .hero__letter {
+    stroke: var(--ultramarine);
+    stroke-width: 1.4px;
+    stroke-opacity: 0;
     stroke-linejoin: round;
   }
   /* while a road is drawing, square ends: a round cap on an empty dash is a dot */
