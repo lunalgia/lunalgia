@@ -72,39 +72,48 @@ const items: { label: string; value?: string; slot?: string }[] = [
   }
 
   /**
-   * The ticker: one run's width per loop, at a steady speed in pixels. A CSS
-   * translateX(-50%) loop is relative to the track's width, so the bar jumped
-   * whenever the weather arrived, a font swapped in or the clock changed width.
-   * Here the animation is rebuilt at the same pixel offset whenever the run
-   * changes size; it still runs on the compositor.
+   * The ticker: one run's width per loop at a steady speed in pixels, driven by
+   * the Web Animations API so it runs on the compositor.
+   *
+   * Its position is a function of the wall clock (seconds since the epoch times
+   * the speed, modulo the run's width), so leaving the page and coming back, or
+   * reloading, finds the bar where it would have been, instead of starting it
+   * over from the left. When the run changes width (the weather arriving, a font
+   * swapping in) the animation is rebuilt on the same clock.
    */
-  const SPEED = 22 // px per second, the old 70 s loop
+  const SPEED = 22 // px per second
   const ticker = (root: HTMLElement) => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const track = root.querySelector<HTMLElement>('.sbar__track')!
     const run = root.querySelector<HTMLElement>('.sbar__run')!
     let anim: Animation | null = null
     let width = 0
+    let hovered = false
+    const clock = (w: number) => ((((performance.timeOrigin + performance.now()) / 1000) * SPEED) % w) / SPEED * 1000
     const build = () => {
       const w = run.offsetWidth
       if (!w || w === width) return
-      // where the bar is now, in pixels
-      const at = anim && width ? ((Number(anim.currentTime) || 0) * SPEED) / 1000 % width : 0
-      const paused = anim?.playState === 'paused'
       anim?.cancel()
       width = w
       anim = track.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${-w}px)` }], {
         duration: (w / SPEED) * 1000,
         iterations: Infinity,
       })
-      anim.currentTime = (Math.min(at, w) / SPEED) * 1000
-      if (paused) anim.pause()
+      anim.currentTime = clock(w)
+      if (hovered) anim.pause()
     }
     const ro = new ResizeObserver(build)
     ro.observe(run)
     build()
-    root.addEventListener('mouseenter', () => anim?.pause())
-    root.addEventListener('mouseleave', () => anim?.play())
+    root.addEventListener('mouseenter', () => {
+      hovered = true
+      anim?.pause()
+    })
+    root.addEventListener('mouseleave', () => {
+      hovered = false
+      if (anim) anim.currentTime = clock(width) // back on the clock, as if it never stopped
+      anim?.play()
+    })
     document.addEventListener(
       'astro:before-swap',
       () => {
@@ -113,6 +122,22 @@ const items: { label: string; value?: string; slot?: string }[] = [
       },
       { once: true },
     )
+  }
+
+  /** the last weather reading, kept for half an hour so a visit does not start at "—°C" */
+  const WEATHER_KEY = 'lunalgia:weather'
+  const cached = (): string | null => {
+    try {
+      const v = JSON.parse(localStorage.getItem(WEATHER_KEY) ?? 'null')
+      return v && Date.now() - v.at < 30 * 60 * 1000 ? v.label : null
+    } catch {
+      return null
+    }
+  }
+  const remember = (label: string) => {
+    try {
+      localStorage.setItem(WEATHER_KEY, JSON.stringify({ label, at: Date.now() }))
+    } catch {}
   }
 
   const init = () => {
@@ -132,6 +157,9 @@ const items: { label: string; value?: string; slot?: string }[] = [
     document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true })
     set(root, 'moon-value', moon())
 
+    const known = cached()
+    if (known) return set(root, 'weather-label', known)
+
     const { lat, lon } = root.dataset
     fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Asia%2FKolkata`,
@@ -141,7 +169,9 @@ const items: { label: string; value?: string; slot?: string }[] = [
         const c = d?.current
         if (!c) return
         const word = WEATHER.find(([codes]) => codes.includes(c.weather_code))?.[1]
-        set(root, 'weather-label', `— ${Math.round(c.temperature_2m)}°C${word ? `, ${word}` : ''}`)
+        const label = `— ${Math.round(c.temperature_2m)}°C${word ? `, ${word}` : ''}`
+        set(root, 'weather-label', label)
+        remember(label)
       })
       .catch(() => {})
   }

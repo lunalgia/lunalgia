@@ -64,28 +64,27 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
 </footer>
 
 <script>
-  import { gsap } from 'gsap'
-  import { ScrollTrigger } from 'gsap/ScrollTrigger'
-  gsap.registerPlugin(ScrollTrigger)
-
+  /**
+   * The name surfaces once, when the footer is a little way into view. The water
+   * rising slower than the page is pure CSS (a scroll-driven animation), so the
+   * footer needs no animation library. Without JS, or with reduced motion,
+   * everything is simply in place.
+   */
   const init = () => {
     const root = document.querySelector<HTMLElement>('.foot')
     if (!root || root.dataset.ready || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     root.dataset.ready = '1'
-    // the water rises a little slower than the page
-    gsap.fromTo(
-      root.querySelector('.foot__water img'),
-      { yPercent: 7 },
-      { yPercent: 0, ease: 'none', scrollTrigger: { trigger: root, start: 'top bottom', end: 'bottom bottom', scrub: true } },
+    root.classList.add('is-armed')
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return
+        root.classList.add('is-in')
+        io.disconnect()
+      },
+      { rootMargin: '0px 0px -45% 0px' },
     )
-    // and the name surfaces once
-    gsap.from(root.querySelector('.foot__mark'), {
-      yPercent: 22,
-      opacity: 0,
-      duration: 2.2,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: root, start: 'top 55%', once: true },
-    })
+    io.observe(root)
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true })
   }
   document.addEventListener('astro:page-load', init)
 </script>
@@ -250,6 +249,32 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     inset: auto 0 0 0;
     height: 100%;
     pointer-events: none;
+  }
+  .foot.is-armed .foot__mark {
+    opacity: 0;
+    transform: translateY(22%);
+  }
+  .foot.is-in .foot__mark {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 2.2s var(--ease-out),
+      transform 2.2s var(--ease-out);
+  }
+  /* the water rises a little slower than the page, tied to scroll by the browser */
+  @keyframes foot-rise {
+    from {
+      transform: translateY(7%);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .foot__water img {
+        animation: foot-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+      }
+    }
   }
   .foot__mist {
     position: absolute;
