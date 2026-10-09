@@ -28,8 +28,9 @@
      revival of Ange Degheest's lettering, Velvetyne; OFL, see src/assets/fonts/Louise-OFL.txt). A connected script: no tracking, and no
      synthetic italic for *emphasis*, which would only slant the joins. */
   .ah__t {
-    margin: 1.4rem 0 1rem;
-    font: 400 clamp(3.4rem, 8.6vw, 8rem) / 1 var(--font-louise);
+    /* Louise's ascenders and swashes stand well above its em box: room above, looser lines */
+    margin: 0.3em 0 1rem;
+    font: 400 clamp(3.4rem, 8.6vw, 8rem) / 1.18 var(--font-louise);
     letter-spacing: 0;
     text-wrap: balance;
   }
