@@ -14,7 +14,9 @@ interface Props {
   here?: string
 }
 const { here = 'home' } = Astro.props
-const water = await getImage({ src: monet, width: 2000, format: 'webp', quality: 82 })
+// the painting sits behind fog and grain, so it survives strong compression
+const water = await getImage({ src: monet, width: 1800, format: 'webp', quality: 68 })
+const waterAvif = await getImage({ src: monet, width: 1800, format: 'avif', quality: 50 })
 // all the wording lives in src/data/footer.md
 const credit = String(text.credit ?? '').replaceAll('{year}', String(new Date().getFullYear()))
 const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
@@ -22,7 +24,10 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
 
 <footer class="foot board">
   <div class="foot__water" aria-hidden="true">
-    <img src={water.src} alt="" loading="lazy" decoding="async" />
+    <picture>
+      <source type="image/avif" srcset={waterAvif.src} />
+      <img src={water.src} alt="" loading="lazy" decoding="async" />
+    </picture>
   </div>
   <div class="foot__fog" aria-hidden="true"></div>
 
@@ -107,6 +112,10 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     overflow: hidden;
   }
   /* exactly the footer's width: any wider only zooms further into the painting */
+  /* the <picture> only chooses a file; layout is the <img>'s, as before */
+  .foot__water picture {
+    display: contents;
+  }
   .foot__water img {
     position: absolute;
     left: 0;

@@ -206,6 +206,10 @@ const items: { label: string; value?: string; slot?: string }[] = [
   .sbar__item {
     margin-right: 1.7em;
   }
+  /* weather, time and moon are worked out in the browser: without JS, leave them out */
+  :global(html:not(.js)) .sbar__item:has([data-slot]) {
+    display: none;
+  }
   .sbar__label {
     font-variant-numeric: tabular-nums;
     font-family: var(--font-din);

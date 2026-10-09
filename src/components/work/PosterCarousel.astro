@@ -18,9 +18,11 @@ const { posters, heading = 'POSTERS' } = Astro.props
 const slides = await Promise.all(
   posters.map(async (p) => {
     const img = p.data.image
-    const [small, mid, big, full] = await Promise.all(
-      [600, 1000, 1500, 2200].map((w) => getImage({ src: img, width: Math.min(w, img.width), format: 'webp', quality: 84 })),
-    )
+    const sized = (w: number, format: 'webp' | 'avif', quality: number) =>
+      getImage({ src: img, width: Math.min(w, img.width), format, quality })
+    const [small, mid, big, full] = await Promise.all([600, 1000, 1500, 2200].map((w) => sized(w, 'webp', 84)))
+    // AVIF first for browsers that take it: the posters' grain is costly in WebP
+    const avif = await Promise.all([600, 1000, 1500].map((w) => sized(w, 'avif', 58)))
     return {
       title: p.data.title,
       year: p.data.year,
@@ -28,6 +30,7 @@ const slides = await Promise.all(
       ar: img.width / img.height,
       src: mid.src,
       srcset: `${small.src} 600w, ${mid.src} 1000w, ${big.src} 1500w`,
+      avifset: `${avif[0].src} 600w, ${avif[1].src} 1000w, ${avif[2].src} 1500w`,
       full: full.src,
     }
   }),
@@ -49,7 +52,10 @@ const pad = (n: number) => String(n).padStart(2, '0')
     {
       slides.map((s, i) => (
         <figure class="pc__slide" data-i={i} style={`--ar:${s.ar}`} aria-label={`${i + 1} of ${slides.length}: ${s.title}`}>
-          <img src={s.src} srcset={s.srcset} sizes="(min-width: 760px) 44vh, 70vw" alt={s.title} draggable="false" loading={i < 3 ? 'eager' : 'lazy'} data-full={s.full} />
+          <picture>
+            <source type="image/avif" srcset={s.avifset} sizes="(min-width: 760px) 44vh, 70vw" />
+            <img src={s.src} srcset={s.srcset} sizes="(min-width: 760px) 44vh, 70vw" alt={s.title} draggable="false" loading={i < 3 ? 'eager' : 'lazy'} data-full={s.full} />
+          </picture>
         </figure>
       ))
     }
@@ -290,6 +296,10 @@ const pad = (n: number) => String(n).padStart(2, '0')
     transform-origin: 50% 50%;
     will-change: transform;
     box-shadow: 0 40px 60px -34px rgb(17 19 90 / 0.7);
+  }
+  /* the <picture> only chooses a file; layout is the <img>'s, as before */
+  .pc__slide picture {
+    display: contents;
   }
   .pc__slide img {
     display: block;

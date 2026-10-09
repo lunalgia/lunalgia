@@ -66,6 +66,16 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     </span>
   </header>
 
+  <noscript>
+    <ol class="cs__plain">
+      {items.map((b) => (
+        <li>
+          <a href={b.href ?? '#'}>{b.title}</a> <span>{b.by}</span>
+        </li>
+      ))}
+    </ol>
+  </noscript>
+
   <div class="cs__stage">
     <div class="cs__shelf">
       {
@@ -397,6 +407,13 @@ const verb = { book: 'FINISHED', record: 'ON REPEAT SINCE', film: 'WATCHED' }[ki
     font: 0.75rem var(--font-din); letter-spacing: 0.18em;
   }
   .cs__count b { font-weight: 400; }
+  /* without JS the shelf cannot be browsed: its arrows go, and a plain list of
+     links to every review stands in for it */
+  :global(html:not(.js)) .cs__nav { display: none; }
+  .cs__plain { list-style: none; margin: 0 var(--gutter) 2rem; padding: 0; columns: 16rem; column-gap: 2rem; }
+  .cs__plain li { break-inside: avoid; padding-block: 0.3rem; border-bottom: 1px solid var(--rule); }
+  .cs__plain a { font: italic 1.25rem var(--font-display); color: var(--ultramarine); }
+  .cs__plain span { font: italic 0.95rem var(--font-body); color: var(--ink-soft); }
   .cs__top { align-items: center; }
   /* previous · count · next, as one object */
   .cs__nav { display: inline-flex; align-items: center; gap: 1.3rem; }
