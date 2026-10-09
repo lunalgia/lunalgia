@@ -10,7 +10,10 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
 
 <section class="letter board" aria-labelledby="letter-label">
     <div class="panel"></div>
-    <div class="letter__frame" aria-hidden="true"></div>
+    <!-- the hero's frame, redrawn: a rectangle starting at the top centre, under the label -->
+    <svg class="letter__frame" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M50 0H100V100H0V0Z" pathLength="1000" vector-effect="non-scaling-stroke" />
+    </svg>
     <p id="letter-label" class="letter__label">
         {label}
     </p>
@@ -66,6 +69,25 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
         root.dataset.ready = "1";
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+        // the outline in real pixels, so its dashes measure true: the drawing grows
+        // from the top centre both ways, like the hero's frame
+        const svg = root.querySelector<SVGSVGElement>(".letter__frame");
+        const path = svg?.querySelector("path");
+        if (svg && path) {
+            path.removeAttribute("pathLength");
+            const fit = () => {
+                const { width: w, height: h } = svg.getBoundingClientRect();
+                if (!w || !h) return;
+                svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+                path.setAttribute("d", `M${w / 2} 0H${w}V${h}H0V0Z`);
+                svg.style.setProperty("--L", `${2 * (w + h)}px`);
+            };
+            fit();
+            const ro = new ResizeObserver(fit);
+            ro.observe(svg);
+            document.addEventListener("astro:before-swap", () => ro.disconnect(), { once: true });
+        }
+
         const wide = matchMedia("(min-width: 900px)").matches;
         const units = [...root.querySelectorAll<HTMLElement>(wide ? ".ln" : ".letter__body p")];
         units.forEach((el, i) => el.style.setProperty("--i", String(i)));
@@ -89,27 +111,40 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
 
 <style>
     .letter {
+        /* the hero's drawing units: 1920 wide on wide screens, 760 on tall ones */
+        --hu: calc(100vw / 760);
+        --fx: calc(24 * var(--hu));
+        --fy: calc(44 * var(--hu));
+        --fw: calc(2.6 * var(--hu));
         color: var(--mist);
         text-align: center;
-        padding: 6rem 1.5rem 6rem;
+        padding: calc(var(--fy) + 4rem) calc(var(--fx) + 1.5rem);
     }
-    /* the panel is the hero's box: same inset from the screen's sides
-       (24 of 760 on tall screens) and the same 1.93px ultramarine rule */
+    /* the base colour spans the whole board */
     .letter .panel {
-        inset: 1.25rem calc(100vw * 24 / 760);
+        inset: 0;
         height: auto;
-        border: 1.93px solid var(--ultramarine);
     }
+    /* only the outline takes the hero frame's place and weight */
     .letter__frame {
         position: absolute;
-        inset: 2.25rem calc(100vw * 24 / 760 + 1rem);
-        border: 1px solid rgb(210 211 221 / 0.45);
+        inset: var(--fy) var(--fx);
+        width: calc(100% - 2 * var(--fx));
+        height: calc(100% - 2 * var(--fy));
+        overflow: visible;
         pointer-events: none;
     }
+    .letter__frame path {
+        fill: none;
+        stroke: rgb(210 211 221 / 0.55);
+        stroke-width: var(--fw);
+        stroke-linejoin: miter;
+    }
 
-    /* the reveal (see the script) */
-    .letter.is-armed .letter__frame {
-        transform: scaleX(0);
+    /* the reveal (see the script): the outline grows both ways from the label,
+       as the hero's does, then the label, then the lines one after another */
+    .letter.is-armed .letter__frame path {
+        stroke-dasharray: 0 var(--L) 0 0;
     }
     .letter.is-armed .letter__label {
         opacity: 0;
@@ -121,29 +156,32 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
     .letter.is-armed.by-line .ln,
     .letter.is-armed.by-para .letter__body p {
         opacity: 0;
-        transform: translateY(0.6em);
+        transform: translateY(0.5em);
+        filter: blur(3px);
     }
-    .letter.is-in .letter__frame {
-        transform: none;
-        transition: transform 1.3s var(--ease-out);
+    .letter.is-in .letter__frame path {
+        stroke-dasharray: calc(var(--L) / 2) 0 calc(var(--L) / 2) 0;
+        transition: stroke-dasharray 1.6s cubic-bezier(0.65, 0, 0.35, 1);
     }
     .letter.is-in .letter__label {
         opacity: 1;
-        transition: opacity 0.9s var(--ease-out) 0.5s;
+        transition: opacity 0.8s var(--ease-out) 0.15s;
     }
     .letter.is-in.by-line .ln,
     .letter.is-in.by-para .letter__body p {
         opacity: 1;
         transform: none;
+        filter: none;
         transition:
-            opacity 1s var(--ease-out),
-            transform 1.2s var(--ease-out);
-        transition-delay: calc(0.45s + var(--i) * 70ms);
+            opacity 0.9s var(--ease-out),
+            transform 1.1s var(--ease-out),
+            filter 0.9s var(--ease-out);
+        transition-delay: calc(0.6s + var(--i) * 90ms);
     }
     .letter__label {
         position: absolute;
         left: 50%;
-        top: 2.25rem;
+        top: var(--fy);
         translate: -50% -50%;
         margin: 0;
         padding: 0 1rem;
@@ -156,7 +194,7 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
     }
     .letter__label--flip {
         top: auto;
-        bottom: 2.25rem;
+        bottom: var(--fy);
         translate: -50% 50%;
         rotate: 180deg;
     }
@@ -188,22 +226,24 @@ const label = "A FEW WORDS, BEFORE YOU WANDER";
             aspect-ratio: 16 / 9;
             padding: 0;
         }
-        /* exactly the hero's frame: x 44.546, y 51.983, 1830.143 × 983.8 of 1920 × 1080 */
-        .letter .panel {
+        /* exactly the hero's frame: x 44.546, y 51.983, 1830.143 × 983.8 of
+           1920 × 1080, drawn 1.93 units thick */
+        .letter__frame {
             inset: calc(51.983 * var(--u)) auto auto calc(44.546 * var(--u));
             width: calc(1830.143 * var(--u));
             height: calc(983.8 * var(--u));
         }
-        .letter__frame {
-            inset: calc(76 * var(--u)) calc(68 * var(--u));
+        .letter__frame path {
+            stroke-width: calc(1.93 * var(--u));
         }
         .letter__label {
-            top: calc(76 * var(--u));
+            top: calc(51.983 * var(--u));
             font-size: max(0.62rem, calc(15 * var(--u)));
         }
         .letter__label--flip {
-            top: auto;
-            bottom: calc(76 * var(--u));
+            top: calc((51.983 + 983.8) * var(--u));
+            bottom: auto;
+            translate: -50% -50%;
         }
         .letter__body {
             position: absolute;
