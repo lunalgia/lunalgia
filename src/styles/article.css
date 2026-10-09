@@ -3,7 +3,7 @@
  * code come from Markdown (see src/lib/remark-boxes.mjs and the shiki config).
  */
 @layer theme, base, components, utilities;
-@import 'katex/dist/katex.min.css';
+@import './math.css';
 
 @layer components {
   /* ---------- header ---------- */
@@ -153,13 +153,12 @@
     margin-top: 0.6rem;
     font: italic 0.95rem var(--font-body);
   }
-  .ax__text .katex {
-    font-size: 1.04em;
-  }
-  .ax__text .katex-display {
+  .ax__text .math-display {
     margin: 1.2rem 0;
-    overflow-x: auto;
-    overflow-y: hidden;
+  }
+  /* parentheticals a step quieter than the sentence (src/lib/markdown/parentheticals.mjs) */
+  .ax__text [data-parenthetical] {
+    color: color-mix(in oklab, currentColor 80%, var(--bg)); /* ~4.5:1 on lavender; 60% would be 3.2:1 */
   }
 
   /* ---------- quotes ---------- */
@@ -842,7 +841,7 @@
   .ax__text figure,
   .ax__text img,
   .ax__text p:has(> img),
-  .ax__text .katex-display {
+  .ax__text .math-display {
     break-inside: avoid;
   }
   .ax__text img {
@@ -866,7 +865,7 @@
     white-space: pre-wrap;
     font-size: 8.5pt;
   }
-  .ax__text .katex-display {
+  .ax__text .math-display {
     overflow: visible;
   }
   /* "show answer" means nothing on paper */

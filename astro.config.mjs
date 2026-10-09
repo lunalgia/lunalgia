@@ -2,9 +2,10 @@
 import { defineConfig } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
-import remarkBoxes from './src/lib/remark-boxes.mjs'
+import { satteri } from '@astrojs/markdown-satteri'
+import { boxes } from './src/lib/markdown/boxes.mjs'
+import { math } from './src/lib/markdown/math.mjs'
+import { parentheticals } from './src/lib/markdown/parentheticals.mjs'
 
 export default defineConfig({
   site: 'https://lunalgia.pages.dev',
@@ -17,8 +18,13 @@ export default defineConfig({
     '/lectures/[...id]': '/academics/[...id]',
   },
   markdown: {
-    remarkPlugins: [remarkMath, remarkBoxes],
-    rehypePlugins: [rehypeKatex],
+    // Sätteri (Rust) parses; our plugins run on its trees. Maths first, so the
+    // boxes plugin copies already-rendered MathML into theorem boxes.
+    processor: satteri({
+      features: { math: true },
+      mdastPlugins: [math, boxes],
+      hastPlugins: [parentheticals],
+    }),
     // code takes its colours from CSS variables (see article.css), so it matches the site
     shikiConfig: {
       theme: 'css-variables',

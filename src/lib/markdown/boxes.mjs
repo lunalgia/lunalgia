@@ -11,12 +11,21 @@
  *
  * An ordinary quote whose last line starts with "— " or "-- " gets that line
  * styled as the attribution.
+ *
+ * Sätteri port of the old remark plugin: Sätteri hands plugins read-only nodes,
+ * so each top-level blockquote is cloned, rewritten as before, and swapped in.
  */
+import { defineMdastPlugin } from 'satteri'
+
 const KINDS = ['theorem', 'lemma', 'proposition', 'corollary', 'definition', 'example', 'question', 'answer', 'proof', 'remark', 'pull']
 const TAG = /^\[!(\w+)\][ \t]*/
 
 const text = (value) => ({ type: 'text', value })
-const el = (type, hName, className, children = []) => ({ type, data: { hName, hProperties: { className } }, children })
+const el = (type, hName, className, children = []) => ({ type, data: { hName, ...(className.length ? { hProperties: { className } } : {}) }, children })
+const clone = (node) => JSON.parse(JSON.stringify(node))
+
+/** kind of each rewritten box, kept off the node so it never reaches the output */
+const kindOf = new WeakMap()
 
 function convert(node) {
   const first = node.children[0]
@@ -45,21 +54,19 @@ function convert(node) {
 
   const body = [...(firstRest.length ? [{ ...first, children: firstRest }] : []), ...node.children.slice(1)]
   const head =
-    kind === 'pull'
+    kind === 'pull' || kind === 'proof'
       ? []
-      : kind === 'proof'
-        ? []
-        : [
-            el('paragraph', 'p', ['env__h'], [
-              el('strong', 'b', ['env__k'], [text(kind)]),
-              ...(nameNodes.length ? [el('emphasis', 'i', ['env__name'], nameNodes)] : []),
-            ]),
-          ]
+      : [
+          el('paragraph', 'p', ['env__h'], [
+            el('strong', 'b', ['env__k'], [text(kind)]),
+            ...(nameNodes.length ? [el('emphasis', 'i', ['env__name'], nameNodes)] : []),
+          ]),
+        ]
   if (kind === 'proof' && body[0]?.type === 'paragraph')
     body[0].children.unshift(el('emphasis', 'i', ['env__proof'], [text('Proof.')]), text(' '))
   node.data = { hName: kind === 'pull' ? 'aside' : 'div', hProperties: { className: ['env', `env--${kind}`] } }
   node.children = [...head, ...body]
-  node.kind = kind
+  kindOf.set(node, kind)
 }
 
 /** "— Name" as the last line of a quote becomes its caption */
@@ -80,28 +87,43 @@ function attribution(node) {
   node.data = { hProperties: { className: ['quote'] } }
 }
 
-function walk(parent) {
-  if (!parent.children) return
-  for (const child of parent.children) {
-    if (child.type === 'blockquote') convert(child)
-    walk(child)
-  }
-  // fold an answer into the question right before it
-  for (let i = parent.children.length - 1; i > 0; i--) {
-    const a = parent.children[i]
-    const q = parent.children[i - 1]
-    if (a.kind === 'answer' && q.kind === 'question') {
-      const body = a.children.slice(1) // drop the answer's own heading
-      q.children.push({
-        type: 'blockquote',
-        data: { hName: 'details', hProperties: { className: ['env__ans'] } },
-        children: [el('paragraph', 'summary', [], [text('show answer')]), ...body],
-      })
-      parent.children.splice(i, 1)
-    }
-  }
+/** rewrite a cloned subtree in place: nested quotes too */
+function rewrite(node) {
+  if (node.type === 'blockquote') convert(node)
+  if (node.children) node.children.forEach(rewrite)
+  return node
 }
 
-export default function remarkBoxes() {
-  return (tree) => walk(tree)
+/** fold an answer into the question right before it */
+function fold(q, a) {
+  q.children.push({
+    type: 'blockquote',
+    data: { hName: 'details', hProperties: { className: ['env__ans'] } },
+    children: [el('paragraph', 'summary', [], [text('show answer')]), ...a.children.slice(1)],
+  })
+  return q
 }
+
+export const boxes = defineMdastPlugin({
+  name: 'lunalgia-boxes',
+  before(root, ctx) {
+    const visit = (parent) => {
+      if (!parent.children) return
+      const kids = [...parent.children]
+      const done = kids.map((c) => (c.type === 'blockquote' ? rewrite(clone(c)) : null))
+      for (let i = 0; i < kids.length; i++) {
+        if (kids[i].type !== 'blockquote') {
+          visit(kids[i])
+          continue
+        }
+        const next = done[i + 1]
+        if (kindOf.get(done[i]) === 'question' && next && kindOf.get(next) === 'answer') {
+          ctx.replaceNode(kids[i], fold(done[i], next))
+          ctx.removeNode(kids[i + 1])
+          i++
+        } else ctx.replaceNode(kids[i], done[i])
+      }
+    }
+    visit(root)
+  },
+})
