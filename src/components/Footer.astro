@@ -1,7 +1,7 @@
 ---
 /**
  * Board 5, compressed: the fog band carries the footer text, Monet's water
- * rises out of it, and "jardin de lys" (Louise) sinks into the water as a
+ * rises out of it, and "jardin de lys" (Instrument Serif) sinks into the water as a
  * pale mist: one copy in soft-light so the water shows through the letters,
  * one faint copy on top so they stay legible, both fading out downwards.
  */
@@ -174,8 +174,8 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     line-height: 1.35;
   }
   .foot__word {
-    font-family: var(--font-louise);
-    font-style: normal;
+    font-family: var(--font-display);
+    font-style: italic;
     font-size: 1.85em;
     line-height: 1.05;
     margin-bottom: 0.4em;
@@ -291,10 +291,9 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
     bottom: -0.17em;
     text-align: center;
     white-space: nowrap;
-    /* Louise's swashes run wide: sized so the phrase spans the board like the
-       Fraunces it replaces */
-    font-family: var(--font-louise);
-    font-size: calc(290 * var(--u));
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: calc(400 * var(--u));
     line-height: 1;
     color: #efeaff;
   }
@@ -338,8 +337,7 @@ const elsewhere: { label: string; href: string }[] = text.elsewhere ?? []
       height: 75%;
     }
     .foot__mist {
-      /* Louise runs wide: the phrase fits the screen */
-      font-size: 15vw;
+      font-size: 19vw;
     }
     .foot__water img {
       inset: 0;

@@ -196,14 +196,14 @@
   }
 
   /* code */
-  .prose code {
+  .prose code:not(.expressive-code *) {
     font-size: 0.78em;
     padding: 0.05em 0.35em;
     border: 1px solid var(--rule);
     border-radius: 3px;
     background: var(--code-bg);
   }
-  .prose pre {
+  .prose pre:not(.expressive-code *) {
     padding: 1rem 1.25rem;
     overflow-x: auto;
     font-size: 0.85rem;
@@ -217,9 +217,6 @@
     border: 0;
     background: none;
     font-size: inherit;
-  }
-  .astro-code span {
-    color: var(--shiki-light);
   }
   
 

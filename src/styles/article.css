@@ -366,87 +366,12 @@
   }
 
   /* ---------- code: paper ---------- */
-  .ax__text code {
+  .ax__text code:not(.expressive-code *) {
     font: 0.84em var(--font-mono);
     font-variant-ligatures: none;
     padding: 0.08em 0.3em;
     background: rgb(2 8 135 / 0.08);
   }
-  /* a block is wrapped by the script in .codebox with a header; without JS it still reads */
-  .ax__text pre,
-  .codebox {
-    margin: 1.4rem 0 2rem;
-    background: none !important;
-    border-top: 1.5px solid var(--ultramarine);
-    border-bottom: 1px solid rgb(2 8 135 / 0.35);
-  }
-  .ax__text pre {
-    padding: 1rem 1.1rem 1.1rem;
-    overflow-x: auto;
-    font: 0.86rem/1.65 var(--font-mono);
-    font-variant-ligatures: none;
-    hyphens: none;
-    text-align: left;
-    --astro-code-foreground: #11135a;
-    --astro-code-background: transparent;
-    --astro-code-token-keyword: #020887;
-    --astro-code-token-string: #795663;
-    --astro-code-token-comment: #5a5a9a;
-    --astro-code-token-function: #2233b8;
-    --astro-code-token-constant: #795663;
-    --astro-code-token-parameter: #11135a;
-    --astro-code-token-punctuation: #5a5a9a;
-    --astro-code-token-string-expression: #795663;
-    --astro-code-token-link: #020887;
-  }
-  .codebox pre {
-    margin: 0;
-    border: 0;
-    background: none !important;
-  }
-  .ax__text pre code {
-    padding: 0;
-    background: none;
-    font: inherit;
-  }
-  .codebox__bar {
-    display: flex;
-    align-items: baseline;
-    gap: 1.2rem;
-    padding: 0.55rem 1rem;
-    border-bottom: 1px solid rgb(2 8 135 / 0.2);
-    color: var(--ultramarine);
-  }
-  .codebox__lang {
-    font: 0.62rem var(--font-din);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .codebox__file {
-    font: 0.78rem var(--font-mono);
-  }
-  .code-copy {
-    all: unset;
-    cursor: pointer;
-    margin-left: auto;
-    font: 400 0.66rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase; font-style: normal;
-    color: var(--ultramarine);
-    border-bottom: 1px solid transparent;
-  }
-  .code-copy:hover {
-    border-bottom-color: currentColor;
-  }
-  .code-copy + .code-copy {
-    margin-left: 1.2rem;
-  }
-  /* long blocks start folded to a few lines; "expand" opens them */
-  .codebox.is-folded pre {
-    max-height: 11rem;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(#000 60%, transparent);
-    mask-image: linear-gradient(#000 60%, transparent);
-  }
-
   /* ---------- footnote references ---------- */
   .ax__text a[data-footnote-ref] {
     font: 0.66rem var(--font-din);
@@ -849,7 +774,8 @@
   .sidenote-rail,
   .aa,
   .ah__print,
-  .code-copy {
+  .code-fold,
+  .expressive-code .copy {
     display: none !important;
   }
   main {
@@ -920,14 +846,13 @@
   /* tinted boxes and code keep their paper colour */
   .ax__text .env,
   .ax__text code,
-  .ax__text pre,
-  .codebox {
+  .ax__text pre {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .ax__text pre {
-    overflow: visible;
-    white-space: pre-wrap;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
     font-size: 8.5pt;
   }
   .ax__text .math-display {
@@ -981,10 +906,10 @@
   .ax__text a[data-footnote-backref] {
     display: none;
   }
-  .codebox.is-folded pre {
-    max-height: none;
-    -webkit-mask-image: none;
-    mask-image: none;
+  .ax__text .expressive-code.is-folded .frame pre {
+    max-height: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
   }
   /* Knuth-Plass lines are fixed to the screen's column: let paper re-flow them,
      even if a browser prints before the script has undone them */
@@ -1011,3 +936,44 @@
     color: #020887;
   }
 }
+
+/* Expressive Code ships unlayered CSS (with all: revert inside its blocks),
+   so these overrides sit outside the layers to win */
+  /* blocks come framed by Expressive Code (ec.config.mjs); here only the
+     site's rules around them, and the fold for long ones */
+  .ax__text .expressive-code {
+    position: relative;
+    margin: 1.4rem 0 2rem;
+    border-top: 1.5px solid var(--ultramarine);
+    border-bottom: 1px solid rgb(2 8 135 / 0.35);
+    hyphens: none;
+    text-align: left;
+  }
+  .ax__text .expressive-code code {
+    font-variant-ligatures: none;
+  }
+  .ax__text .expressive-code .frame.has-title .header .title {
+    font: 0.78rem var(--font-mono);
+    color: var(--ultramarine);
+  }
+  .ax__text .expressive-code.is-folded .frame pre {
+    max-height: 11rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+    mask-image: linear-gradient(#000 60%, transparent);
+  }
+  .ax__text .expressive-code > .code-fold {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    margin: 0.5rem 1.1rem 0.6rem;
+    font: 400 0.66rem/1.4 var(--font-din); letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ultramarine);
+    border-bottom: 1px solid transparent;
+    width: fit-content;
+  }
+  .ax__text .expressive-code > .code-fold:hover,
+  .ax__text .expressive-code > .code-fold:focus-visible {
+    border-bottom-color: currentColor;
+  }
+

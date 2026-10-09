@@ -1,6 +1,6 @@
 /**
  * Writing pages: the contents follow you (current part, progress, minutes left),
- * and code blocks get a copy button.
+ * and long code blocks start folded.
  */
 const setup = () => {
   const ax = document.querySelector<HTMLElement>('.ax')
@@ -72,47 +72,22 @@ const setup = () => {
       print()
     }),
   )
-  // ---- code: a header with the language, file name and a copy button ----
-  text.querySelectorAll<HTMLElement>('pre').forEach((pre) => {
-    const box = document.createElement('div')
-    box.className = 'codebox'
-    const bar = document.createElement('div')
-    bar.className = 'codebox__bar'
-    const lang = pre.dataset.language && pre.dataset.language !== 'plaintext' ? pre.dataset.language : 'text'
-    bar.innerHTML = `<span class="codebox__lang"></span>${pre.dataset.title ? '<span class="codebox__file"></span>' : ''}`
-    bar.querySelector('.codebox__lang')!.textContent = lang
-    if (pre.dataset.title) bar.querySelector('.codebox__file')!.textContent = pre.dataset.title
-    const b = document.createElement('button')
-    b.type = 'button'
-    b.className = 'code-copy'
-    b.textContent = 'copy'
-    b.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(pre.querySelector('code')?.innerText ?? pre.innerText)
-        b.textContent = 'copied'
-      } catch {
-        b.textContent = 'press ⌘C'
-      }
-      setTimeout(() => (b.textContent = 'copy'), 1600)
+  // ---- code: Expressive Code draws the frame and copy button; long blocks start folded ----
+  text.querySelectorAll<HTMLElement>('.expressive-code').forEach((ec) => {
+    const pre = ec.querySelector('pre')
+    if (!pre || pre.scrollHeight <= 230 || ec.querySelector('.code-fold')) return
+    ec.classList.add('is-folded')
+    const t = document.createElement('button')
+    t.type = 'button'
+    t.className = 'code-fold'
+    t.textContent = 'expand'
+    t.setAttribute('aria-expanded', 'false')
+    t.addEventListener('click', () => {
+      const folded = ec.classList.toggle('is-folded')
+      t.textContent = folded ? 'expand' : 'fold'
+      t.setAttribute('aria-expanded', String(!folded))
     })
-    bar.append(b)
-    pre.replaceWith(box)
-    box.append(bar, pre)
-    // fold anything longer than a few lines
-    if (pre.scrollHeight > 230) {
-      box.classList.add('is-folded')
-      const t = document.createElement('button')
-      t.type = 'button'
-      t.className = 'code-copy'
-      t.textContent = 'expand'
-      t.setAttribute('aria-expanded', 'false')
-      t.addEventListener('click', () => {
-        const folded = box.classList.toggle('is-folded')
-        t.textContent = folded ? 'expand' : 'fold'
-        t.setAttribute('aria-expanded', String(!folded))
-      })
-      bar.append(t)
-    }
+    ec.append(t)
   })
 }
 document.addEventListener('astro:page-load', setup)
