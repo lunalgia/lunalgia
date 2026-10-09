@@ -1,7 +1,0 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-/** shadcn-style class merger, used by componentry components. */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
