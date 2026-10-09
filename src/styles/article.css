@@ -80,6 +80,11 @@
   .ax__text > p {
     text-align: justify;
   }
+  /* broken by Knuth–Plass (src/scripts/justify.ts): its hyphens only */
+  .ax__text > p.is-tex {
+    hyphens: manual;
+    -webkit-hyphens: manual;
+  }
   .ax__text > p:first-of-type::first-letter {
     float: left;
     margin: 0.06em 0.08em 0 0;
