@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,enumitem}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\familydefault}{\rmdefault}
+\setlength{\parindent}{0pt}\setlength{\parskip}{8pt}
+\newcommand{\prob}[1]{\textbf{#1}\quad}
+\begin{document}
+{\Large\bfseries Algebra 1 --- Tutorial sheet 5}\par\vspace{-4pt}
+{\small\sffamily Transcribed from the Moodle assignment page (no PDF was posted). Opened 25 Sep 2026\quad Due Fri 2 Oct 2026. No separate HW subset named. Part B added 10 Oct 2026 from a board photo.}\par\vspace{2pt}\hrule
+
+\section*{\large Part A (Moodle)}
+\prob{0.} If you have not done the HW 4 computations, finish them and submit, especially 11(a) and (c).
+
+\prob{1.} Look at the example in the Sep 17-3 board image: the map $f(x)=Ax$ has a simple diagonal matrix with respect to a ``magic'' basis. Finding such bases is a goal for the next few lectures.
+
+\prob{2.} An operator $T$ on $V$ is a \emph{projection} if $T^2=T$. Show that if $T$ is a projection then $V=\operatorname{im}T\oplus\ker T$ (internal direct sum). Is this true if $V$ is infinite-dimensional? The converse is false (pointed out by Pradyun): find a counterexample. What extra condition gives an ``if and only if''? Why the name ``projection''?
+
+\prob{3.} Artin, Chapter 3, problems 5.1, 5.2, 5.3 (direct sums).
+
+\prob{4 (SMMC 2023).} Let $n\ge1$ and let $A,B,C$ be $n$-dimensional subspaces of $\mathbb{R}^{2n}$ with $A\cap B=B\cap C=C\cap A=\{0\}$. Prove there are bases $\{a_i\}$ of $A$, $\{b_i\}$ of $B$, $\{c_i\}$ of $C$ such that for each $i$ the vectors $a_i,b_i,c_i$ are linearly dependent.
+
+\prob{5.} Verify that the examples in the Sep 17-5 board image are fields. Review that every concept so far goes through over a general field.
+
+\section*{\large Part B (board)}
+{\small\sffamily Notation: $GL_n(F)$ is the set of invertible $n\times n$ matrices with entries in the field $F$; $SL_n(F)$ is the subset of those with determinant $1$. ``Diagonal'' below means diagonalizable. The numbers of problems 1 and 2 were cut off at the board's edge and are inferred from the order.}
+
+\prob{1.}
+\begin{enumerate}[label=(\alph*),topsep=0pt]
+\item Show $|GL_2(\F_p)| = p(p+1)(p-1)^2$. Calculate $|GL_n(\F_p)|$. What about $|SL_n(\F_p)|$? (Consider $\det\colon GL_n(F)\to F^\times$.)
+\item Find for each $n\le 3$ the number of subspaces of dimension $n$ in $\F_p^3$.
+\end{enumerate}
+
+\prob{2.}
+\begin{enumerate}[label=(\alph*),topsep=0pt]
+\item For $V=F^3$ define $T$ by $T(e_1)=e_2$, $T(e_2)=e_3$, $T(e_3)=e_1$. Decide if $T$ is diagonal if $F=\mathbb{R},\mathbb{C},\F_p$ in turn.
+\item $B$ is a $3\times3$ matrix with entries in $\mathbb{C}$. Suppose $\operatorname{tr}(B)=\operatorname{tr}(B^2)=0$ and $\operatorname{tr}(B^3)=3d$ for $d\ne0$. Find $\det(B)$.
+\end{enumerate}
+
+\prob{3.} Let $W$ be a $T$-invariant subspace of $V$, where $T$ is diagonal on $V$. Must $T|_W$ also be diagonal?
+
+\prob{4.} Let $T,S$ be diagonal operators on $V$. Show that
+\[ TS=ST \iff \text{there is a basis of $V$ with respect to which $S$ and $T$ both have diagonal matrices.}\]
+
+\prob{5.} Let $T$ be an operator on $V/F$ with
+\[ p_T(x)=\prod_i (x-\lambda_i)^{m_i} = (x-\mu_1)\cdots(x-\mu_n), \]
+so as multisets $\{\mu_1,\dots,\mu_n\}=\{\underbrace{\lambda_1,\dots,\lambda_1}_{m_1},\dots\}$.
+\begin{enumerate}[label=(\alph*),topsep=0pt]
+\item Show $\dim\ker(T-\lambda_j I)\le m_j$.
+\item Show $p_T(T)=0$. (Understand the meaning carefully!) This is the Cayley--Hamilton theorem (CH thm).
+First do it for $V=F^n$, $T$ given by a diagonal matrix. Then do the same for $T$ given by a triangular matrix. This does the job! Why?
+
+[Can you prove CH without assuming $p_T(x)$ factors fully?!]
+\end{enumerate}
+\end{document}
