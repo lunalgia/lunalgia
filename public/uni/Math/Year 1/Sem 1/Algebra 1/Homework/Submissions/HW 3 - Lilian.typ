@@ -280,4 +280,30 @@ _For the quiz you will need to know and be able to use all the words used in the
 ]
 
 #b() 
+
+(b). Suppose $vb(b)$ and $vb(c)$ are additive inverses of $vb(a)$. Then,
+
+$
+vb(b) = vb(b) + vb(0) = vb(b) + (vb(a) + vb(c)) = (vb(b) + vb(a)) + vb(c) = vb(0) + vb(c) = vb(c)
+$
+Thus, $vb(b) = vb(c)$. 
+
+(c). Note that 
+$
+0 dot vb(v) = (0 + 0) dot vb(v) = 0 dot vb(v) + 0 dot vb(v) 
+$
+Adding the additive inverse of $0 dot vb(b)$ from both sides, we are done.
+
+(d). Pretty much the same as (c). 
+$
+a dot vb(0) = a dot (vb(0) + vb(0)) = a dot vb(0) + a dot vb(0)
+$ 
+and adding the additive inverse of $a dot vb(0)$ to both sides gives us what we want.
+
+(e). Note that:
+$
+(-1) dot vb(v) + vb(v) = (-1) dot vb(v) + 1 dot vb(v) = (-1 + 1) dot vb(v) = 0 dot vb(v) = 0
+$
+by (d). Using the uniqueness of additive inverse (b), we are done.
+
 #Q()

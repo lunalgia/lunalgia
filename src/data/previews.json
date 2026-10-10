@@ -17,6 +17,15 @@
     "h": 905,
     "taken": "2026-10-04"
   },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Assignments/Assignment1.pdf": {
+    "kind": "pdf",
+    "title": "Assignment 1",
+    "pages": 2,
+    "image": "/previews/8ab56dcd83e5.webp",
+    "w": 640,
+    "h": 828,
+    "taken": "2026-10-10"
+  },
   "/uni/CS/Year 1/Sem 1/Intro_Prog/Lecture Slides/01-functions-and-types.pdf": {
     "kind": "pdf",
     "title": "Introduction to Programming with Haskell - Functions and types",
@@ -107,6 +116,78 @@
     "h": 828,
     "taken": "2026-10-05"
   },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 1 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming Section 1 Section 2",
+    "pages": 3,
+    "image": "/previews/77fd98bebc6e.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 1.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming Section 1 Section 2",
+    "pages": 2,
+    "image": "/previews/e4fa31cb1530.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 2 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 3,
+    "image": "/previews/45016b3e09f7.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 2.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 3,
+    "image": "/previews/18d8d3ae1d4b.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 3 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 2,
+    "image": "/previews/b924d93d712d.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 3.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 2,
+    "image": "/previews/cbb7734a2ad7.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 4 solutions.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming Problem 1: 2x2 integer matrices as a Num instance",
+    "pages": 2,
+    "image": "/previews/22d5d2c3e816.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Problem Sheets/Sheet 4.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming Problem 1: 2x2 integer matrices as a Num instance",
+    "pages": 2,
+    "image": "/previews/106b185c313b.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
   "/uni/CS/Year 1/Sem 1/Intro_Prog/Quizzes/Haskell-Quiz1.pdf": {
     "kind": "pdf",
     "title": "NAME=TEJAS SAH Roll NO=BMC_202517",
@@ -115,6 +196,24 @@
     "w": 640,
     "h": 886,
     "taken": "2026-10-05"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Quizzes/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 1,
+    "image": "/previews/0eb9eb51dbf6.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/CS/Year 1/Sem 1/Intro_Prog/Tests/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Introduction to Programming",
+    "pages": 2,
+    "image": "/previews/e1e38625bd1f.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
   },
   "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Moodle/02 11 August - 17 August/phonetic symbols.pdf": {
     "kind": "pdf",
@@ -187,6 +286,24 @@
     "w": 640,
     "h": 906,
     "taken": "2026-10-05"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Quizzes/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Empowerment with English",
+    "pages": 1,
+    "image": "/previews/d3d78ae3c362.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/Humanities/Year 1/Sem 1/Empowerment with English/Tests/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Empowerment with English",
+    "pages": 2,
+    "image": "/previews/698b9bde0ea5.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
   },
   "/uni/Math/Year 1/Sem 1/Algebra 1/Assignments/Assignment 1 Solutions.pdf": {
     "kind": "pdf",
@@ -863,6 +980,15 @@
     "h": 906,
     "taken": "2026-10-08"
   },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Quiz 1 grading.pdf": {
+    "kind": "pdf",
+    "title": "Quiz 1 – Grading Scheme Problem 1 Problem 2 Problem 3 Problem 4 – Marking Scheme",
+    "pages": 2,
+    "image": "/previews/43916c422400.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
   "/uni/Math/Year 1/Sem 1/Algebra 1/Quizzes/Quiz 1 solutions.pdf": {
     "kind": "pdf",
     "title": "Quiz 1",
@@ -907,6 +1033,15 @@
     "w": 640,
     "h": 482,
     "taken": "2026-10-08"
+  },
+  "/uni/Math/Year 1/Sem 1/Algebra 1/Tests/Test 1.pdf": {
+    "kind": "pdf",
+    "title": "Algebra 1",
+    "pages": 2,
+    "image": "/previews/2061a0d717f9.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
   },
   "/uni/Math/Year 1/Sem 1/Algebra 1/Tutorials/Tutorial 1.pdf": {
     "kind": "pdf",
@@ -1033,6 +1168,15 @@
     "w": 640,
     "h": 960,
     "taken": "2026-10-04"
+  },
+  "/uni/Math/Year 1/Sem 1/Analysis 1/Tests/Mock Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Analysis 1",
+    "pages": 1,
+    "image": "/previews/ad8aa46a8012.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
   },
   "/uni/Past Material/Sem 1/Algebra 1/2024 Fall - Moodle archive/01 4 August - 10 August/Course Information.pdf": {
     "kind": "pdf",
@@ -2122,6 +2266,24 @@
     "w": 640,
     "h": 828,
     "taken": "2026-10-05"
+  },
+  "/uni/Physics/Year 1/Sem 1/Classical Mechanics 1/Quizzes/Quiz 1.pdf": {
+    "kind": "pdf",
+    "title": "Classical Mechanics 1",
+    "pages": 1,
+    "image": "/previews/04d20e8666a9.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
+  },
+  "/uni/Physics/Year 1/Sem 1/Classical Mechanics 1/Tests/Midsem.pdf": {
+    "kind": "pdf",
+    "title": "Classical Mechanics 1",
+    "pages": 2,
+    "image": "/previews/a7ce9f4386f8.webp",
+    "w": 640,
+    "h": 905,
+    "taken": "2026-10-10"
   },
   "https://en.wikipedia.org/w/index.php?title=Gustave_Flaubert&oldid=1377904952": {
     "kind": "page",

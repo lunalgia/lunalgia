@@ -46,7 +46,11 @@ const run = (name, cmd, cmdArgs) => {
 }
 
 const uniScript = path.join(os.homedir(), 'Scripts', 'sync-uni.sh')
-if (fs.existsSync(uniScript)) run('uni', 'bash', [uniScript])
+if (fs.existsSync(uniScript)) {
+  // Point the script at this checkout so it keeps working if the repo is moved or renamed.
+  process.env.DEST ??= path.join(ROOT, 'public', 'uni')
+  run('uni', 'bash', [uniScript])
+}
 else console.log(`\n── uni: skipped (no ${uniScript})`)
 
 for (const [name, cmdArgs] of steps) run(name, process.execPath, cmdArgs)

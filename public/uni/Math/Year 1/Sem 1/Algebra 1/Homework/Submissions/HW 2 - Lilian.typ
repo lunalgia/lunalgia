@@ -174,7 +174,20 @@ which cannot be $vb(0)$ unless all the $b_i$ are $0$. Thus $(vb(w_1), dots, vb(w
 #b()
 (a) This is just a rephrasing of injective and surjective. It is injective iff there is a unique solution to $A vb(x) = vb(0)$ #footnote[Since $A vb(x) = A vb(y) <=> A(vb(x) - vb(y)) = 0$.], and surjective if there is a solution to $A vb(x) = vb(b)$ for all $vb(b)$ in the co-domain of the function.
 
-(b) It is injective iff every column of the REF has a pivot. It is surjective iff every row has a pivot. For the first, $vb(0)$ must be the only solution to $A vb(x) = vb(0)$. But 
+(b) It is injective iff every column of the REF has a pivot. It is surjective iff every row has a pivot. I have already proved this in HW 1, for a RREF. Using problem 7, to show that pivots are unchanged across REFs, we will be done.
+
+(c). It is injective iff column vectors are linearly independent, and surjective if they span the co-domain (obvious from Problem 1).
+
+(d). We will use (b). We claim that it is injective iff row vector spans the domain. Note that every column has a pivot implies that the rows span the domain (this can be seen from the RREF. I argue in HW3 how elementary row operations do not change row space.) The reverse is also true, if the rows span the domain, and if there is a column, say the $k$th one, that does not have a pivot, note that we will have the standard basis vectors $vb(e)_i$ for $i eq.not k$ as the rows of $A_"RREF"$, but $vb(e)_k$ will not exist. Since these form a basis, this shows that the row vectors cannot span the domain.
+
+Similarly, it is surjective iff the row vectors are linearly independent. Again, we use (b). One can see that each row having a pivot will ensure linear independence. For the converse, suppose some row does not have a pivot. It must then be a zero row in the RREF. It remains to show that the row operations preserve linear independence, but that is easy to do.
+
+Less annoyingly, one could show this as follows. Suppose the rows of $A$ are linearly dependent, then there exist non-trivial weights, $y_i$ such that the linear combination of the rows of $A$ using them is $vb(0)$. Let the vector $vb(y) = y_i vb(e)_i$. If $A$ is surjective, then there exists some $vb(x)$ such that $A vb(x) = vb(y)$, but then
+$
+0 = 0 dot vb(x) = (vb(y)^T A) x= vb(y)^"T" (A vb(x)) = vb(y)^"T" vb(y) >= 0
+$
+where the equality is iff $vb(y) = 0 <=> y_i = 0$ for all $i$. The other direction still requires some work.
+
 #Q()
 
 #pagebreak()
@@ -186,6 +199,23 @@ which cannot be $vb(0)$ unless all the $b_i$ are $0$. Thus $(vb(w_1), dots, vb(w
 ]
 
 #b() 
+
+We define each $E$ by applying the row operation to $I_m$, and then check that the same $E$ works for every $m times n$ matrix $A$.
+
+Write $bold(a)_k$ for the $k$th row of $A$ and $bold(e)_k^T$ for the $k$th row of $I_m$. The one fact we need: for any $m times m$ matrix $B$,
+$ (B A)_(k j) = sum_(l=1)^m B_(k l) A_(l j), $
+so the $k$th row of $B A$ is $sum_l B_(k l) bold(a)_l$. In words, row $k$ of $B A$ is the combination of rows of $A$ whose coefficients are read off from row $k$ of $B$. In particular, if row $k$ of $B$ is $bold(e)_l^T$, then row $k$ of $B A$ is $bold(a)_l$.
+
+*Swap.* $E_(i <-> j)$ has rows $bold(e)_k^T$ for $k != i, j$, row $i$ equal to $bold(e)_j^T$, and row $j$ equal to $bold(e)_i^T$. By the fact above, $E_(i <-> j) A$ has rows $bold(a)_k$ for $k != i, j$, row $i$ equal to $bold(a)_j$, and row $j$ equal to $bold(a)_i$. That is exactly $A$ with rows $i$ and $j$ swapped.
+
+*Scale.* For $lambda != 0$, $E_(i -> lambda i)$ agrees with $I_m$ except that row $i$ is $lambda bold(e)_i^T$. So $E_(i -> lambda i) A$ agrees with $A$ except that row $i$ is $lambda bold(a)_i$.
+
+*Add.* For $i != j$, $E_(i -> i + lambda j)$ agrees with $I_m$ except that row $i$ is $bold(e)_i^T + lambda bold(e)_j^T$, i.e. it has a $lambda$ in position $(i, j)$. So $E_(i -> i + lambda j) A$ agrees with $A$ except that row $i$ is $bold(a)_i + lambda bold(a)_j$.
+
+In each case $E$ depends only on the operation and on $m$, not on $A$. This proves (a).
+
+For (b): by construction, each $E$ is the result of applying the corresponding row operation to $I_m$. Equivalently, taking $A = I_m$ in (a) gives $"op"(I_m) = E I_m = E$.
+
 #Q()
 
 #pagebreak()
