@@ -6,6 +6,7 @@ semester: 1
 date: 2026-08-20
 order: 2
 folder: 'Humanities/Year 1/Sem 1/Empowerment with English'
+past: 'Empowerment with English'
 tags: [humanities, literature]
 ---
 

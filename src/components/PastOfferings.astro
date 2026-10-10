@@ -1,0 +1,132 @@
+---
+/**
+ * One course's earlier offerings, each a fold-out with its files.
+ * Used on /academics/past and at the foot of a course page.
+ */
+import FileTree from '@/components/FileTree.astro'
+import { inline, sourceOf, type Offering } from '@/lib/past-material'
+
+interface Props {
+  offerings: Offering[]
+}
+const { offerings } = Astro.props
+---
+
+<ul class="po" role="list">
+  {
+    offerings.map((o) => {
+      const src = sourceOf(o.source)
+      return (
+        <li>
+          <details class="po__o">
+            <summary class="po__s">
+              <span class="po__term">
+                {o.year || ''} {o.season}
+              </span>
+              <span class="po__who">{o.instructor ?? o.source}</span>
+              <span class="po__meta">
+                {o.inProgress && <span class="po__chip">in progress</span>}
+                {src && <span class="po__via">via {src.name}</span>}
+                <span class="po__n">{String(o.files).padStart(2, '0')}</span>
+              </span>
+            </summary>
+            <div class="po__body">
+              {o.note && <p class="po__note" set:html={inline(o.note)} />}
+              <FileTree nodes={o.tree} />
+            </div>
+          </details>
+        </li>
+      )
+    })
+  }
+</ul>
+
+<style>
+  .po {
+    display: grid;
+  }
+  .po > li + li {
+    border-top: 1px solid rgb(2 8 135 / 0.18);
+  }
+  .po__s {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr auto;
+    gap: 0.3rem 1.2rem;
+    align-items: baseline;
+    padding: 0.85rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .po__s::-webkit-details-marker {
+    display: none;
+  }
+  .po__term {
+    white-space: nowrap;
+  }
+  .po__term,
+  .po__meta {
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .po__term::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 0.6rem;
+    letter-spacing: 0;
+    color: var(--muted);
+    transition: rotate 0.25s var(--ease);
+  }
+  .po__o[open] .po__term::before {
+    rotate: 90deg;
+  }
+  .po__who {
+    font: italic 1.15rem/1.3 var(--font-body);
+    transition: translate 0.4s var(--ease-out);
+  }
+  .po__s:hover .po__who {
+    translate: 0.35rem 0;
+  }
+  .po__meta {
+    display: flex;
+    gap: 0.9rem;
+    align-items: baseline;
+    color: var(--muted);
+  }
+  .po__chip {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid rgb(2 8 135 / 0.4);
+    color: var(--ultramarine);
+  }
+  .po__n {
+    color: var(--ultramarine);
+  }
+  .po__body {
+    padding: 0.2rem 0 1.4rem 8.7rem;
+    color: #11135a;
+  }
+  .po__note {
+    max-width: 36rem;
+    margin: 0 0 1rem;
+    font: 1.02rem/1.55 var(--font-body);
+  }
+  .po__note :global(a) {
+    text-underline-offset: 0.18em;
+  }
+  @media (max-width: 640px) {
+    .po__s {
+      grid-template-columns: 1fr auto;
+    }
+    .po__who {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .po__body {
+      padding-left: 1.1rem;
+    }
+    /* the sources are credited at the top of the page; no room for them here */
+    .po__via {
+      display: none;
+    }
+  }
+</style>

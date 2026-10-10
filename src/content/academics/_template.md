@@ -7,6 +7,7 @@ semester: 1              # 1 | 2
 date: 2026-08-20
 pdf: 'notes.pdf'         # optional, relative to folder
 folder: 'Math/Year 1/Sem 1/Course'
+past: 'Course'          # optional, folder name in public/uni/Past Material/Sem N
 tags: [math]
 ---
 

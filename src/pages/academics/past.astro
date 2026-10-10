@@ -1,0 +1,179 @@
+---
+/**
+ * Past material: earlier years' exams, quizzes and homework, one row per course,
+ * one fold-out per offering. Files: public/uni/Past Material. Words: src/data/past-material.ts.
+ */
+import Base from '@/layouts/Base.astro'
+import PastOfferings from '@/components/PastOfferings.astro'
+import { readPast } from '@/lib/past-material'
+import { SOURCES } from '@/data/past-material'
+import { roman } from '@/lib/utils'
+
+const courses = await readPast()
+const sems = [...Map.groupBy(courses, (c) => c.sem)].sort(([a], [b]) => a - b)
+const ordinal = ['ZEROTH', 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH', 'SIXTH']
+const total = courses.reduce((n, c) => n + c.offerings.reduce((m, o) => m + o.files, 0), 0)
+---
+
+<Base title="Past material" description="Earlier years' exams, quizzes and homework for CMI's BSc Mathematics and Physics courses.">
+  <header class="ah">
+    <a class="ah__back" href="/academics">← academics</a>
+    <h1 class="ah__t">Past material</h1>
+    <nav class="ah__nav" aria-label="semesters">
+      {sems.map(([s]) => <a href={`#sem${s}`}>(sem {roman(s).toLowerCase()})</a>)}
+    </nav>
+    <p class="ah__lede">
+      Exams, quizzes and homework from earlier offerings of the BSc Mathematics &amp; Physics courses at CMI. Instructors
+      change from year to year, so check whose papers you are looking at.
+    </p>
+    <dl class="ah__cred">
+      <dt>COLLECTED BY</dt>
+      {
+        Object.values(SOURCES).map((s) => (
+          <dd>
+            <a href={s.href} target="_blank" rel="noopener">
+              {s.name}
+            </a>{' '}
+            <span>
+              ({s.people}): {s.covers}.
+            </span>
+          </dd>
+        ))
+      }
+      <dd class="ah__fine">{total} files, mirrored from the pages above.</dd>
+    </dl>
+  </header>
+
+  {
+    sems.map(([s, list]) => (
+      <section class="as" id={`sem${s}`}>
+        <header class="as__top">
+          <span>
+            {roman(s)} · {ordinal[s] ?? `SEMESTER ${s}`} SEMESTER
+          </span>
+          <span>{String(list.length).padStart(2, '0')}</span>
+        </header>
+        <ol class="as__list" role="list">
+          {list.map((c) => (
+            <li class="pc" id={c.slug}>
+              <h2 class="pc__t">
+                <a href={`#${c.slug}`}>{c.name}</a>
+              </h2>
+              <PastOfferings offerings={c.offerings} />
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .ah {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    padding: 7rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .ah__back {
+    grid-column: 1 / -1;
+    font: 0.72rem var(--font-din);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .ah__t {
+    margin: 0;
+    font: 400 clamp(3.4rem, 9vw, 8.4rem) / 0.9 var(--font-din);
+  }
+  .ah__nav {
+    display: flex;
+    gap: 1.6rem;
+    font: 400 0.72rem/1.4 var(--font-din);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .ah__nav a {
+    text-decoration: none;
+  }
+  .ah__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .ah__lede {
+    grid-column: 1 / -1;
+    max-width: 34rem;
+    margin: 0;
+    font: 1.2rem/1.5 var(--font-body);
+    color: #11135a;
+  }
+  .ah__cred {
+    grid-column: 1 / -1;
+    max-width: 40rem;
+    margin: 0;
+    color: #11135a;
+  }
+  .ah__cred dt {
+    margin-bottom: 0.6rem;
+    font: 0.68rem var(--font-din);
+    letter-spacing: 0.16em;
+    color: var(--ultramarine);
+  }
+  .ah__cred dd {
+    margin: 0 0 0.35rem;
+    font: 1.02rem/1.5 var(--font-body);
+  }
+  .ah__cred a {
+    font-style: italic;
+    text-underline-offset: 0.18em;
+  }
+  .ah__fine {
+    margin-top: 0.8rem !important;
+    font-size: 0.92rem !important;
+    color: var(--muted);
+  }
+
+  .as {
+    padding: 4rem 4vw 0;
+    color: var(--ultramarine);
+  }
+  .as:last-of-type {
+    padding-bottom: 6rem;
+  }
+  .as__top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid var(--ultramarine);
+    font: 0.75rem var(--font-din);
+    letter-spacing: 0.18em;
+  }
+  .pc {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem 2rem;
+    padding: 1.6rem 0 1rem;
+    border-bottom: 1px solid rgb(2 8 135 / 0.3);
+    scroll-margin-top: 4rem;
+  }
+  .pc__t {
+    margin: 0;
+    font: italic 400 clamp(2rem, 3.4vw, 3rem) / 1 var(--font-display);
+  }
+  .pc__t a {
+    text-decoration: none;
+  }
+  @media (min-width: 1000px) {
+    .pc {
+      grid-template-columns: minmax(16rem, 2fr) 3fr;
+    }
+  }
+  @media (max-width: 760px) {
+    .ah {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

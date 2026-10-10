@@ -7,6 +7,7 @@ date: 2026-08-20
 order: 2
 pdf: 'linalg.pdf'
 folder: 'Math/Year 1/Sem 1/Algebra 1'
+past: 'Algebra 1'
 tags: [math, algebra]
 ---
 

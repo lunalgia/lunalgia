@@ -38,6 +38,8 @@ const academics = defineCollection({
     order: z.number().optional(),
     pdf: z.string().optional(),
     folder: z.string().optional(),
+    /** the course's folder name in public/uni/Past Material, to list earlier years' papers */
+    past: z.string().optional(),
     tags: z.array(z.string()).default([]),
   }),
 })

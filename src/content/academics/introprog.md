@@ -6,6 +6,7 @@ semester: 1
 date: 2026-08-20
 order: 2
 folder: 'CS/Year 1/Sem 1/Intro_Prog'
+past: 'Intro to Programming (Haskell)'
 tags: [cs, programming]
 ---
 

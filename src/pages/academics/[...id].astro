@@ -3,8 +3,10 @@ import '@/styles/prose.css'
 import { getCollection, render } from 'astro:content'
 import Base from '@/layouts/Base.astro'
 import FileTree from '@/components/FileTree.astro'
+import PastOfferings from '@/components/PastOfferings.astro'
+import { readPast } from '@/lib/past-material'
 import { readUniTree, uniHref } from '@/lib/file-tree'
-import { formatDate } from '@/lib/utils'
+import { formatDate, roman } from '@/lib/utils'
 
 export async function getStaticPaths() {
   const lectures = await getCollection('academics')
@@ -16,6 +18,7 @@ const { Content } = await render(lecture)
 const d = lecture.data
 const pdfHref = d.pdf ? (d.folder ? uniHref(d.folder, d.pdf) : `/academics/${d.pdf}`) : null
 const tree = d.folder ? await readUniTree(d.folder) : []
+const past = d.past ? (await readPast()).find((c) => c.name === d.past) : undefined
 const sem = d.semester === 1 ? 'first semester' : d.semester === 2 ? 'second semester' : null
 const kicker = [d.folder?.split('/')[0], ...d.tags.slice(1), [sem, d.year].filter(Boolean).join(' ')].filter(Boolean)
 ---
@@ -62,6 +65,22 @@ const kicker = [d.folder?.split('/')[0], ...d.tags.slice(1), [sem, d.year].filte
         </header>
         <div class="cs2__tree">
           <FileTree nodes={tree} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    past && past.offerings.length > 0 && (
+      <section class="cs2">
+        <header class="cs2__top">
+          <span>{roman([pdfHref, tree.length].filter(Boolean).length + 1)} · EARLIER YEARS</span>
+          <span class="cs2__tools">
+            <a href={`/academics/past#${past.slug}`}>all past material →</a>
+          </span>
+        </header>
+        <div class="cs2__tree">
+          <PastOfferings offerings={past.offerings} />
         </div>
       </section>
     )
